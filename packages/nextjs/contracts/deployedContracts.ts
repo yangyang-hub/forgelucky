@@ -4,6 +4,365 @@
  */
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
-const deployedContracts = {} as const;
+const deployedContracts = {
+  31337: {
+    ForgeLucky: {
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      abi: [
+        {
+          "type": "constructor",
+          "inputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "CYCLE_DURATION",
+          "inputs": [],
+          "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "TICKET_PRICE",
+          "inputs": [],
+          "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "approve",
+          "inputs": [
+            {"name": "to", "type": "address", "internalType": "address"},
+            {"name": "tokenId", "type": "uint256", "internalType": "uint256"}
+          ],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "balanceOf",
+          "inputs": [{"name": "owner", "type": "address", "internalType": "address"}],
+          "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "buyTicketWithETH",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "payable"
+        },
+        {
+          "type": "function",
+          "name": "buyTicketWithBalance",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "buyTicketsWithETH",
+          "inputs": [{"name": "count", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [],
+          "stateMutability": "payable"
+        },
+        {
+          "type": "function",
+          "name": "buyTicketsWithBalance",
+          "inputs": [{"name": "count", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "canBuyTicketsWithBalance",
+          "inputs": [
+            {"name": "user", "type": "address", "internalType": "address"},
+            {"name": "count", "type": "uint256", "internalType": "uint256"}
+          ],
+          "outputs": [{"name": "", "type": "bool", "internalType": "bool"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "canDrawTicket",
+          "inputs": [{"name": "tokenId", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [{"name": "", "type": "bool", "internalType": "bool"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "claimPrize",
+          "inputs": [{"name": "tokenId", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "currentCycleId",
+          "inputs": [],
+          "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "cycles",
+          "inputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [
+            {"name": "id", "type": "uint256", "internalType": "uint256"},
+            {"name": "startTime", "type": "uint256", "internalType": "uint256"},
+            {"name": "endTime", "type": "uint256", "internalType": "uint256"},
+            {"name": "totalTickets", "type": "uint256", "internalType": "uint256"},
+            {"name": "prizePool", "type": "uint256", "internalType": "uint256"},
+            {"name": "platformFee", "type": "uint256", "internalType": "uint256"},
+            {"name": "isFinalized", "type": "bool", "internalType": "bool"},
+            {"name": "drawnTickets", "type": "uint256", "internalType": "uint256"},
+            {"name": "superGrandDrawn", "type": "bool", "internalType": "bool"},
+            {"name": "superGrandTicketId", "type": "uint256", "internalType": "uint256"}
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "deposit",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "payable"
+        },
+        {
+          "type": "function",
+          "name": "drawTicket",
+          "inputs": [{"name": "tokenId", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "getCurrentCycle",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "internalType": "struct ForgeLucky.Cycle",
+              "components": [
+                {"name": "id", "type": "uint256", "internalType": "uint256"},
+                {"name": "startTime", "type": "uint256", "internalType": "uint256"},
+                {"name": "endTime", "type": "uint256", "internalType": "uint256"},
+                {"name": "totalTickets", "type": "uint256", "internalType": "uint256"},
+                {"name": "prizePool", "type": "uint256", "internalType": "uint256"},
+                {"name": "platformFee", "type": "uint256", "internalType": "uint256"},
+                {"name": "isFinalized", "type": "bool", "internalType": "bool"},
+                {"name": "drawnTickets", "type": "uint256", "internalType": "uint256"},
+                {"name": "superGrandDrawn", "type": "bool", "internalType": "bool"},
+                {"name": "superGrandTicketId", "type": "uint256", "internalType": "uint256"}
+              ]
+            }
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "getUserBalance",
+          "inputs": [{"name": "user", "type": "address", "internalType": "address"}],
+          "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "getUserInfo",
+          "inputs": [{"name": "user", "type": "address", "internalType": "address"}],
+          "outputs": [
+            {"name": "balance", "type": "uint256", "internalType": "uint256"},
+            {"name": "ticketCount", "type": "uint256", "internalType": "uint256"},
+            {"name": "ticketIds", "type": "uint256[]", "internalType": "uint256[]"}
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "getUserTickets",
+          "inputs": [{"name": "user", "type": "address", "internalType": "address"}],
+          "outputs": [{"name": "", "type": "uint256[]", "internalType": "uint256[]"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "name",
+          "inputs": [],
+          "outputs": [{"name": "", "type": "string", "internalType": "string"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "owner",
+          "inputs": [],
+          "outputs": [{"name": "", "type": "address", "internalType": "address"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "ownerOf",
+          "inputs": [{"name": "tokenId", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [{"name": "", "type": "address", "internalType": "address"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "pause",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "paused",
+          "inputs": [],
+          "outputs": [{"name": "", "type": "bool", "internalType": "bool"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "tickets",
+          "inputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [
+            {"name": "cycleId", "type": "uint256", "internalType": "uint256"},
+            {"name": "purchaseTime", "type": "uint256", "internalType": "uint256"},
+            {"name": "isDrawn", "type": "bool", "internalType": "bool"},
+            {"name": "prizeLevel", "type": "uint8", "internalType": "enum ForgeLucky.PrizeLevel"},
+            {"name": "prizeAmount", "type": "uint256", "internalType": "uint256"},
+            {"name": "isClaimed", "type": "bool", "internalType": "bool"}
+          ],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "tokenURI",
+          "inputs": [{"name": "tokenId", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [{"name": "", "type": "string", "internalType": "string"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "totalSupply",
+          "inputs": [],
+          "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "userBalances",
+          "inputs": [{"name": "", "type": "address", "internalType": "address"}],
+          "outputs": [{"name": "", "type": "uint256", "internalType": "uint256"}],
+          "stateMutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "withdrawAllBalance",
+          "inputs": [],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "function",
+          "name": "withdrawBalance",
+          "inputs": [{"name": "amount", "type": "uint256", "internalType": "uint256"}],
+          "outputs": [],
+          "stateMutability": "nonpayable"
+        },
+        {
+          "type": "event",
+          "name": "Approval",
+          "inputs": [
+            {"name": "owner", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "approved", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "BatchTicketsPurchased",
+          "inputs": [
+            {"name": "buyer", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "startTokenId", "type": "uint256", "indexed": false, "internalType": "uint256"},
+            {"name": "count", "type": "uint256", "indexed": false, "internalType": "uint256"},
+            {"name": "cycleId", "type": "uint256", "indexed": true, "internalType": "uint256"},
+            {"name": "usedBalance", "type": "bool", "indexed": false, "internalType": "bool"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "CycleStarted",
+          "inputs": [
+            {"name": "cycleId", "type": "uint256", "indexed": true, "internalType": "uint256"},
+            {"name": "startTime", "type": "uint256", "indexed": false, "internalType": "uint256"},
+            {"name": "endTime", "type": "uint256", "indexed": false, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "PrizeClaimed",
+          "inputs": [
+            {"name": "winner", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256"},
+            {"name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "TicketDrawn",
+          "inputs": [
+            {"name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256"},
+            {"name": "prizeLevel", "type": "uint8", "indexed": false, "internalType": "enum ForgeLucky.PrizeLevel"},
+            {"name": "prizeAmount", "type": "uint256", "indexed": false, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "TicketPurchased",
+          "inputs": [
+            {"name": "buyer", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256"},
+            {"name": "cycleId", "type": "uint256", "indexed": true, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "Transfer",
+          "inputs": [
+            {"name": "from", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "to", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "UserDeposited",
+          "inputs": [
+            {"name": "user", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        },
+        {
+          "type": "event",
+          "name": "UserWithdrawn",
+          "inputs": [
+            {"name": "user", "type": "address", "indexed": true, "internalType": "address"},
+            {"name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256"}
+          ],
+          "anonymous": false
+        }
+      ] as const,
+    },
+  },
+} as const;
 
 export default deployedContracts satisfies GenericContractsDeclaration;

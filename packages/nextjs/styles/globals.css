@@ -18,50 +18,50 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #93bbfb;
-  --color-primary-content: #212638;
-  --color-secondary: #dae8ff;
-  --color-secondary-content: #212638;
-  --color-accent: #93bbfb;
-  --color-accent-content: #212638;
-  --color-neutral: #212638;
+  --color-primary: #FFD700;
+  --color-primary-content: #1a1a1a;
+  --color-secondary: #FF6B6B;
+  --color-secondary-content: #ffffff;
+  --color-accent: #4ECDC4;
+  --color-accent-content: #1a1a1a;
+  --color-neutral: #2a2a2a;
   --color-neutral-content: #ffffff;
   --color-base-100: #ffffff;
-  --color-base-200: #f4f8ff;
-  --color-base-300: #dae8ff;
-  --color-base-content: #212638;
-  --color-info: #93bbfb;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-base-200: #fef3c7;
+  --color-base-300: #fde68a;
+  --color-base-content: #1a1a1a;
+  --color-info: #3b82f6;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1.5rem;
   --tt-tailw: 6px;
 }
 
 @plugin "daisyui/theme" {
   name: "dark";
 
-  --color-primary: #212638;
-  --color-primary-content: #f9fbff;
-  --color-secondary: #323f61;
-  --color-secondary-content: #f9fbff;
-  --color-accent: #4969a6;
-  --color-accent-content: #f9fbff;
-  --color-neutral: #f9fbff;
-  --color-neutral-content: #385183;
-  --color-base-100: #385183;
-  --color-base-200: #2a3655;
-  --color-base-300: #212638;
-  --color-base-content: #f9fbff;
-  --color-info: #385183;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-primary: #FFD700;
+  --color-primary-content: #1a1a1a;
+  --color-secondary: #FF6B6B;
+  --color-secondary-content: #ffffff;
+  --color-accent: #4ECDC4;
+  --color-accent-content: #1a1a1a;
+  --color-neutral: #f9fafb;
+  --color-neutral-content: #1a1a1a;
+  --color-base-100: #1e1e1e;
+  --color-base-200: #2a2a2a;
+  --color-base-300: #3a3a3a;
+  --color-base-content: #f9fafb;
+  --color-info: #3b82f6;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1.5rem;
 
   --tt-tailw: 6px;
   --tt-bg: var(--color-primary);
@@ -120,4 +120,147 @@
 
 .link:hover {
   opacity: 80%;
+}
+
+/* 彩票风格的自定义样式 */
+.lottery-gradient {
+  background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B6B);
+}
+
+.lottery-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+  border: 2px solid #FFD700;
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.lottery-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+}
+
+.scratch-card {
+  position: relative;
+  background: linear-gradient(45deg, #c0c0c0, #silver);
+  cursor: crosshair;
+}
+
+.scratch-overlay {
+  background: linear-gradient(45deg, #c0c0c0 25%, #a0a0a0 25%, #a0a0a0 50%, #c0c0c0 50%, #c0c0c0 75%, #a0a0a0 75%);
+  background-size: 20px 20px;
+}
+
+.prize-glow {
+  animation: prize-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes prize-glow {
+  from {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+  }
+}
+
+.confetti {
+  animation: confetti-fall 3s ease-out forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.number-display {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.countdown-timer {
+  background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 响应式布局优化 */
+@media (max-width: 768px) {
+  .lottery-gradient {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  .lottery-card {
+    padding: 1rem;
+  }
+  
+  .stats-grid-15 {
+    grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .hero-stats > div {
+    min-width: 120px;
+  }
+  
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+}
+
+/* 图表样式 */
+.chart-container {
+  position: relative;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2px;
+  min-width: 600px;
+  height: 200px;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .chart-bars {
+    min-width: 400px;
+    height: 150px;
+  }
+}
+
+/* 表格响应式 */
+.responsive-table {
+  overflow-x: auto;
+}
+
+.responsive-table table {
+  min-width: 600px;
+}
+
+@media (max-width: 768px) {
+  .responsive-table table {
+    font-size: 0.875rem;
+  }
 }
