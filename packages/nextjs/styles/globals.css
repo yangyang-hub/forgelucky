@@ -27,9 +27,9 @@
   --color-neutral: #1f2937;
   --color-neutral-content: #ffffff;
   --color-base-100: #ffffff;
-  --color-base-200: #fef3c7;
-  --color-base-300: #fde68a;
-  --color-base-content: #111827;
+  --color-base-200: #f8f9fa;
+  --color-base-300: #e9ecef;
+  --color-base-content: #000000;
   --color-info: #1d4ed8;
   --color-success: #059669;
   --color-warning: #d97706;
@@ -51,10 +51,10 @@
   --color-accent-content: #1a1a1a;
   --color-neutral: #f9fafb;
   --color-neutral-content: #1a1a1a;
-  --color-base-100: #1e1e1e;
-  --color-base-200: #2a2a2a;
-  --color-base-300: #3a3a3a;
-  --color-base-content: #f9fafb;
+  --color-base-100: #000000;
+  --color-base-200: #1a1a1a;
+  --color-base-300: #2a2a2a;
+  --color-base-content: #ffffff;
   --color-info: #3b82f6;
   --color-success: #10b981;
   --color-warning: #f59e0b;
@@ -267,16 +267,16 @@
 
 /* 文字对比度优化 */
 .text-enhanced {
-  color: #111827;
+  color: #000000;
   font-weight: 500;
 }
 
 [data-theme="dark"] .text-enhanced {
-  color: #f9fafb;
+  color: #ffffff;
 }
 
 .text-muted {
-  color: #4b5563;
+  color: #6b7280;
 }
 
 [data-theme="dark"] .text-muted {
@@ -294,17 +294,17 @@
 
 /* 改进的彩票卡片样式 */
 .lottery-card {
-  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border: 2px solid #D97700;
   box-shadow: 0 8px 32px rgba(217, 119, 0, 0.3);
   transition: all 0.3s ease;
-  color: #111827;
+  color: #000000;
 }
 
 [data-theme="dark"] .lottery-card {
-  background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
   border: 2px solid #FFD700;
-  color: #f9fafb;
+  color: #ffffff;
 }
 
 .lottery-card:hover {
