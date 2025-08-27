@@ -24,7 +24,7 @@ contract ForgeLuckyDebugTest is Test {
         // Buy 100 tickets like in the failing test
         vm.startPrank(user1);
         for (uint256 i = 0; i < 100; i++) {
-            forgeLucky.buyTicket{value: 0.01 ether}();
+            forgeLucky.buyTicketWithETH{value: 0.01 ether}();
         }
         vm.stopPrank();
         

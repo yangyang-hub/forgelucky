@@ -94,6 +94,12 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
     uint256 public totalPlatformFees;                        // 累计平台费用
     
     // =================================================================================
+    // 用户余额管理
+    // =================================================================================
+    
+    mapping(address => uint256) public userBalances;         // 用户地址 => 平台余额
+    
+    // =================================================================================
     // 事件定义
     // =================================================================================
     
@@ -105,6 +111,12 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
     event SuperGrandPrizeAwarded(uint256 indexed cycleId, uint256 indexed tokenId, uint256 amount);
     event BatchDrawCompleted(uint256 indexed cycleId, uint256 ticketsDrawn);
     event PlatformFeesWithdrawn(address indexed owner, uint256 amount);
+    
+    // 用户余额管理相关事件
+    event UserDeposited(address indexed user, uint256 amount);
+    event UserWithdrawn(address indexed user, uint256 amount);
+    event TicketPurchasedWithBalance(address indexed buyer, uint256 indexed tokenId, uint256 indexed cycleId);
+    event BatchTicketsPurchased(address indexed buyer, uint256 startTokenId, uint256 count, uint256 indexed cycleId, bool usedBalance);
     
     // =================================================================================
     // 修饰符
@@ -144,21 +156,155 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
     }
     
     // =================================================================================
-    // 核心功能函数
+    // 用户余额管理功能
     // =================================================================================
     
     /**
-     * @dev 购买彩票
+     * @dev 用户充值到平台
+     * @notice 用户向平台充值ETH，可用于购买彩票
+     */
+    function deposit() external payable whenNotPaused nonReentrant {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        
+        userBalances[msg.sender] += msg.value;
+        
+        emit UserDeposited(msg.sender, msg.value);
+        console.log("User deposited:", msg.value);
+    }
+    
+    /**
+     * @dev 用户提取平台余额
+     * @param amount 提取金额
+     */
+    function withdrawBalance(uint256 amount) external whenNotPaused nonReentrant {
+        require(amount > 0, "Withdraw amount must be greater than 0");
+        require(userBalances[msg.sender] >= amount, "Insufficient balance");
+        
+        userBalances[msg.sender] -= amount;
+        
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "Withdraw transfer failed");
+        
+        emit UserWithdrawn(msg.sender, amount);
+        console.log("User withdrawn:", amount);
+    }
+    
+    /**
+     * @dev 用户提取全部平台余额
+     */
+    function withdrawAllBalance() external whenNotPaused nonReentrant {
+        uint256 balance = userBalances[msg.sender];
+        require(balance > 0, "No balance to withdraw");
+        
+        userBalances[msg.sender] = 0;
+        
+        (bool success, ) = payable(msg.sender).call{value: balance}("");
+        require(success, "Withdraw transfer failed");
+        
+        emit UserWithdrawn(msg.sender, balance);
+        console.log("User withdrawn all:", balance);
+    }
+    
+    // =================================================================================
+    // 购买彩票功能
+    // =================================================================================
+    
+    /**
+     * @dev 使用ETH购买单张彩票
      * @notice 用户支付0.01 ETH购买一张NFT彩票
      */
-    function buyTicket() external payable onlyActiveCycle whenNotPaused nonReentrant {
+    function buyTicketWithETH() external payable onlyActiveCycle whenNotPaused nonReentrant {
         require(msg.value == TICKET_PRICE, "Incorrect payment amount");
         
-        // 生成新的彩票ID
-        uint256 tokenId = _tokenIdCounter++;
+        uint256 tokenId = _mintTicket(msg.sender);
+        
+        // 更新周期信息
+        cycles[currentCycleId].totalTickets++;
+        cycles[currentCycleId].prizePool += TICKET_PRICE;
+        
+        emit TicketPurchased(msg.sender, tokenId, currentCycleId);
+        console.log("Ticket purchased with ETH, ID:", tokenId);
+    }
+    
+    /**
+     * @dev 使用平台余额购买单张彩票
+     * @notice 用户使用平台余额购买一张NFT彩票
+     */
+    function buyTicketWithBalance() external onlyActiveCycle whenNotPaused nonReentrant {
+        require(userBalances[msg.sender] >= TICKET_PRICE, "Insufficient balance");
+        
+        userBalances[msg.sender] -= TICKET_PRICE;
+        uint256 tokenId = _mintTicket(msg.sender);
+        
+        // 更新周期信息
+        cycles[currentCycleId].totalTickets++;
+        cycles[currentCycleId].prizePool += TICKET_PRICE;
+        
+        emit TicketPurchasedWithBalance(msg.sender, tokenId, currentCycleId);
+        console.log("Ticket purchased with balance, ID:", tokenId);
+    }
+    
+    /**
+     * @dev 使用ETH批量购买彩票
+     * @param count 购买数量
+     */
+    function buyTicketsWithETH(uint256 count) external payable onlyActiveCycle whenNotPaused nonReentrant {
+        require(count > 0, "Count must be greater than 0");
+        require(count <= 100, "Cannot buy more than 100 tickets at once");
+        require(msg.value == TICKET_PRICE * count, "Incorrect payment amount");
+        
+        uint256 startTokenId = _tokenIdCounter;
+        
+        // 批量铸造彩票
+        for (uint256 i = 0; i < count; i++) {
+            _mintTicket(msg.sender);
+        }
+        
+        // 更新周期信息
+        cycles[currentCycleId].totalTickets += count;
+        cycles[currentCycleId].prizePool += TICKET_PRICE * count;
+        
+        emit BatchTicketsPurchased(msg.sender, startTokenId, count, currentCycleId, false);
+        console.log("Batch tickets purchased with ETH, count:", count);
+    }
+    
+    /**
+     * @dev 使用平台余额批量购买彩票
+     * @param count 购买数量
+     */
+    function buyTicketsWithBalance(uint256 count) external onlyActiveCycle whenNotPaused nonReentrant {
+        require(count > 0, "Count must be greater than 0");
+        require(count <= 100, "Cannot buy more than 100 tickets at once");
+        
+        uint256 totalCost = TICKET_PRICE * count;
+        require(userBalances[msg.sender] >= totalCost, "Insufficient balance");
+        
+        userBalances[msg.sender] -= totalCost;
+        uint256 startTokenId = _tokenIdCounter;
+        
+        // 批量铸造彩票
+        for (uint256 i = 0; i < count; i++) {
+            _mintTicket(msg.sender);
+        }
+        
+        // 更新周期信息
+        cycles[currentCycleId].totalTickets += count;
+        cycles[currentCycleId].prizePool += totalCost;
+        
+        emit BatchTicketsPurchased(msg.sender, startTokenId, count, currentCycleId, true);
+        console.log("Batch tickets purchased with balance, count:", count);
+    }
+    
+    /**
+     * @dev 内部函数：铸造彩票NFT
+     * @param buyer 购买者地址
+     * @return tokenId 生成的彩票ID
+     */
+    function _mintTicket(address buyer) internal returns (uint256 tokenId) {
+        tokenId = _tokenIdCounter++;
         
         // 铸造NFT彩票
-        _safeMint(msg.sender, tokenId);
+        _safeMint(buyer, tokenId);
         
         // 创建彩票信息
         tickets[tokenId] = Ticket({
@@ -170,15 +316,11 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
             isClaimed: false
         });
         
-        // 更新周期信息
-        cycles[currentCycleId].totalTickets++;
-        cycles[currentCycleId].prizePool += TICKET_PRICE;
+        // 更新用户和周期的彩票列表
         cycleTickets[currentCycleId].push(tokenId);
-        userTickets[msg.sender].push(tokenId);
+        userTickets[buyer].push(tokenId);
         
-        emit TicketPurchased(msg.sender, tokenId, currentCycleId);
-        
-        console.log("Ticket purchased, ID:", tokenId);
+        return tokenId;
     }
     
     /**
@@ -479,6 +621,33 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
     }
     
     /**
+     * @dev 获取用户平台余额
+     */
+    function getUserBalance(address user) external view returns (uint256) {
+        return userBalances[user];
+    }
+    
+    /**
+     * @dev 获取用户详细信息
+     */
+    function getUserInfo(address user) external view returns (
+        uint256 balance,
+        uint256 ticketCount,
+        uint256[] memory ticketIds
+    ) {
+        balance = userBalances[user];
+        ticketIds = userTickets[user];
+        ticketCount = ticketIds.length;
+    }
+    
+    /**
+     * @dev 检查用户是否有足够余额购买指定数量彩票
+     */
+    function canBuyTicketsWithBalance(address user, uint256 count) external view returns (bool) {
+        return userBalances[user] >= TICKET_PRICE * count;
+    }
+    
+    /**
      * @dev 获取周期的所有彩票
      */
     function getCycleTickets(uint256 cycleId) external view returns (uint256[] memory) {
@@ -523,6 +692,27 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
                 totalPrizesPaid += tickets[i].prizeAmount;
             }
         }
+    }
+    
+    /**
+     * @dev 获取平台资金统计
+     */
+    function getPlatformStats() external view returns (
+        uint256 contractBalance,
+        uint256 platformFeesTotal,
+        uint256 totalPrizePool,
+        uint256 availableFunds
+    ) {
+        contractBalance = address(this).balance;
+        platformFeesTotal = totalPlatformFees;
+        
+        // 计算当前周期的奖金池
+        totalPrizePool = cycles[currentCycleId].prizePool;
+        
+        // 可用资金 = 合约余额 - 当前周期奖金池 - 平台费用
+        availableFunds = contractBalance >= (totalPrizePool + platformFeesTotal) 
+            ? contractBalance - totalPrizePool - platformFeesTotal 
+            : 0;
     }
     
     // =================================================================================

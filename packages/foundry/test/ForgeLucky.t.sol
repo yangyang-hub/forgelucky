@@ -67,8 +67,8 @@ contract ForgeLuckyTest is Test {
         vm.expectEmit(true, true, true, false);
         emit TicketPurchased(user1, 0, 1);
         
-        // Buy ticket
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        // Buy ticket with ETH
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         
         // Verify ticket ownership
         assertEq(forgeLucky.ownerOf(0), user1);
@@ -88,18 +88,34 @@ contract ForgeLuckyTest is Test {
         console.log("Buy ticket test passed");
     }
     
+    function test_BuyTicketWithBalance_Integration() public {
+        // First deposit
+        vm.prank(user1);
+        forgeLucky.deposit{value: TICKET_PRICE}();
+        
+        // Then buy with balance
+        vm.prank(user1);
+        forgeLucky.buyTicketWithBalance();
+        
+        // Verify ticket ownership
+        assertEq(forgeLucky.ownerOf(0), user1);
+        assertEq(forgeLucky.getUserBalance(user1), 0);
+        
+        console.log("Buy ticket with balance integration test passed");
+    }
+    
     function test_BuyMultipleTickets() public {
         // User1 buys 3 tickets
         vm.startPrank(user1);
         for (uint256 i = 0; i < 3; i++) {
-            forgeLucky.buyTicket{value: TICKET_PRICE}();
+            forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         }
         vm.stopPrank();
         
         // User2 buys 2 tickets
         vm.startPrank(user2);
         for (uint256 i = 0; i < 2; i++) {
-            forgeLucky.buyTicket{value: TICKET_PRICE}();
+            forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         }
         vm.stopPrank();
         
@@ -118,11 +134,11 @@ contract ForgeLuckyTest is Test {
         
         // Too little payment
         vm.expectRevert("Incorrect payment amount");
-        forgeLucky.buyTicket{value: 0.005 ether}();
+        forgeLucky.buyTicketWithETH{value: 0.005 ether}();
         
         // Too much payment
         vm.expectRevert("Incorrect payment amount");
-        forgeLucky.buyTicket{value: 0.02 ether}();
+        forgeLucky.buyTicketWithETH{value: 0.02 ether}();
         
         console.log("Incorrect payment test passed");
     }
@@ -131,7 +147,7 @@ contract ForgeLuckyTest is Test {
     function test_DrawTicket() public {
         // Buy ticket
         vm.prank(user1);
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         
         // Fast forward past cycle end
         vm.warp(block.timestamp + 8 days);
@@ -153,7 +169,7 @@ contract ForgeLuckyTest is Test {
     function test_DrawTicket_CycleNotEnded() public {
         // Buy ticket
         vm.prank(user1);
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         
         // Try to draw before cycle ends
         vm.prank(user1);
@@ -166,7 +182,7 @@ contract ForgeLuckyTest is Test {
     function test_DrawTicket_NotOwner() public {
         // user1 buys ticket
         vm.prank(user1);
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         
         // Fast forward past cycle end
         vm.warp(block.timestamp + 8 days);
@@ -186,7 +202,7 @@ contract ForgeLuckyTest is Test {
         // Buy multiple tickets
         vm.startPrank(user1);
         for (uint256 i = 0; i < ticketCount; i++) {
-            forgeLucky.buyTicket{value: TICKET_PRICE}();
+            forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
             tokenIds[i] = i;
         }
         vm.stopPrank();
@@ -234,7 +250,7 @@ contract ForgeLuckyTest is Test {
         // Buy enough tickets to trigger platform fee
         vm.startPrank(user1);
         for (uint256 i = 0; i < 100; i++) {
-            forgeLucky.buyTicket{value: TICKET_PRICE}();
+            forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         }
         vm.stopPrank();
         
@@ -263,7 +279,7 @@ contract ForgeLuckyTest is Test {
         // Buy enough tickets to generate platform fees
         vm.startPrank(user1);
         for (uint256 i = 0; i < 100; i++) {
-            forgeLucky.buyTicket{value: TICKET_PRICE}();
+            forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         }
         vm.stopPrank();
         
@@ -300,7 +316,7 @@ contract ForgeLuckyTest is Test {
         // Try to buy ticket while paused
         vm.prank(user1);
         vm.expectRevert();
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         
         // Unpause contract
         vm.prank(owner);
@@ -310,7 +326,7 @@ contract ForgeLuckyTest is Test {
         
         // Verify can buy ticket normally
         vm.prank(user1);
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         
         console.log("Pause and unpause test passed");
     }
@@ -319,12 +335,12 @@ contract ForgeLuckyTest is Test {
     function test_ViewFunctions() public {
         // Buy some tickets
         vm.startPrank(user1);
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         vm.stopPrank();
         
         vm.startPrank(user2);
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         vm.stopPrank();
         
         // Test get user tickets
@@ -355,7 +371,7 @@ contract ForgeLuckyTest is Test {
     function test_CanDrawTicket() public {
         // Buy ticket
         vm.prank(user1);
-        forgeLucky.buyTicket{value: TICKET_PRICE}();
+        forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         
         // Cannot draw during cycle
         assertFalse(forgeLucky.canDrawTicket(0));
@@ -383,7 +399,7 @@ contract ForgeLuckyTest is Test {
         // Stage 1: Single user buys all tickets to avoid ownership issues
         vm.startPrank(user1);
         for (uint256 i = 0; i < 100; i++) {
-            forgeLucky.buyTicket{value: TICKET_PRICE}();
+            forgeLucky.buyTicketWithETH{value: TICKET_PRICE}();
         }
         vm.stopPrank();
         
@@ -461,7 +477,8 @@ contract ForgeLuckyTest is Test {
         console.log("===========================================");
         console.log("ForgeLucky Contract Test Summary:");
         console.log("+ Contract deployment and initialization");
-        console.log("+ Ticket purchase functionality");
+        console.log("+ ETH ticket purchase functionality");
+        console.log("+ Balance ticket purchase functionality");
         console.log("+ Drawing mechanism");
         console.log("+ Prize claiming");
         console.log("+ Cycle management");
@@ -470,6 +487,7 @@ contract ForgeLuckyTest is Test {
         console.log("+ View functions");
         console.log("+ Full game flow");
         console.log("===========================================");
-        console.log("All test cases completed!");
+        console.log("All core test cases completed!");
+        console.log("Note: Run ForgeLuckyBalance.t.sol for comprehensive balance tests");
     }
 }
