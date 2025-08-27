@@ -12,6 +12,7 @@ import {
   BanknotesIcon,
   ClockIcon
 } from "@heroicons/react/24/outline";
+import { useLanguage } from "~~/hooks/useLanguage";
 
 /**
  * 统计数据页面
@@ -19,6 +20,7 @@ import {
  */
 
 const StatsPage: NextPage = () => {
+  const { t } = useLanguage();
   const [selectedPeriod, setSelectedPeriod] = useState<"7d" | "30d" | "90d" | "all">("30d");
 
   // 模拟统计数据
@@ -36,11 +38,11 @@ const StatsPage: NextPage = () => {
 
   // 奖项分布数据
   const prizeDistribution = [
-    { level: "超级大奖", count: 2, percentage: 0.16, totalAmount: "3.612 ETH", color: "bg-yellow-400" },
-    { level: "大奖", count: 31, percentage: 2.49, totalAmount: "5.418 ETH", color: "bg-orange-500" },
-    { level: "中奖", count: 93, percentage: 7.46, totalAmount: "2.709 ETH", color: "bg-blue-500" },
-    { level: "小奖", count: 187, percentage: 15.00, totalAmount: "0.903 ETH", color: "bg-green-500" },
-    { level: "未中奖", count: 934, percentage: 74.9, totalAmount: "0 ETH", color: "bg-gray-400" }
+    { level: "superGrand", count: 2, percentage: 0.16, totalAmount: "3.612 ETH", color: "bg-yellow-400" },
+    { level: "grand", count: 31, percentage: 2.49, totalAmount: "5.418 ETH", color: "bg-orange-500" },
+    { level: "medium", count: 93, percentage: 7.46, totalAmount: "2.709 ETH", color: "bg-blue-500" },
+    { level: "small", count: 187, percentage: 15.00, totalAmount: "0.903 ETH", color: "bg-green-500" },
+    { level: "noPrize", count: 934, percentage: 74.9, totalAmount: "0 ETH", color: "bg-gray-400" }
   ];
 
   // 每日销售数据（模拟）
@@ -67,10 +69,10 @@ const StatsPage: NextPage = () => {
   // 获取期间标签
   const getPeriodLabel = (period: string) => {
     const labels = {
-      "7d": "最近7天",
-      "30d": "最近30天", 
-      "90d": "最近90天",
-      "all": "全部时间"
+      "7d": t('stats.last7Days'),
+      "30d": t('stats.last30Days'), 
+      "90d": t('stats.last90Days'),
+      "all": t('stats.allTime')
     };
     return labels[period as keyof typeof labels];
   };
@@ -82,9 +84,9 @@ const StatsPage: NextPage = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-2">
             <ChartBarIcon className="h-10 w-10 text-primary" />
-            统计数据
+            {t('stats.title')}
           </h1>
-          <p className="text-gray-600">查看平台的详细统计信息和数据分析</p>
+          <p className="text-gray-600">{t('stats.subtitle')}</p>
         </div>
 
         {/* 时间段选择 */}
@@ -109,8 +111,8 @@ const StatsPage: NextPage = () => {
               <TicketIcon className="h-12 w-12 text-primary" />
             </div>
             <div className="text-3xl font-bold text-primary mb-2">{platformStats.totalTicketsSold}</div>
-            <div className="text-sm text-gray-600 mb-1">总彩票销售</div>
-            <div className="text-xs text-success">+12% 本月</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.totalTicketsSold')}</div>
+            <div className="text-xs text-success">+12% {t('stats.thisMonth')}</div>
           </div>
 
           <div className="lottery-card p-6 rounded-2xl text-center">
@@ -118,8 +120,8 @@ const StatsPage: NextPage = () => {
               <UserGroupIcon className="h-12 w-12 text-secondary" />
             </div>
             <div className="text-3xl font-bold text-secondary mb-2">{platformStats.totalUsers}</div>
-            <div className="text-sm text-gray-600 mb-1">总用户数</div>
-            <div className="text-xs text-success">+8% 本月</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.totalUsers')}</div>
+            <div className="text-xs text-success">+8% {t('stats.thisMonth')}</div>
           </div>
 
           <div className="lottery-card p-6 rounded-2xl text-center">
@@ -127,8 +129,8 @@ const StatsPage: NextPage = () => {
               <CurrencyDollarIcon className="h-12 w-12 text-accent" />
             </div>
             <div className="text-3xl font-bold text-accent mb-2">{platformStats.totalPrizesPaid}</div>
-            <div className="text-sm text-gray-600 mb-1">累计奖金</div>
-            <div className="text-xs text-success">+15% 本月</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.totalPrizes')}</div>
+            <div className="text-xs text-success">+15% {t('stats.thisMonth')}</div>
           </div>
 
           <div className="lottery-card p-6 rounded-2xl text-center">
@@ -136,8 +138,8 @@ const StatsPage: NextPage = () => {
               <TrophyIcon className="h-12 w-12 text-warning" />
             </div>
             <div className="text-3xl font-bold text-warning mb-2">{platformStats.averageWinRate}%</div>
-            <div className="text-sm text-gray-600 mb-1">平均中奖率</div>
-            <div className="text-xs text-info">稳定在25%</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.avgWinRate')}</div>
+            <div className="text-xs text-info">{t('stats.stable')}</div>
           </div>
         </div>
 
@@ -147,38 +149,38 @@ const StatsPage: NextPage = () => {
           <div className="lottery-card p-6 rounded-2xl">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
               <SparklesIcon className="h-6 w-6 text-primary" />
-              平台概览
+              {t('stats.platformOverview')}
             </h3>
             
             <div className="space-y-4">
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <ClockIcon className="h-5 w-5 text-blue-500" />
-                  <span className="text-sm">活跃周期</span>
+                  <span className="text-sm">{t('stats.activeCycles')}</span>
                 </div>
-                <span className="font-semibold">{platformStats.activeCycles} 个</span>
+                <span className="font-semibold">{platformStats.activeCycles} {t('common.pieces')}</span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <ChartBarIcon className="h-5 w-5 text-green-500" />
-                  <span className="text-sm">完成周期</span>
+                  <span className="text-sm">{t('stats.completedCycles')}</span>
                 </div>
-                <span className="font-semibold">{platformStats.completedCycles} 个</span>
+                <span className="font-semibold">{platformStats.completedCycles} {t('common.pieces')}</span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <TicketIcon className="h-5 w-5 text-purple-500" />
-                  <span className="text-sm">周期平均销售</span>
+                  <span className="text-sm">{t('stats.avgTicketsPerCycle')}</span>
                 </div>
-                <span className="font-semibold">{platformStats.averageTicketsPerCycle} 张</span>
+                <span className="font-semibold">{platformStats.averageTicketsPerCycle} {t('common.tickets')}</span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <TrophyIcon className="h-5 w-5 text-yellow-500" />
-                  <span className="text-sm">最大单笔奖金</span>
+                  <span className="text-sm">{t('stats.biggestWin')}</span>
                 </div>
                 <span className="font-semibold text-success">{platformStats.biggestWin}</span>
               </div>
@@ -186,7 +188,7 @@ const StatsPage: NextPage = () => {
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <BanknotesIcon className="h-5 w-5 text-orange-500" />
-                  <span className="text-sm">平台费用收入</span>
+                  <span className="text-sm">{t('stats.platformFeeIncome')}</span>
                 </div>
                 <span className="font-semibold text-info">{platformStats.totalPlatformFees}</span>
               </div>
@@ -197,15 +199,15 @@ const StatsPage: NextPage = () => {
           <div className="lottery-card p-6 rounded-2xl">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
               <TrophyIcon className="h-6 w-6 text-primary" />
-              奖项分布统计
+              {t('stats.prizeDistribution')}
             </h3>
             
             <div className="space-y-4">
               {prizeDistribution.map((prize, index) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">{prize.level}</span>
-                    <span>{prize.count} 次 ({prize.percentage}%)</span>
+                    <span className="font-medium">{t(`home.${prize.level}`)}</span>
+                    <span>{prize.count} {t('stats.times')} ({prize.percentage}%)</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -214,8 +216,8 @@ const StatsPage: NextPage = () => {
                     />
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
-                    <span>总奖金: {prize.totalAmount}</span>
-                    <span>占比: {prize.percentage.toFixed(1)}%</span>
+                    <span>{t('stats.totalPrizeAmount')}: {prize.totalAmount}</span>
+                    <span>{t('stats.percentage')}: {prize.percentage.toFixed(1)}%</span>
                   </div>
                 </div>
               ))}
@@ -227,7 +229,7 @@ const StatsPage: NextPage = () => {
         <div className="lottery-card p-6 rounded-2xl mb-12">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
             <ChartBarIcon className="h-6 w-6 text-primary" />
-            销售趋势 (最近30天)
+            {t('stats.salesTrend')}
           </h3>
           
           {/* 简单的条形图展示 */}
@@ -255,7 +257,7 @@ const StatsPage: NextPage = () => {
           </div>
           
           <div className="mt-4 text-center text-sm text-gray-600">
-            <p>横轴: 日期 | 纵轴: 彩票销售数量</p>
+            <p>{t('stats.horizontalAxis')}: {t('stats.date')} | {t('stats.verticalAxis')}: {t('stats.ticketsSold')}</p>
           </div>
         </div>
 
@@ -263,19 +265,19 @@ const StatsPage: NextPage = () => {
         <div className="lottery-card p-6 rounded-2xl">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
             <TrophyIcon className="h-6 w-6 text-primary" />
-            中奖排行榜 (总奖金)
+            {t('stats.winnersRanking')}
           </h3>
           
           <div className="responsive-table">
             <table className="table w-full">
               <thead>
                 <tr>
-                  <th className="text-center">排名</th>
-                  <th>地址</th>
-                  <th className="text-center">总奖金</th>
-                  <th className="text-center hidden sm:table-cell">中奖次数</th>
-                  <th className="text-center hidden md:table-cell">中奖率</th>
-                  <th className="text-center">勋章</th>
+                  <th className="text-center">{t('stats.rank')}</th>
+                  <th>{t('stats.address')}</th>
+                  <th className="text-center">{t('stats.totalWinnings')}</th>
+                  <th className="text-center hidden sm:table-cell">{t('stats.winCount')}</th>
+                  <th className="text-center hidden md:table-cell">{t('stats.winRate')}</th>
+                  <th className="text-center">{t('stats.medal')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -321,7 +323,7 @@ const StatsPage: NextPage = () => {
           
           <div className="text-center mt-4">
             <button className="btn btn-outline btn-sm">
-              查看完整排行榜
+              {t('stats.viewFullRanking')}
             </button>
           </div>
         </div>

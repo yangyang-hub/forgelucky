@@ -7,7 +7,9 @@ import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon, HomeIcon, TicketIcon, ChartBarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { LanguageSwitcher } from "~~/components/LanguageSwitcher";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { useLanguage } from "~~/hooks/useLanguage";
 
 type HeaderMenuLink = {
   label: string;
@@ -15,36 +17,37 @@ type HeaderMenuLink = {
   icon?: React.ReactNode;
 };
 
-export const menuLinks: HeaderMenuLink[] = [
-  {
-    label: "首页",
-    href: "/",
-    icon: <HomeIcon className="h-4 w-4" />,
-  },
-  {
-    label: "我的彩票",
-    href: "/tickets",
-    icon: <TicketIcon className="h-4 w-4" />,
-  },
-  {
-    label: "周期信息",
-    href: "/cycles",
-    icon: <ClockIcon className="h-4 w-4" />,
-  },
-  {
-    label: "统计数据", 
-    href: "/stats",
-    icon: <ChartBarIcon className="h-4 w-4" />,
-  },
-  {
-    label: "调试合约",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
-  },
-];
-
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const menuLinks: HeaderMenuLink[] = [
+    {
+      label: t('nav.home'),
+      href: "/",
+      icon: <HomeIcon className="h-4 w-4" />,
+    },
+    {
+      label: t('nav.myTickets'),
+      href: "/tickets",
+      icon: <TicketIcon className="h-4 w-4" />,
+    },
+    {
+      label: t('nav.cycles'),
+      href: "/cycles",
+      icon: <ClockIcon className="h-4 w-4" />,
+    },
+    {
+      label: t('nav.stats'), 
+      href: "/stats",
+      icon: <ChartBarIcon className="h-4 w-4" />,
+    },
+    {
+      label: t('nav.debug'),
+      href: "/debug",
+      icon: <BugAntIcon className="h-4 w-4" />,
+    },
+  ];
 
   return (
     <>
@@ -56,8 +59,8 @@ export const HeaderMenuLinks = () => {
               href={href}
               passHref
               className={`${
-                isActive ? "bg-secondary shadow-md" : ""
-              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+                isActive ? "bg-secondary shadow-md text-secondary-content" : "text-enhanced"
+              } hover:bg-secondary hover:shadow-md hover:text-secondary-content focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col transition-all duration-200`}
             >
               {icon}
               <span>{label}</span>
@@ -70,10 +73,12 @@ export const HeaderMenuLinks = () => {
 };
 
 /**
- * Site header
+ * 网站头部组件
+ * 包含导航菜单、Logo、语言切换器和钱包连接按钮
  */
 export const Header = () => {
   const { targetNetwork } = useTargetNetwork();
+  const { t } = useLanguage();
   const isLocalNetwork = targetNetwork.id === hardhat.id;
 
   const burgerMenuRef = useRef<HTMLDetailsElement>(null);
@@ -105,14 +110,15 @@ export const Header = () => {
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight text-primary">ForgeLucky</span>
-            <span className="text-xs text-secondary">去中心化彩票系统</span>
+            <span className="text-xs text-muted">{t('home.subtitle').split(' - ')[1]}</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
           <HeaderMenuLinks />
         </ul>
       </div>
-      <div className="navbar-end grow mr-4">
+      <div className="navbar-end grow mr-4 flex items-center gap-3">
+        <LanguageSwitcher />
         <RainbowKitCustomConnectButton />
         {isLocalNetwork && <FaucetButton />}
       </div>

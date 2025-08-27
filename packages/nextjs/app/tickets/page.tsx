@@ -12,6 +12,7 @@ import {
   BanknotesIcon
 } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { useLanguage } from "~~/hooks/useLanguage";
 
 /**
  * 我的彩票页面
@@ -79,17 +80,18 @@ const mockTickets: Ticket[] = [
 
 const TicketsPage: NextPage = () => {
   const { address: connectedAddress } = useAccount();
+  const { t } = useLanguage();
   const [selectedTab, setSelectedTab] = useState<"all" | "drawable" | "claimed">("all");
   const [userBalance] = useState("0.15"); // 模拟用户余额
 
   // 获取奖项等级显示信息
   const getPrizeLevelInfo = (level: PrizeLevel) => {
     const prizeInfo = {
-      [PrizeLevel.NO_PRIZE]: { name: "未中奖", color: "text-gray-500", bg: "bg-gray-100" },
-      [PrizeLevel.SMALL_PRIZE]: { name: "小奖", color: "text-green-600", bg: "bg-green-100" },
-      [PrizeLevel.MEDIUM_PRIZE]: { name: "中奖", color: "text-blue-600", bg: "bg-blue-100" },
-      [PrizeLevel.GRAND_PRIZE]: { name: "大奖", color: "text-orange-600", bg: "bg-orange-100" },
-      [PrizeLevel.SUPER_GRAND]: { name: "超级大奖", color: "text-yellow-600", bg: "bg-yellow-100" }
+      [PrizeLevel.NO_PRIZE]: { name: t('tickets.notWon'), color: "text-gray-500", bg: "bg-gray-100" },
+      [PrizeLevel.SMALL_PRIZE]: { name: t('home.small'), color: "text-green-600", bg: "bg-green-100" },
+      [PrizeLevel.MEDIUM_PRIZE]: { name: t('home.medium'), color: "text-blue-600", bg: "bg-blue-100" },
+      [PrizeLevel.GRAND_PRIZE]: { name: t('home.grand'), color: "text-orange-600", bg: "bg-orange-100" },
+      [PrizeLevel.SUPER_GRAND]: { name: t('home.superGrand'), color: "text-yellow-600", bg: "bg-yellow-100" }
     };
     return prizeInfo[level];
   };
@@ -97,10 +99,10 @@ const TicketsPage: NextPage = () => {
   // 获取状态显示信息
   const getStatusInfo = (status: TicketStatus) => {
     const statusInfo = {
-      [TicketStatus.ACTIVE]: { name: "售卖中", color: "text-blue-600", bg: "bg-blue-100" },
-      [TicketStatus.DRAWABLE]: { name: "可开奖", color: "text-green-600", bg: "bg-green-100" },
-      [TicketStatus.DRAWN]: { name: "已开奖", color: "text-orange-600", bg: "bg-orange-100" },
-      [TicketStatus.CLAIMED]: { name: "已领奖", color: "text-gray-500", bg: "bg-gray-100" }
+      [TicketStatus.ACTIVE]: { name: t('cycles.active'), color: "text-blue-600", bg: "bg-blue-100" },
+      [TicketStatus.DRAWABLE]: { name: t('tickets.drawable'), color: "text-green-600", bg: "bg-green-100" },
+      [TicketStatus.DRAWN]: { name: t('cycles.ended'), color: "text-orange-600", bg: "bg-orange-100" },
+      [TicketStatus.CLAIMED]: { name: t('tickets.claimed'), color: "text-gray-500", bg: "bg-gray-100" }
     };
     return statusInfo[status];
   };
@@ -127,8 +129,8 @@ const TicketsPage: NextPage = () => {
       <div className="flex flex-col items-center justify-center min-h-screen py-12">
         <div className="text-center">
           <TicketIcon className="h-20 w-20 text-gray-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-600 mb-2">请先连接钱包</h1>
-          <p className="text-gray-500">连接钱包后查看您的彩票</p>
+          <h1 className="text-2xl font-bold text-gray-600 mb-2">{t('common.connectWallet')}</h1>
+          <p className="text-gray-500">{t('tickets.connectWalletInfo')}</p>
         </div>
       </div>
     );
@@ -141,9 +143,9 @@ const TicketsPage: NextPage = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-2">
             <TicketIcon className="h-10 w-10 text-primary" />
-            我的彩票
+            {t('tickets.title')}
           </h1>
-          <p className="text-gray-600">管理您的彩票，刮奖领取奖金</p>
+          <p className="text-gray-600">{t('tickets.subtitle')}</p>
         </div>
 
         {/* 用户信息卡片 */}
@@ -153,16 +155,16 @@ const TicketsPage: NextPage = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <SparklesIcon className="h-6 w-6 text-primary" />
-                账户信息
+                {t('tickets.accountInfo')}
               </h3>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">钱包地址</p>
+                  <p className="text-sm text-gray-600 mb-1">{t('tickets.walletAddress')}</p>
                   <Address address={connectedAddress} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">平台余额</p>
-                  <p className="text-xl font-bold text-success">{userBalance} ETH</p>
+                  <p className="text-sm text-gray-600 mb-1">{t('tickets.platformBalance')}</p>
+                  <p className="text-xl font-bold text-success">{userBalance} {t('common.eth')}</p>
                 </div>
               </div>
             </div>
@@ -171,24 +173,24 @@ const TicketsPage: NextPage = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <GiftIcon className="h-6 w-6 text-secondary" />
-                彩票统计
+                {t('tickets.ticketsStats')}
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-base-200 rounded-lg">
                   <div className="text-xl font-bold text-primary">{stats.total}</div>
-                  <div className="text-xs text-gray-600">总彩票数</div>
+                  <div className="text-xs text-gray-600">{t('tickets.totalTickets')}</div>
                 </div>
                 <div className="text-center p-3 bg-base-200 rounded-lg">
                   <div className="text-xl font-bold text-warning">{stats.drawable}</div>
-                  <div className="text-xs text-gray-600">可开奖</div>
+                  <div className="text-xs text-gray-600">{t('tickets.drawable')}</div>
                 </div>
                 <div className="text-center p-3 bg-base-200 rounded-lg">
                   <div className="text-xl font-bold text-success">{stats.claimed}</div>
-                  <div className="text-xs text-gray-600">已领奖</div>
+                  <div className="text-xs text-gray-600">{t('tickets.claimed')}</div>
                 </div>
                 <div className="text-center p-3 bg-base-200 rounded-lg">
                   <div className="text-xl font-bold text-info">{stats.totalWinnings.toFixed(3)}</div>
-                  <div className="text-xs text-gray-600">总奖金(ETH)</div>
+                  <div className="text-xs text-gray-600">{t('tickets.totalWinnings')}</div>
                 </div>
               </div>
             </div>
@@ -198,15 +200,15 @@ const TicketsPage: NextPage = () => {
           <div className="flex flex-wrap gap-4 mt-6">
             <button className="btn btn-primary flex-1 min-w-[120px]">
               <BanknotesIcon className="h-5 w-5" />
-              充值余额
+              {t('tickets.depositBalance')}
             </button>
             <button className="btn btn-secondary flex-1 min-w-[120px]">
               <CurrencyDollarIcon className="h-5 w-5" />
-              提取余额
+              {t('tickets.withdrawBalance')}
             </button>
             <button className="btn btn-accent flex-1 min-w-[120px]">
               <GiftIcon className="h-5 w-5" />
-              购买彩票
+              {t('tickets.buyTickets')}
             </button>
           </div>
         </div>
@@ -217,19 +219,19 @@ const TicketsPage: NextPage = () => {
             className={`tab ${selectedTab === "all" ? "tab-active" : ""}`}
             onClick={() => setSelectedTab("all")}
           >
-            全部彩票 ({stats.total})
+            {t('tickets.allTickets')} ({stats.total})
           </button>
           <button 
             className={`tab ${selectedTab === "drawable" ? "tab-active" : ""}`}
             onClick={() => setSelectedTab("drawable")}
           >
-            可开奖 ({stats.drawable})
+            {t('tickets.drawableTickets')} ({stats.drawable})
           </button>
           <button 
             className={`tab ${selectedTab === "claimed" ? "tab-active" : ""}`}
             onClick={() => setSelectedTab("claimed")}
           >
-            已领奖 ({stats.claimed})
+            {t('tickets.claimedTickets')} ({stats.claimed})
           </button>
         </div>
 
@@ -244,8 +246,8 @@ const TicketsPage: NextPage = () => {
                 {/* 彩票头部 */}
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-bold">彩票 #{ticket.id}</h3>
-                    <p className="text-sm text-gray-600">周期 #{ticket.cycleId}</p>
+                    <h3 className="text-lg font-bold">{t('tickets.ticketId')}{ticket.id}</h3>
+                    <p className="text-sm text-gray-600">{t('tickets.cycleId')}{ticket.cycleId}</p>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bg} ${statusInfo.color}`}>
                     {statusInfo.name}
@@ -277,32 +279,32 @@ const TicketsPage: NextPage = () => {
                   {ticket.canDraw && (
                     <button className="btn btn-primary w-full">
                       <SparklesIcon className="h-5 w-5" />
-                      刮开彩票
+                      {t('tickets.scratchTicket')}
                     </button>
                   )}
                   
                   {ticket.canClaim && (
                     <button className="btn btn-success w-full">
                       <CurrencyDollarIcon className="h-5 w-5" />
-                      领取奖金
+                      {t('tickets.claimPrize')}
                     </button>
                   )}
 
                   {ticket.status === TicketStatus.ACTIVE && (
                     <div className="text-center p-4 bg-info/20 rounded-lg">
-                      <p className="text-sm text-info">周期结束后可开奖</p>
+                      <p className="text-sm text-info">{t('tickets.cycleNotEnded')}</p>
                     </div>
                   )}
 
                   {ticket.status === TicketStatus.CLAIMED && (
                     <div className="text-center p-4 bg-success/20 rounded-lg">
-                      <p className="text-sm text-success">奖金已领取</p>
+                      <p className="text-sm text-success">{t('tickets.prizeClaimed')}</p>
                     </div>
                   )}
 
                   {ticket.status === TicketStatus.DRAWN && !ticket.canClaim && ticket.prizeLevel === PrizeLevel.NO_PRIZE && (
                     <div className="text-center p-4 bg-gray-100 rounded-lg">
-                      <p className="text-sm text-gray-600">很遗憾，未中奖</p>
+                      <p className="text-sm text-gray-600">{t('tickets.notWon')}</p>
                     </div>
                   )}
                 </div>
@@ -316,18 +318,18 @@ const TicketsPage: NextPage = () => {
           <div className="text-center py-12">
             <TicketIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-600 mb-2">
-              {selectedTab === "all" && "暂无彩票"}
-              {selectedTab === "drawable" && "暂无可开奖彩票"}
-              {selectedTab === "claimed" && "暂无已领奖彩票"}
+              {selectedTab === "all" && t('tickets.noTickets')}
+              {selectedTab === "drawable" && t('tickets.noDrawableTickets')}
+              {selectedTab === "claimed" && t('tickets.noClaimedTickets')}
             </h3>
             <p className="text-gray-500 mb-6">
-              {selectedTab === "all" && "购买您的第一张彩票开始游戏！"}
-              {selectedTab === "drawable" && "等待周期结束后回来开奖"}
-              {selectedTab === "claimed" && "快去购买彩票试试手气吧"}
+              {selectedTab === "all" && t('tickets.buyFirstTicket')}
+              {selectedTab === "drawable" && t('tickets.waitForDraw')}
+              {selectedTab === "claimed" && t('tickets.tryLuck')}
             </p>
             <button className="btn btn-primary">
               <GiftIcon className="h-5 w-5" />
-              立即购买彩票
+              {t('tickets.buyTicketNow')}
             </button>
           </div>
         )}

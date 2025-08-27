@@ -18,22 +18,22 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #FFD700;
-  --color-primary-content: #1a1a1a;
-  --color-secondary: #FF6B6B;
+  --color-primary: #D97700;
+  --color-primary-content: #ffffff;
+  --color-secondary: #DC2626;
   --color-secondary-content: #ffffff;
-  --color-accent: #4ECDC4;
-  --color-accent-content: #1a1a1a;
-  --color-neutral: #2a2a2a;
+  --color-accent: #059669;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1f2937;
   --color-neutral-content: #ffffff;
   --color-base-100: #ffffff;
   --color-base-200: #fef3c7;
   --color-base-300: #fde68a;
-  --color-base-content: #1a1a1a;
-  --color-info: #3b82f6;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
+  --color-base-content: #111827;
+  --color-info: #1d4ed8;
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
 
   --radius-field: 1rem;
   --radius-box: 1.5rem;
@@ -263,4 +263,89 @@
   .responsive-table table {
     font-size: 0.875rem;
   }
+}
+
+/* 文字对比度优化 */
+.text-enhanced {
+  color: #111827;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .text-enhanced {
+  color: #f9fafb;
+}
+
+.text-muted {
+  color: #4b5563;
+}
+
+[data-theme="dark"] .text-muted {
+  color: #9ca3af;
+}
+
+.text-stronger {
+  color: #000000;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .text-stronger {
+  color: #ffffff;
+}
+
+/* 改进的彩票卡片样式 */
+.lottery-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+  border: 2px solid #D97700;
+  box-shadow: 0 8px 32px rgba(217, 119, 0, 0.3);
+  transition: all 0.3s ease;
+  color: #111827;
+}
+
+[data-theme="dark"] .lottery-card {
+  background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+  border: 2px solid #FFD700;
+  color: #f9fafb;
+}
+
+.lottery-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(217, 119, 0, 0.4);
+}
+
+/* 改进的渐变背景 */
+.lottery-gradient {
+  background: linear-gradient(135deg, #D97700, #F59E0B, #DC2626);
+}
+
+/* 语言切换器样式 */
+.lang-switcher {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-switcher:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.lang-dropdown {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #111827;
+}
+
+[data-theme="dark"] .lang-dropdown {
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
 }
