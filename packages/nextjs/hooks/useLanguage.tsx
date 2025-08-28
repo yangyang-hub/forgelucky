@@ -69,11 +69,11 @@ const translations_zh = {
 
     gameRules: "📋 游戏规则",
     step1Title: "购买彩票",
-    step1Desc: "支付0.01 ETH购买NFT彩票，每张彩票都是独特的",
+    step1Desc: "支付0.01 S购买NFT彩票，每张彩票都是独特的",
     step2Title: "等待周期结束",
     step2Desc: "每个周期持续7天，周期结束后才可开奖",
     step3Title: "刮开领奖",
-    step3Desc: "手动刮开彩票查看结果，中奖即可领取ETH奖励",
+    step3Desc: "手动刮开彩票查看结果，中奖即可领取S奖励",
   },
 
   // 彩票页面
@@ -87,7 +87,7 @@ const translations_zh = {
     totalTickets: "总彩票数",
     drawable: "可开奖",
     claimed: "已领奖",
-    totalWinnings: "总奖金(ETH)",
+    totalWinnings: "总奖金(S)",
     depositBalance: "充值余额",
     withdrawBalance: "提取余额",
     buyTickets: "购买彩票",
@@ -119,8 +119,8 @@ const translations_zh = {
     subtitle: "查看历史和当前周期的详细统计信息",
     totalCycles: "总周期数",
     totalTicketsSales: "总彩票销售",
-    totalPrizePool: "总奖金池(ETH)",
-    platformFees: "平台费用(ETH)",
+    totalPrizePool: "总奖金池(S)",
+    platformFees: "平台费用(S)",
 
     allCycles: "全部周期",
     activeCycles: "进行中",
@@ -236,7 +236,7 @@ const translations_zh = {
     connectWallet: "连接钱包",
     disconnectWallet: "断开钱包",
 
-    eth: "ETH",
+    eth: "S",
     tickets: "张",
     pieces: "个",
 
@@ -306,11 +306,11 @@ const translations_en = {
 
     gameRules: "📋 Game Rules",
     step1Title: "Buy Tickets",
-    step1Desc: "Pay 0.01 ETH for unique NFT lottery tickets",
+    step1Desc: "Pay 0.01 S for unique NFT lottery tickets",
     step2Title: "Wait for Cycle End",
     step2Desc: "Each cycle lasts 7 days, drawing available after cycle ends",
     step3Title: "Scratch & Claim",
-    step3Desc: "Manually scratch tickets to see results and claim ETH rewards",
+    step3Desc: "Manually scratch tickets to see results and claim S rewards",
   },
 
   // Tickets page
@@ -324,7 +324,7 @@ const translations_en = {
     totalTickets: "Total Tickets",
     drawable: "Drawable",
     claimed: "Claimed",
-    totalWinnings: "Total Winnings(ETH)",
+    totalWinnings: "Total Winnings(S)",
     depositBalance: "Deposit Balance",
     withdrawBalance: "Withdraw Balance",
     buyTickets: "Buy Tickets",
@@ -356,8 +356,8 @@ const translations_en = {
     subtitle: "View detailed statistics for all historical and current cycles",
     totalCycles: "Total Cycles",
     totalTicketsSales: "Total Tickets Sales",
-    totalPrizePool: "Total Prize Pool(ETH)",
-    platformFees: "Platform Fees(ETH)",
+    totalPrizePool: "Total Prize Pool(S)",
+    platformFees: "Platform Fees(S)",
 
     allCycles: "All Cycles",
     activeCycles: "Active",
@@ -473,7 +473,7 @@ const translations_en = {
     connectWallet: "Connect Wallet",
     disconnectWallet: "Disconnect Wallet",
 
-    eth: "ETH",
+    eth: "S",
     tickets: "tickets",
     pieces: "pcs",
 

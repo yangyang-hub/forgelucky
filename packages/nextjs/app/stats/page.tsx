@@ -28,11 +28,11 @@ const StatsPage: NextPage = () => {
   const [platformStats, setPlatformStats] = useState({
     totalTicketsSold: 0,
     totalUsers: 0,
-    totalPrizesPaid: "0 ETH",
-    totalPlatformFees: "0 ETH",
+    totalPrizesPaid: "0 S",
+    totalPlatformFees: "0 S",
     averageTicketsPerCycle: 0,
     averageWinRate: 0,
-    biggestWin: "0 ETH",
+    biggestWin: "0 S",
     activeCycles: 0,
     completedCycles: 0,
   });
@@ -67,11 +67,11 @@ const StatsPage: NextPage = () => {
       setPlatformStats({
         totalTicketsSold,
         totalUsers: Math.floor(totalTicketsSold * 0.3), // 估算用户数
-        totalPrizesPaid: `${totalPrizesPaid} ETH`,
-        totalPlatformFees: `${totalPlatformFees} ETH`,
+        totalPrizesPaid: `${totalPrizesPaid} S`,
+        totalPlatformFees: `${totalPlatformFees} S`,
         averageTicketsPerCycle: totalCycles > 0 ? Math.floor(totalTicketsSold / totalCycles) : 0,
         averageWinRate: 25.0, // 理论中奖率
-        biggestWin: "0 ETH", // 需要从历史数据计算
+        biggestWin: "0 S", // 需要从历史数据计算
         activeCycles: 1,
         completedCycles: totalCycles - 1,
       });
@@ -80,11 +80,11 @@ const StatsPage: NextPage = () => {
 
   // 奖项分布数据
   const prizeDistribution = [
-    { level: "superGrand", count: 2, percentage: 0.16, totalAmount: "3.612 ETH", color: "bg-blue-600" },
-    { level: "grand", count: 31, percentage: 2.49, totalAmount: "5.418 ETH", color: "bg-orange-500" },
-    { level: "medium", count: 93, percentage: 7.46, totalAmount: "2.709 ETH", color: "bg-blue-500" },
-    { level: "small", count: 187, percentage: 15.0, totalAmount: "0.903 ETH", color: "bg-green-500" },
-    { level: "noPrize", count: 934, percentage: 74.9, totalAmount: "0 ETH", color: "bg-gray-400" },
+    { level: "superGrand", count: 2, percentage: 0.16, totalAmount: "3.612 S", color: "bg-blue-600" },
+    { level: "grand", count: 31, percentage: 2.49, totalAmount: "5.418 S", color: "bg-orange-500" },
+    { level: "medium", count: 93, percentage: 7.46, totalAmount: "2.709 S", color: "bg-blue-500" },
+    { level: "small", count: 187, percentage: 15.0, totalAmount: "0.903 S", color: "bg-green-500" },
+    { level: "noPrize", count: 934, percentage: 74.9, totalAmount: "0 S", color: "bg-gray-400" },
   ];
 
   // 每日销售数据（模拟）
@@ -96,11 +96,11 @@ const StatsPage: NextPage = () => {
 
   // 排行榜数据（模拟）
   const topWinners = [
-    { rank: 1, address: "0x1234...5678", totalWins: "2.156 ETH", ticketsWon: 15, winRate: 31.2 },
-    { rank: 2, address: "0x2345...6789", totalWins: "1.834 ETH", ticketsWon: 12, winRate: 28.6 },
-    { rank: 3, address: "0x3456...7890", totalWins: "1.645 ETH", ticketsWon: 18, winRate: 25.4 },
-    { rank: 4, address: "0x4567...8901", totalWins: "1.423 ETH", ticketsWon: 9, winRate: 33.3 },
-    { rank: 5, address: "0x5678...9012", totalWins: "1.297 ETH", ticketsWon: 14, winRate: 23.3 },
+    { rank: 1, address: "0x1234...5678", totalWins: "2.156 S", ticketsWon: 15, winRate: 31.2 },
+    { rank: 2, address: "0x2345...6789", totalWins: "1.834 S", ticketsWon: 12, winRate: 28.6 },
+    { rank: 3, address: "0x3456...7890", totalWins: "1.645 S", ticketsWon: 18, winRate: 25.4 },
+    { rank: 4, address: "0x4567...8901", totalWins: "1.423 S", ticketsWon: 9, winRate: 33.3 },
+    { rank: 5, address: "0x5678...9012", totalWins: "1.297 S", ticketsWon: 14, winRate: 23.3 },
   ];
 
   // 格式化地址显示

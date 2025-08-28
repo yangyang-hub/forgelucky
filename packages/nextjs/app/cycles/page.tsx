@@ -100,16 +100,16 @@ const CyclesPage: NextPage = () => {
           startTime: new Date(Number(cycleData.startTime) * 1000),
           endTime: new Date(Number(cycleData.endTime) * 1000),
           totalTickets: Number(cycleData.totalTickets),
-          prizePool: `${formatEther(cycleData.prizePool)} ETH`,
-          platformFee: `${formatEther(cycleData.platformFee)} ETH`,
+          prizePool: `${formatEther(cycleData.prizePool)} S`,
+          platformFee: `${formatEther(cycleData.platformFee)} S`,
           drawnTickets: Number(cycleData.drawnTickets),
           superGrandAwarded: cycleData.superGrandDrawn,
           superGrandTicketId: cycleData.superGrandDrawn ? Number(cycleData.superGrandTicketId) : undefined,
           prizeStats: {
-            superGrand: { count: 0, totalAmount: "0 ETH" },
-            grand: { count: 0, totalAmount: "0 ETH" },
-            medium: { count: 0, totalAmount: "0 ETH" },
-            small: { count: 0, totalAmount: "0 ETH" },
+            superGrand: { count: 0, totalAmount: "0 S" },
+            grand: { count: 0, totalAmount: "0 S" },
+            medium: { count: 0, totalAmount: "0 S" },
+            small: { count: 0, totalAmount: "0 S" },
             noPrize: { count: 0 },
           },
         };
@@ -396,7 +396,7 @@ const CyclesPage: NextPage = () => {
                       <div className="bg-gradient-to-r from-gray-400 to-gray-500 text-white p-4 rounded-xl text-center">
                         <div className="text-sm opacity-90">{t("cycles.noPrize")}</div>
                         <div className="text-xl font-bold">{cycle.prizeStats.noPrize.count}</div>
-                        <div className="text-xs">0 ETH</div>
+                        <div className="text-xs">0 S</div>
                       </div>
                     </div>
                   </div>

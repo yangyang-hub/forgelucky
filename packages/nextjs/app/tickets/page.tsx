@@ -108,7 +108,7 @@ const TicketsPage: NextPage = () => {
           purchaseTime: new Date(Number(purchaseTimes[index]) * 1000),
           status,
           prizeLevel: prizeLevel as PrizeLevel,
-          prizeAmount: prizeAmount > 0 ? `${formatEther(prizeAmount)} ETH` : undefined,
+          prizeAmount: prizeAmount > 0 ? `${formatEther(prizeAmount)} S` : undefined,
           canDraw,
           canClaim: isDrawn && prizeLevel > 0 && !isClaimed,
         };
@@ -197,7 +197,7 @@ const TicketsPage: NextPage = () => {
     try {
       await deposit({
         functionName: "deposit",
-        value: parseEther("0.1"), // 充值0.1 ETH
+        value: parseEther("0.1"), // 充值0.1 S
       });
 
       notification.success(t("common.depositSuccess"));
