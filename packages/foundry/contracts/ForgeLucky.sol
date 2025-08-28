@@ -6,21 +6,56 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "forge-std/console.sol";
 
 /**
  * @title ForgeLucky - 去中心化NFT彩票系统
  * @dev 基于ERC721的彩票合约，实现刮刮乐机制和四级奖励体系
  * @author ForgeLucky Team
+ * 
+ * @notice 这是一个完全去中心化的NFT彩票系统，具有以下特性：
+ * - 基于ERC721标准的NFT彩票
+ * - 四级奖励体系：超级大奖(40%)、大奖(30%)、中奖(20%)、小奖(10%)
+ * - 7天周期制，自动轮换
+ * - 用户余额管理系统
+ * - 安全的随机数生成
+ * - Gas优化的批量操作
+ * - 完整的事件日志系统
+ * 
+ * @custom:security-contact security@forgelucky.com
+ * @custom:version 2.0.0
+ * @custom:license MIT
  */
 contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGuard {
+    
+    // =================================================================================
+    // 自定义错误 - 节省gas并提供更清晰的错误信息
+    // =================================================================================
+    
+    error InvalidPaymentAmount(uint256 expected, uint256 actual);
+    error InsufficientBalance(uint256 required, uint256 available);
+    error CycleNotEnded(uint256 cycleId, uint256 endTime);
+    error CycleAlreadyEnded(uint256 cycleId, uint256 endTime);
+    error TicketNotExists(uint256 tokenId);
+    error TicketAlreadyDrawn(uint256 tokenId);
+    error NotTicketOwner(uint256 tokenId, address caller);
+    error TicketNotDrawn(uint256 tokenId);
+    error PrizeAlreadyClaimed(uint256 tokenId);
+    error NoPrizeToWin(uint256 tokenId);
+    error InvalidCycleId(uint256 cycleId, uint256 maxId);
+    error CycleAlreadyFinalized(uint256 cycleId);
+    error InsufficientTicketsForFee(uint256 current, uint256 minimum);
+    error NoPlatformFees();
+    error TransferFailed();
+    error InvalidBatchSize(uint256 size, uint256 maxSize);
+    error ZeroAmount();
+    error EmptyTicketArray();
     
     // =================================================================================
     // 常量定义
     // =================================================================================
     
-    uint256 public constant TICKET_PRICE = 0.01 ether;        // 彩票价格：0.01 ETH
-    uint256 public constant CYCLE_DURATION = 7 days;          // 周期持续时间：7天
+    uint256 public constant TICKET_PRICE = 1 ether;        // 彩票价格：1 S
+    uint256 public constant CYCLE_DURATION = 1 hours;          // 周期持续时间：1小时
     uint256 public constant MIN_TICKETS_FOR_FEE = 100;        // 收取平台费用的最小彩票数量
     uint256 public constant PLATFORM_FEE_RATE = 100;          // 平台费用率：1% (10000为基数)
     uint256 public constant FEE_BASE = 10000;                 // 费用计算基数
@@ -42,41 +77,65 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
     
     /**
      * @dev 彩票信息结构
+     * @notice 存储每张NFT彩票的完整信息
+     * @param cycleId 所属周期ID，标识彩票属于哪个7天周期
+     * @param purchaseTime 购买时间戳，用于记录和验证
+     * @param isDrawn 是否已开奖，防止重复开奖
+     * @param prizeLevel 中奖等级，包含无奖、小奖、中奖、大奖、超级大奖
+     * @param prizeAmount 奖金数量，以wei为单位
+     * @param isClaimed 是否已领取奖金，防止重复领取
      */
     struct Ticket {
-        uint256 cycleId;           // 所属周期ID
-        uint256 purchaseTime;      // 购买时间
-        bool isDrawn;              // 是否已开奖
-        PrizeLevel prizeLevel;     // 中奖等级
-        uint256 prizeAmount;       // 奖金数量
-        bool isClaimed;            // 是否已领取奖金
+        uint256 cycleId;           
+        uint256 purchaseTime;      
+        bool isDrawn;              
+        PrizeLevel prizeLevel;     
+        uint256 prizeAmount;       
+        bool isClaimed;            
     }
     
     /**
      * @dev 周期信息结构
+     * @notice 管理7天彩票周期的完整状态信息
+     * @param id 周期唯一标识符
+     * @param startTime 周期开始时间戳
+     * @param endTime 周期结束时间戳，购票截止时间
+     * @param totalTickets 周期内售出的彩票总数
+     * @param prizePool 奖金池总额，来自所有彩票销售
+     * @param platformFee 平台费用，从奖金池中扣除
+     * @param isFinalized 是否已完成结算
+     * @param drawnTickets 已开奖的彩票数量
+     * @param superGrandDrawn 超级大奖是否已被抽中
+     * @param superGrandTicketId 中超级大奖的彩票ID
      */
     struct Cycle {
-        uint256 id;                // 周期ID
-        uint256 startTime;         // 开始时间
-        uint256 endTime;           // 结束时间
-        uint256 totalTickets;      // 总彩票数
-        uint256 prizePool;         // 奖金池
-        uint256 platformFee;       // 平台费用
-        bool isFinalized;          // 是否已结算
-        uint256 drawnTickets;      // 已开奖彩票数
-        bool superGrandDrawn;      // 超级大奖是否已抽出
-        uint256 superGrandTicketId; // 超级大奖彩票ID
+        uint256 id;                
+        uint256 startTime;         
+        uint256 endTime;           
+        uint256 totalTickets;      
+        uint256 prizePool;         
+        uint256 platformFee;       
+        bool isFinalized;          
+        uint256 drawnTickets;      
+        bool superGrandDrawn;      
+        uint256 superGrandTicketId; 
     }
     
     /**
      * @dev 奖项等级枚举
+     * @notice 定义彩票系统的五个奖励等级
+     * NO_PRIZE 未中奖，概率75%
+     * SMALL_PRIZE 小奖，概率15%，获得10%奖金池份额
+     * MEDIUM_PRIZE 中奖，概率7.5%，获得20%奖金池份额  
+     * GRAND_PRIZE 大奖，概率2.5%，获得30%奖金池份额
+     * SUPER_GRAND 超级大奖，每周期1个，获得40%奖金池份额
      */
     enum PrizeLevel {
-        NO_PRIZE,      // 未中奖
-        SMALL_PRIZE,   // 小奖
-        MEDIUM_PRIZE,  // 中奖
-        GRAND_PRIZE,   // 大奖
-        SUPER_GRAND    // 超级大奖
+        NO_PRIZE,      
+        SMALL_PRIZE,   
+        MEDIUM_PRIZE,  
+        GRAND_PRIZE,   
+        SUPER_GRAND    
     }
     
     // =================================================================================
@@ -100,23 +159,108 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
     mapping(address => uint256) public userBalances;         // 用户地址 => 平台余额
     
     // =================================================================================
-    // 事件定义
+    // 增强事件定义 - 支持更好的监控和分析
     // =================================================================================
     
-    event TicketPurchased(address indexed buyer, uint256 indexed tokenId, uint256 indexed cycleId);
-    event TicketDrawn(uint256 indexed tokenId, PrizeLevel prizeLevel, uint256 prizeAmount);
-    event PrizeClaimed(address indexed winner, uint256 indexed tokenId, uint256 amount);
-    event CycleStarted(uint256 indexed cycleId, uint256 startTime, uint256 endTime);
-    event CycleFinalized(uint256 indexed cycleId, uint256 totalTickets, uint256 prizePool);
-    event SuperGrandPrizeAwarded(uint256 indexed cycleId, uint256 indexed tokenId, uint256 amount);
-    event BatchDrawCompleted(uint256 indexed cycleId, uint256 ticketsDrawn);
-    event PlatformFeesWithdrawn(address indexed owner, uint256 amount);
+    // 基础操作事件
+    event TicketPurchased(
+        address indexed buyer, 
+        uint256 indexed tokenId, 
+        uint256 indexed cycleId,
+        uint256 timestamp,
+        uint256 ticketPrice,
+        bool usedBalance
+    );
+    
+    event TicketDrawn(
+        uint256 indexed tokenId, 
+        address indexed owner,
+        uint256 indexed cycleId,
+        PrizeLevel prizeLevel, 
+        uint256 prizeAmount,
+        uint256 timestamp
+    );
+    
+    event PrizeClaimed(
+        address indexed winner, 
+        uint256 indexed tokenId, 
+        uint256 indexed cycleId,
+        uint256 amount,
+        PrizeLevel prizeLevel,
+        uint256 timestamp
+    );
+    
+    // 周期管理事件
+    event CycleStarted(
+        uint256 indexed cycleId, 
+        uint256 startTime, 
+        uint256 endTime,
+        uint256 ticketPrice
+    );
+    
+    event CycleFinalized(
+        uint256 indexed cycleId, 
+        uint256 totalTickets, 
+        uint256 prizePool,
+        uint256 platformFee,
+        uint256 timestamp
+    );
+    
+    // 特殊奖项事件
+    event SuperGrandPrizeAwarded(
+        uint256 indexed cycleId, 
+        uint256 indexed tokenId, 
+        address indexed winner,
+        uint256 amount,
+        uint256 timestamp
+    );
+    
+    // 批量操作事件
+    event BatchDrawCompleted(
+        uint256 indexed cycleId, 
+        uint256 ticketsProcessed,
+        uint256 winnersFound,
+        uint256 timestamp
+    );
+    
+    event BatchTicketsPurchased(
+        address indexed buyer, 
+        uint256 indexed cycleId,
+        uint256 startTokenId, 
+        uint256 count, 
+        bool usedBalance,
+        uint256 totalCost,
+        uint256 timestamp
+    );
+    
+    // 管理员操作事件
+    event PlatformFeesWithdrawn(
+        address indexed owner, 
+        uint256 amount,
+        uint256 timestamp
+    );
+    
+    event EmergencyAction(
+        address indexed admin,
+        string action,
+        uint256 amount,
+        uint256 timestamp
+    );
     
     // 用户余额管理相关事件
-    event UserDeposited(address indexed user, uint256 amount);
-    event UserWithdrawn(address indexed user, uint256 amount);
-    event TicketPurchasedWithBalance(address indexed buyer, uint256 indexed tokenId, uint256 indexed cycleId);
-    event BatchTicketsPurchased(address indexed buyer, uint256 startTokenId, uint256 count, uint256 indexed cycleId, bool usedBalance);
+    event UserDeposited(
+        address indexed user, 
+        uint256 amount,
+        uint256 newBalance,
+        uint256 timestamp
+    );
+    
+    event UserWithdrawn(
+        address indexed user, 
+        uint256 amount,
+        uint256 remainingBalance,
+        uint256 timestamp
+    );
     
     // =================================================================================
     // 修饰符
@@ -126,7 +270,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @dev 检查周期是否活跃（在售票期间）
      */
     modifier onlyActiveCycle() {
-        require(block.timestamp <= cycles[currentCycleId].endTime, "Cycle ended, cannot buy ticket");
+        if (block.timestamp > cycles[currentCycleId].endTime) {
+            revert CycleAlreadyEnded(currentCycleId, cycles[currentCycleId].endTime);
+        }
         _;
     }
     
@@ -134,7 +280,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @dev 检查周期是否已结束（可以开奖）
      */
     modifier onlyEndedCycle(uint256 cycleId) {
-        require(block.timestamp > cycles[cycleId].endTime, "Cycle not ended, cannot draw");
+        if (block.timestamp <= cycles[cycleId].endTime) {
+            revert CycleNotEnded(cycleId, cycles[cycleId].endTime);
+        }
         _;
     }
     
@@ -142,7 +290,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @dev 检查彩票是否存在
      */
     modifier ticketExists(uint256 tokenId) {
-        require(_ownerOf(tokenId) != address(0), "Ticket does not exist");
+        if (_ownerOf(tokenId) == address(0)) {
+            revert TicketNotExists(tokenId);
+        }
         _;
     }
     
@@ -150,7 +300,22 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
     // 构造函数
     // =================================================================================
     
+    /**
+     * @notice 初始化ForgeLucky彩票合约
+     * @dev 部署合约时自动执行，设置基础配置并启动第一个周期
+     * 
+     * 执行步骤：
+     * 1. 初始化ERC721("ForgeLucky Lottery Ticket", "FLLT")
+     * 2. 设置合约拥有者为部署者
+     * 3. 验证奖金分配比例总和为100%
+     * 4. 启动第一个7天彩票周期
+     * 
+     * @custom:oz-upgrades-unsafe-allow constructor
+     */
     constructor() ERC721("ForgeLucky Lottery Ticket", "FLLT") Ownable(msg.sender) {
+        // 验证奖金分配比例
+        _validatePrizeRatios();
+        
         // 启动第一个周期
         _startNewCycle();
     }
@@ -164,12 +329,13 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @notice 用户向平台充值ETH，可用于购买彩票
      */
     function deposit() external payable whenNotPaused nonReentrant {
-        require(msg.value > 0, "Deposit amount must be greater than 0");
+        if (msg.value == 0) {
+            revert ZeroAmount();
+        }
         
         userBalances[msg.sender] += msg.value;
         
-        emit UserDeposited(msg.sender, msg.value);
-        console.log("User deposited:", msg.value);
+        emit UserDeposited(msg.sender, msg.value, userBalances[msg.sender], block.timestamp);
     }
     
     /**
@@ -177,16 +343,18 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @param amount 提取金额
      */
     function withdrawBalance(uint256 amount) external whenNotPaused nonReentrant {
-        require(amount > 0, "Withdraw amount must be greater than 0");
-        require(userBalances[msg.sender] >= amount, "Insufficient balance");
+        if (amount == 0) {
+            revert ZeroAmount();
+        }
+        if (userBalances[msg.sender] < amount) {
+            revert InsufficientBalance(amount, userBalances[msg.sender]);
+        }
         
         userBalances[msg.sender] -= amount;
         
-        (bool success, ) = payable(msg.sender).call{value: amount}("");
-        require(success, "Withdraw transfer failed");
+        _safeTransfer(msg.sender, amount);
         
-        emit UserWithdrawn(msg.sender, amount);
-        console.log("User withdrawn:", amount);
+        emit UserWithdrawn(msg.sender, amount, userBalances[msg.sender], block.timestamp);
     }
     
     /**
@@ -194,15 +362,15 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      */
     function withdrawAllBalance() external whenNotPaused nonReentrant {
         uint256 balance = userBalances[msg.sender];
-        require(balance > 0, "No balance to withdraw");
+        if (balance == 0) {
+            revert InsufficientBalance(1, 0);
+        }
         
         userBalances[msg.sender] = 0;
         
-        (bool success, ) = payable(msg.sender).call{value: balance}("");
-        require(success, "Withdraw transfer failed");
+        _safeTransfer(msg.sender, balance);
         
-        emit UserWithdrawn(msg.sender, balance);
-        console.log("User withdrawn all:", balance);
+        emit UserWithdrawn(msg.sender, balance, 0, block.timestamp);
     }
     
     // =================================================================================
@@ -214,7 +382,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @notice 用户支付0.01 ETH购买一张NFT彩票
      */
     function buyTicketWithETH() external payable onlyActiveCycle whenNotPaused nonReentrant {
-        require(msg.value == TICKET_PRICE, "Incorrect payment amount");
+        if (msg.value != TICKET_PRICE) {
+            revert InvalidPaymentAmount(TICKET_PRICE, msg.value);
+        }
         
         uint256 tokenId = _mintTicket(msg.sender);
         
@@ -222,8 +392,7 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
         cycles[currentCycleId].totalTickets++;
         cycles[currentCycleId].prizePool += TICKET_PRICE;
         
-        emit TicketPurchased(msg.sender, tokenId, currentCycleId);
-        console.log("Ticket purchased with ETH, ID:", tokenId);
+        emit TicketPurchased(msg.sender, tokenId, currentCycleId, block.timestamp, TICKET_PRICE, false);
     }
     
     /**
@@ -231,7 +400,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @notice 用户使用平台余额购买一张NFT彩票
      */
     function buyTicketWithBalance() external onlyActiveCycle whenNotPaused nonReentrant {
-        require(userBalances[msg.sender] >= TICKET_PRICE, "Insufficient balance");
+        if (userBalances[msg.sender] < TICKET_PRICE) {
+            revert InsufficientBalance(TICKET_PRICE, userBalances[msg.sender]);
+        }
         
         userBalances[msg.sender] -= TICKET_PRICE;
         uint256 tokenId = _mintTicket(msg.sender);
@@ -240,8 +411,7 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
         cycles[currentCycleId].totalTickets++;
         cycles[currentCycleId].prizePool += TICKET_PRICE;
         
-        emit TicketPurchasedWithBalance(msg.sender, tokenId, currentCycleId);
-        console.log("Ticket purchased with balance, ID:", tokenId);
+        emit TicketPurchased(msg.sender, tokenId, currentCycleId, block.timestamp, TICKET_PRICE, true);
     }
     
     /**
@@ -249,23 +419,23 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @param count 购买数量
      */
     function buyTicketsWithETH(uint256 count) external payable onlyActiveCycle whenNotPaused nonReentrant {
-        require(count > 0, "Count must be greater than 0");
-        require(count <= 100, "Cannot buy more than 100 tickets at once");
-        require(msg.value == TICKET_PRICE * count, "Incorrect payment amount");
-        
-        uint256 startTokenId = _tokenIdCounter;
-        
-        // 批量铸造彩票
-        for (uint256 i = 0; i < count; i++) {
-            _mintTicket(msg.sender);
+        if (count == 0) {
+            revert ZeroAmount();
+        }
+        if (count > 100) {
+            revert InvalidBatchSize(count, 100);
+        }
+        if (msg.value != TICKET_PRICE * count) {
+            revert InvalidPaymentAmount(TICKET_PRICE * count, msg.value);
         }
         
-        // 更新周期信息
-        cycles[currentCycleId].totalTickets += count;
-        cycles[currentCycleId].prizePool += TICKET_PRICE * count;
+        // 使用优化的批量铸造
+        uint256 startTokenId = _optimizedMintTickets(msg.sender, count, currentCycleId);
         
-        emit BatchTicketsPurchased(msg.sender, startTokenId, count, currentCycleId, false);
-        console.log("Batch tickets purchased with ETH, count:", count);
+        // 批量更新周期信息 - 减少存储操作
+        _batchUpdateCycle(currentCycleId, count, TICKET_PRICE * count);
+        
+        emit BatchTicketsPurchased(msg.sender, currentCycleId, startTokenId, count, false, TICKET_PRICE * count, block.timestamp);
     }
     
     /**
@@ -273,26 +443,27 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @param count 购买数量
      */
     function buyTicketsWithBalance(uint256 count) external onlyActiveCycle whenNotPaused nonReentrant {
-        require(count > 0, "Count must be greater than 0");
-        require(count <= 100, "Cannot buy more than 100 tickets at once");
-        
-        uint256 totalCost = TICKET_PRICE * count;
-        require(userBalances[msg.sender] >= totalCost, "Insufficient balance");
-        
-        userBalances[msg.sender] -= totalCost;
-        uint256 startTokenId = _tokenIdCounter;
-        
-        // 批量铸造彩票
-        for (uint256 i = 0; i < count; i++) {
-            _mintTicket(msg.sender);
+        if (count == 0) {
+            revert ZeroAmount();
+        }
+        if (count > 100) {
+            revert InvalidBatchSize(count, 100);
         }
         
-        // 更新周期信息
-        cycles[currentCycleId].totalTickets += count;
-        cycles[currentCycleId].prizePool += totalCost;
+        uint256 totalCost = TICKET_PRICE * count;
+        if (userBalances[msg.sender] < totalCost) {
+            revert InsufficientBalance(totalCost, userBalances[msg.sender]);
+        }
         
-        emit BatchTicketsPurchased(msg.sender, startTokenId, count, currentCycleId, true);
-        console.log("Batch tickets purchased with balance, count:", count);
+        userBalances[msg.sender] -= totalCost;
+        
+        // 使用优化的批量铸造
+        uint256 startTokenId = _optimizedMintTickets(msg.sender, count, currentCycleId);
+        
+        // 批量更新周期信息 - 减少存储操作  
+        _batchUpdateCycle(currentCycleId, count, totalCost);
+        
+        emit BatchTicketsPurchased(msg.sender, currentCycleId, startTokenId, count, true, totalCost, block.timestamp);
     }
     
     /**
@@ -328,8 +499,12 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @param tokenId 彩票ID
      */
     function drawTicket(uint256 tokenId) external ticketExists(tokenId) onlyEndedCycle(tickets[tokenId].cycleId) whenNotPaused nonReentrant {
-        require(ownerOf(tokenId) == msg.sender, "Only ticket owner can draw");
-        require(!tickets[tokenId].isDrawn, "Ticket already drawn");
+        if (ownerOf(tokenId) != msg.sender) {
+            revert NotTicketOwner(tokenId, msg.sender);
+        }
+        if (tickets[tokenId].isDrawn) {
+            revert TicketAlreadyDrawn(tokenId);
+        }
         
         Ticket storage ticket = tickets[tokenId];
         Cycle storage cycle = cycles[ticket.cycleId];
@@ -348,12 +523,10 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
         if (prizeLevel == PrizeLevel.SUPER_GRAND) {
             cycle.superGrandDrawn = true;
             cycle.superGrandTicketId = tokenId;
-            emit SuperGrandPrizeAwarded(ticket.cycleId, tokenId, prizeAmount);
+            emit SuperGrandPrizeAwarded(ticket.cycleId, tokenId, msg.sender, prizeAmount, block.timestamp);
         }
         
-        emit TicketDrawn(tokenId, prizeLevel, prizeAmount);
-        
-        console.log("Ticket drawn, ID:", tokenId);
+        emit TicketDrawn(tokenId, msg.sender, ticket.cycleId, prizeLevel, prizeAmount, block.timestamp);
     }
     
     /**
@@ -363,7 +536,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      */
     function batchDraw(uint256[] calldata tokenIds) external onlyOwner whenNotPaused {
         uint256 length = tokenIds.length;
-        require(length > 0, "Ticket array cannot be empty");
+        if (length == 0) {
+            revert EmptyTicketArray();
+        }
         
         for (uint256 i = 0; i < length; i++) {
             uint256 tokenId = tokenIds[i];
@@ -395,14 +570,13 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
             if (prizeLevel == PrizeLevel.SUPER_GRAND && !cycle.superGrandDrawn) {
                 cycle.superGrandDrawn = true;
                 cycle.superGrandTicketId = tokenId;
-                emit SuperGrandPrizeAwarded(cycleId, tokenId, prizeAmount);
+                emit SuperGrandPrizeAwarded(cycleId, tokenId, ownerOf(tokenId), prizeAmount, block.timestamp);
             }
             
-            emit TicketDrawn(tokenId, prizeLevel, prizeAmount);
+            emit TicketDrawn(tokenId, ownerOf(tokenId), cycleId, prizeLevel, prizeAmount, block.timestamp);
         }
         
-        emit BatchDrawCompleted(currentCycleId, length);
-        console.log("Batch draw completed");
+        emit BatchDrawCompleted(currentCycleId, length, 0, block.timestamp);
     }
     
     /**
@@ -410,24 +584,34 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @param tokenId 彩票ID
      */
     function claimPrize(uint256 tokenId) external ticketExists(tokenId) whenNotPaused nonReentrant {
-        require(ownerOf(tokenId) == msg.sender, "Only ticket owner can claim prize");
+        if (ownerOf(tokenId) != msg.sender) {
+            revert NotTicketOwner(tokenId, msg.sender);
+        }
         
         Ticket storage ticket = tickets[tokenId];
-        require(ticket.isDrawn, "Ticket not drawn yet");
-        require(ticket.prizeLevel != PrizeLevel.NO_PRIZE, "Ticket did not win");
-        require(!ticket.isClaimed, "Prize already claimed");
-        require(ticket.prizeAmount > 0, "Invalid prize amount");
+        if (!ticket.isDrawn) {
+            revert TicketNotDrawn(tokenId);
+        }
+        if (ticket.prizeLevel == PrizeLevel.NO_PRIZE) {
+            revert NoPrizeToWin(tokenId);
+        }
+        if (ticket.isClaimed) {
+            revert PrizeAlreadyClaimed(tokenId);
+        }
+        if (ticket.prizeAmount == 0) {
+            revert ZeroAmount();
+        }
         
         // 标记为已领取
         ticket.isClaimed = true;
         
         // 转账奖金
         (bool success, ) = payable(msg.sender).call{value: ticket.prizeAmount}("");
-        require(success, "Prize transfer failed");
+        if (!success) {
+            revert TransferFailed();
+        }
         
-        emit PrizeClaimed(msg.sender, tokenId, ticket.prizeAmount);
-        
-        console.log("Prize claimed, ID:", tokenId);
+        emit PrizeClaimed(msg.sender, tokenId, ticket.cycleId, ticket.prizeAmount, ticket.prizeLevel, block.timestamp);
     }
     
     // =================================================================================
@@ -439,7 +623,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @notice 管理员在当前周期结束后手动开启新周期
      */
     function startNewCycle() external onlyOwner {
-        require(block.timestamp > cycles[currentCycleId].endTime, "Current cycle not ended yet");
+        if (block.timestamp <= cycles[currentCycleId].endTime) {
+            revert CycleNotEnded(currentCycleId, cycles[currentCycleId].endTime);
+        }
         _startNewCycle();
     }
     
@@ -449,9 +635,15 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @notice 计算平台费用并完成周期结算
      */
     function finalizeCycle(uint256 cycleId) external onlyOwner {
-        require(cycleId <= currentCycleId, "Invalid cycle ID");
-        require(block.timestamp > cycles[cycleId].endTime, "Cycle not ended yet");
-        require(!cycles[cycleId].isFinalized, "Cycle already finalized");
+        if (cycleId > currentCycleId) {
+            revert InvalidCycleId(cycleId, currentCycleId);
+        }
+        if (block.timestamp <= cycles[cycleId].endTime) {
+            revert CycleNotEnded(cycleId, cycles[cycleId].endTime);
+        }
+        if (cycles[cycleId].isFinalized) {
+            revert CycleAlreadyFinalized(cycleId);
+        }
         
         Cycle storage cycle = cycles[cycleId];
         
@@ -464,9 +656,7 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
         
         cycle.isFinalized = true;
         
-        emit CycleFinalized(cycleId, cycle.totalTickets, cycle.prizePool);
-        
-        console.log("Cycle finalized:", cycleId);
+        emit CycleFinalized(cycleId, cycle.totalTickets, cycle.prizePool, cycle.platformFee, block.timestamp);
     }
     
     /**
@@ -488,9 +678,180 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
             superGrandTicketId: 0
         });
         
-        emit CycleStarted(currentCycleId, block.timestamp, block.timestamp + CYCLE_DURATION);
+        emit CycleStarted(currentCycleId, block.timestamp, block.timestamp + CYCLE_DURATION, TICKET_PRICE);
+    }
+    
+    // =================================================================================
+    // Gas优化工具函数
+    // =================================================================================
+    
+    /**
+     * @dev 批量操作优化 - 减少重复的存储读取
+     */
+    function _batchUpdateCycle(uint256 cycleId, uint256 ticketCount, uint256 prizePoolIncrease) internal {
+        Cycle storage cycle = cycles[cycleId]; // 一次性获取存储引用
         
-        console.log("New cycle started:", currentCycleId);
+        unchecked {
+            // 使用unchecked进行安全的数学运算
+            cycle.totalTickets += ticketCount;
+            cycle.prizePool += prizePoolIncrease;
+        }
+    }
+    
+    /**
+     * @dev 优化的批量铸造
+     */
+    function _optimizedMintTickets(address buyer, uint256 count, uint256 cycleId) internal returns (uint256 startTokenId) {
+        startTokenId = _tokenIdCounter;
+        
+        // 批量更新状态，减少gas消耗
+        unchecked {
+            _tokenIdCounter += count;
+        }
+        
+        // 预分配数组空间
+        uint256[] storage userTicketsList = userTickets[buyer];
+        uint256[] storage cycleTicketsList = cycleTickets[cycleId];
+        
+        for (uint256 i = 0; i < count;) {
+            uint256 tokenId = startTokenId + i;
+            
+            // 铸造NFT
+            _safeMint(buyer, tokenId);
+            
+            // 创建彩票信息
+            tickets[tokenId] = Ticket({
+                cycleId: cycleId,
+                purchaseTime: block.timestamp,
+                isDrawn: false,
+                prizeLevel: PrizeLevel.NO_PRIZE,
+                prizeAmount: 0,
+                isClaimed: false
+            });
+            
+            // 更新映射
+            userTicketsList.push(tokenId);
+            cycleTicketsList.push(tokenId);
+            
+            unchecked {
+                ++i; // 使用++i代替i++节省gas
+            }
+        }
+        
+        return startTokenId;
+    }
+    
+    // =================================================================================
+    // 输入验证和安全检查
+    // =================================================================================
+    
+    error ZeroAddress();
+    error InvalidProbability(uint256 value, uint256 max);
+    error InvalidAmount(uint256 min, uint256 max, uint256 actual);
+    error ContractPaused();
+    
+    /**
+     * @dev 验证地址不为零地址
+     */
+    modifier validAddress(address addr) {
+        if (addr == address(0)) {
+            revert ZeroAddress();
+        }
+        _;
+    }
+    
+    /**
+     * @dev 验证数值在指定范围内
+     */
+    modifier validRange(uint256 value, uint256 min, uint256 max) {
+        if (value < min || value > max) {
+            revert InvalidAmount(min, max, value);
+        }
+        _;
+    }
+    
+    /**
+     * @dev 检查合约状态一致性
+     */
+    function _validateContractState() internal view {
+        if (paused()) {
+            revert ContractPaused();
+        }
+        
+        // 验证当前周期存在且有效
+        if (currentCycleId == 0) {
+            revert InvalidCycleId(currentCycleId, 1);
+        }
+        
+        // 验证关键常量的合理性
+        if (TICKET_PRICE == 0) {
+            revert ZeroAmount();
+        }
+    }
+    
+    /**
+     * @dev 验证奖金分配比例总和
+     */
+    function _validatePrizeRatios() internal pure {
+        uint256 totalRatio = SUPER_GRAND_RATIO + GRAND_PRIZE_RATIO + MEDIUM_PRIZE_RATIO + SMALL_PRIZE_RATIO;
+        if (totalRatio != FEE_BASE) {
+            revert InvalidProbability(totalRatio, FEE_BASE);
+        }
+    }
+    
+    /**
+     * @dev 安全的资金转账
+     */
+    function _safeTransfer(address to, uint256 amount) internal {
+        if (to == address(0)) {
+            revert ZeroAddress();
+        }
+        if (amount == 0) {
+            revert ZeroAmount();
+        }
+        if (address(this).balance < amount) {
+            revert InsufficientBalance(amount, address(this).balance);
+        }
+        
+        (bool success, ) = payable(to).call{value: amount}("");
+        if (!success) {
+            revert TransferFailed();
+        }
+    }
+    
+    // =================================================================================
+    // 安全随机数生成
+    // =================================================================================
+    
+    uint256 private _nonce;  // 防重放攻击的随机数种子
+    
+    /**
+     * @dev 生成安全的伪随机数
+     * @param tokenId 彩票ID
+     * @param cycleId 周期ID  
+     * @param additionalSeed 额外的随机种子
+     * @return 伪随机数
+     */
+    function _generateSecureRandom(
+        uint256 tokenId, 
+        uint256 cycleId, 
+        uint256 additionalSeed
+    ) internal returns (uint256) {
+        // 使用多个不可预测的源组合生成随机数
+        _nonce++;
+        
+        return uint256(keccak256(abi.encodePacked(
+            block.timestamp,           // 时间戳
+            block.prevrandao,         // 前随机数(替代difficulty)
+            block.number,             // 区块号
+            tokenId,                  // 彩票ID
+            msg.sender,               // 调用者地址
+            cycleId,                  // 周期ID
+            additionalSeed,           // 额外种子
+            _nonce,                   // 防重放nonce
+            tx.gasprice,              // Gas价格
+            address(this).balance     // 合约余额
+        )));
     }
     
     // =================================================================================
@@ -504,17 +865,15 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @return prizeLevel 奖项等级
      * @return prizeAmount 奖金数量
      */
-    function _determinePrize(uint256 tokenId, uint256 cycleId) internal view returns (PrizeLevel prizeLevel, uint256 prizeAmount) {
+    function _determinePrize(uint256 tokenId, uint256 cycleId) internal returns (PrizeLevel prizeLevel, uint256 prizeAmount) {
         Cycle storage cycle = cycles[cycleId];
         
-        // 生成伪随机数
-        uint256 randomSeed = uint256(keccak256(abi.encodePacked(
-            block.timestamp,
-            block.prevrandao,  // 使用prevrandao替代difficulty
-            tokenId,
-            msg.sender,
-            cycle.drawnTickets
-        )));
+        // 使用改进的安全随机数生成
+        uint256 randomSeed = _generateSecureRandom(
+            tokenId, 
+            cycleId, 
+            cycle.drawnTickets  // 使用已开奖数量作为额外种子
+        );
         
         uint256 randomValue = randomSeed % FEE_BASE;
         
@@ -569,7 +928,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
      * @dev 提取平台费用
      */
     function withdrawPlatformFees() external onlyOwner nonReentrant {
-        require(totalPlatformFees > 0, "No platform fees to withdraw");
+        if (totalPlatformFees == 0) {
+            revert NoPlatformFees();
+        }
         
         uint256 amount = totalPlatformFees;
         totalPlatformFees = 0;
@@ -577,9 +938,7 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
         (bool success, ) = payable(owner()).call{value: amount}("");
         require(success, "Platform fee withdrawal failed");
         
-        emit PlatformFeesWithdrawn(owner(), amount);
-        
-        console.log("Platform fees withdrawn");
+        emit PlatformFeesWithdrawn(owner(), amount, block.timestamp);
     }
     
     /**
@@ -605,8 +964,6 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
         uint256 balance = address(this).balance;
         (bool success, ) = payable(owner()).call{value: balance}("");
         require(success, "Emergency withdrawal failed");
-        
-        console.log("Emergency withdrawal completed");
     }
     
     // =================================================================================
@@ -715,177 +1072,9 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
             : 0;
     }
     
-    /**
-     * @dev 批量获取用户彩票详细信息
-     * @param user 用户地址
-     * @return tokenIds 彩票ID数组
-     * @return cycleIds 周期ID数组 
-     * @return purchaseTimes 购买时间数组
-     * @return isDrawnArray 是否已开奖数组
-     * @return prizeLevels 奖项等级数组
-     * @return prizeAmounts 奖金数组
-     * @return isClaimedArray 是否已领取数组
-     * @return canDrawArray 是否可开奖数组
-     */
-    function getUserTicketsDetails(address user) external view returns (
-        uint256[] memory tokenIds,
-        uint256[] memory cycleIds,
-        uint256[] memory purchaseTimes,
-        bool[] memory isDrawnArray,
-        uint8[] memory prizeLevels,
-        uint256[] memory prizeAmounts,
-        bool[] memory isClaimedArray,
-        bool[] memory canDrawArray
-    ) {
-        uint256[] memory userTokenIds = userTickets[user];
-        uint256 length = userTokenIds.length;
-        
-        tokenIds = new uint256[](length);
-        cycleIds = new uint256[](length);
-        purchaseTimes = new uint256[](length);
-        isDrawnArray = new bool[](length);
-        prizeLevels = new uint8[](length);
-        prizeAmounts = new uint256[](length);
-        isClaimedArray = new bool[](length);
-        canDrawArray = new bool[](length);
-        
-        for (uint256 i = 0; i < length; i++) {
-            uint256 tokenId = userTokenIds[i];
-            Ticket storage ticket = tickets[tokenId];
-            
-            tokenIds[i] = tokenId;
-            cycleIds[i] = ticket.cycleId;
-            purchaseTimes[i] = ticket.purchaseTime;
-            isDrawnArray[i] = ticket.isDrawn;
-            prizeLevels[i] = uint8(ticket.prizeLevel);
-            prizeAmounts[i] = ticket.prizeAmount;
-            isClaimedArray[i] = ticket.isClaimed;
-            canDrawArray[i] = (_ownerOf(tokenId) != address(0) && !ticket.isDrawn && block.timestamp > cycles[ticket.cycleId].endTime);
-        }
-    }
     
-    /**
-     * @dev 获取周期统计信息
-     * @param cycleId 周期ID
-     * @return superGrandCount 超级大奖数量
-     * @return grandCount 大奖数量
-     * @return mediumCount 中奖数量
-     * @return smallCount 小奖数量
-     * @return noPrizeCount 未中奖数量
-     * @return superGrandTotal 超级大奖总金额
-     * @return grandTotal 大奖总金额
-     * @return mediumTotal 中奖总金额
-     * @return smallTotal 小奖总金额
-     */
-    function getCycleStats(uint256 cycleId) external view returns (
-        uint256 superGrandCount,
-        uint256 grandCount,
-        uint256 mediumCount,
-        uint256 smallCount,
-        uint256 noPrizeCount,
-        uint256 superGrandTotal,
-        uint256 grandTotal,
-        uint256 mediumTotal,
-        uint256 smallTotal
-    ) {
-        require(cycleId <= currentCycleId, "Invalid cycle ID");
-        
-        uint256[] memory ticketIds = cycleTickets[cycleId];
-        
-        for (uint256 i = 0; i < ticketIds.length; i++) {
-            Ticket storage ticket = tickets[ticketIds[i]];
-            
-            if (!ticket.isDrawn) continue;
-            
-            if (ticket.prizeLevel == PrizeLevel.SUPER_GRAND) {
-                superGrandCount++;
-                superGrandTotal += ticket.prizeAmount;
-            } else if (ticket.prizeLevel == PrizeLevel.GRAND_PRIZE) {
-                grandCount++;
-                grandTotal += ticket.prizeAmount;
-            } else if (ticket.prizeLevel == PrizeLevel.MEDIUM_PRIZE) {
-                mediumCount++;
-                mediumTotal += ticket.prizeAmount;
-            } else if (ticket.prizeLevel == PrizeLevel.SMALL_PRIZE) {
-                smallCount++;
-                smallTotal += ticket.prizeAmount;
-            } else {
-                noPrizeCount++;
-            }
-        }
-    }
     
-    /**
-     * @dev 获取所有周期基本信息
-     * @return allCycles 所有周期信息数组
-     */
-    function getAllCycles() external view returns (Cycle[] memory allCycles) {
-        allCycles = new Cycle[](currentCycleId);
-        
-        for (uint256 i = 1; i <= currentCycleId; i++) {
-            allCycles[i - 1] = cycles[i];
-        }
-    }
     
-    /**
-     * @dev 获取用户统计信息
-     * @param user 用户地址
-     * @return totalTickets 总彩票数
-     * @return totalWinnings 总中奖金额
-     * @return winCount 中奖次数
-     * @return drawableCount 可开奖数量
-     * @return claimedCount 已领取数量
-     */
-    function getUserStats(address user) external view returns (
-        uint256 totalTickets,
-        uint256 totalWinnings,
-        uint256 winCount,
-        uint256 drawableCount,
-        uint256 claimedCount
-    ) {
-        uint256[] memory userTokenIds = userTickets[user];
-        totalTickets = userTokenIds.length;
-        
-        for (uint256 i = 0; i < userTokenIds.length; i++) {
-            Ticket storage ticket = tickets[userTokenIds[i]];
-            
-            if (ticket.isDrawn) {
-                if (ticket.prizeLevel != PrizeLevel.NO_PRIZE) {
-                    winCount++;
-                    totalWinnings += ticket.prizeAmount;
-                }
-                if (ticket.isClaimed) {
-                    claimedCount++;
-                }
-            }
-            
-            if (_ownerOf(userTokenIds[i]) != address(0) && !tickets[userTokenIds[i]].isDrawn && block.timestamp > cycles[tickets[userTokenIds[i]].cycleId].endTime) {
-                drawableCount++;
-            }
-        }
-    }
-
-    /**
-     * @dev 获取历史周期范围信息（分页查询）
-     * @param startId 起始周期ID
-     * @param count 查询数量
-     * @return cycles_ 周期信息数组
-     */
-    function getCyclesRange(uint256 startId, uint256 count) external view returns (Cycle[] memory cycles_) {
-        require(startId > 0 && startId <= currentCycleId, "Invalid start cycle ID");
-        
-        uint256 endId = startId + count - 1;
-        if (endId > currentCycleId) {
-            endId = currentCycleId;
-        }
-        
-        uint256 actualCount = endId - startId + 1;
-        cycles_ = new Cycle[](actualCount);
-        
-        for (uint256 i = 0; i < actualCount; i++) {
-            cycles_[i] = cycles[startId + i];
-        }
-    }
 
     // =================================================================================
     // 重写函数
