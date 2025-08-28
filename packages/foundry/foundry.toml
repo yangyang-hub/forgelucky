@@ -28,8 +28,8 @@ pgn = "https://rpc.publicgoods.network"
 pgnTestnet = "https://sepolia.publicgoods.network"
 
 # Sonic Networks
-sonicTestnet = "https://rpc.testnet.soniclabs.com/"
-sonicMainnet = "https://rpc.soniclabs.com/"
+sonic-testnet = "https://rpc.testnet.soniclabs.com/"
+sonic-mainnet = "https://rpc.soniclabs.com/"
 
 localhost = "http://127.0.0.1:8545"
 
