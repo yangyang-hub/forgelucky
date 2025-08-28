@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ForgeLucky: {
-      address: "0xa15bb66138824a1c7167f5e85b957d04dd34e468",
+      address: "0xaa6f9e2d6dd80644cd98a686b2395a69da549577",
       abi: [
         {
           type: "constructor",

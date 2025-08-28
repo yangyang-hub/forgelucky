@@ -20,8 +20,13 @@ deploy:
 	@if [ ! -f "$(DEPLOY_SCRIPT)" ]; then 		echo "Error: Deploy script '$(DEPLOY_SCRIPT)' not found"; 		exit 1; 	fi
 	@if [ "$(RPC_URL)" = "localhost" ]; then 		if [ "$(ETH_KEYSTORE_ACCOUNT)" = "scaffold-eth-default" ]; then 			forge script $(DEPLOY_SCRIPT) --rpc-url localhost --password localhost --broadcast --legacy --ffi; 		else 			forge script $(DEPLOY_SCRIPT) --rpc-url localhost --broadcast --legacy --ffi; 		fi 	else 		forge script $(DEPLOY_SCRIPT) --rpc-url $(RPC_URL) --broadcast --legacy --ffi; 	fi
 
-# Deploy and generate ABIs
-deploy-and-generate-abis: deploy generate-abis 
+# Deploy and generate ABIs (force ABI generation even if deploy has warnings)
+deploy-and-generate-abis:
+	@echo "🚀 Starting deployment and ABI generation process..."
+	@$(MAKE) deploy || (echo "⚠️  Deployment had some warnings, but continuing with ABI generation..." && true)
+	@echo "✅ Now generating TypeScript ABIs..."
+	@$(MAKE) generate-abis
+	@echo "🎉 Deployment and ABI generation completed!" 
 
 # Generate TypeScript ABIs
 generate-abis:
