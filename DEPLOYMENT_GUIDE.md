@@ -71,7 +71,7 @@ npm run dev
 | 网络 | Chain ID | RPC URL | 用途 |
 |------|----------|---------|------|
 | Local | 31337 | http://127.0.0.1:8545 | 本地开发 |
-| Sonic Testnet | 64165 | https://rpc.testnet.soniclabs.com | 测试 |
+| Sonic Testnet | 14601 | https://rpc.testnet.soniclabs.com | 测试 |
 | Sonic Mainnet | 146 | https://rpc.soniclabs.com | 生产 |
 
 ### 前端网络切换

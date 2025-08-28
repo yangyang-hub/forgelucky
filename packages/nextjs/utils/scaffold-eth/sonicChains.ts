@@ -6,7 +6,7 @@ import { Chain } from "viem";
 
 // Sonic Testnet
 export const sonicTestnet: Chain = {
-  id: 64165,
+  id: 14601,
   name: "Sonic Testnet",
   nativeCurrency: {
     decimals: 18,

@@ -29,7 +29,7 @@ const NETWORKS = {
   },
   "sonic-testnet": {
     name: "Sonic Testnet", 
-    chainId: 64165,
+    chainId: 14601,
     rpcUrl: "sonicTestnet",
     script: "script/DeployMultiNetwork.s.sol",
     needsKeystore: true,

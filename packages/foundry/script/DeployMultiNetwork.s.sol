@@ -29,7 +29,7 @@ contract DeployMultiNetwork is ScaffoldETHDeploy {
         networkConfigs[31337] = NetworkConfig("Local", 31337, true);
         
         // Sonic testnet
-        networkConfigs[64165] = NetworkConfig("Sonic Testnet", 64165, true);
+        networkConfigs[14601] = NetworkConfig("Sonic Testnet", 14601, true);
         
         // Sonic mainnet  
         networkConfigs[146] = NetworkConfig("Sonic Mainnet", 146, false);
