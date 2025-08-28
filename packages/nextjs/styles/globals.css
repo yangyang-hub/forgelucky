@@ -18,11 +18,11 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #D97700;
+  --color-primary: #1E40AF;
   --color-primary-content: #ffffff;
-  --color-secondary: #DC2626;
+  --color-secondary: #FB923C;
   --color-secondary-content: #ffffff;
-  --color-accent: #059669;
+  --color-accent: #F59E0B;
   --color-accent-content: #ffffff;
   --color-neutral: #1f2937;
   --color-neutral-content: #ffffff;
@@ -43,12 +43,12 @@
 @plugin "daisyui/theme" {
   name: "dark";
 
-  --color-primary: #FFD700;
-  --color-primary-content: #1a1a1a;
-  --color-secondary: #FF6B6B;
-  --color-secondary-content: #ffffff;
-  --color-accent: #4ECDC4;
-  --color-accent-content: #1a1a1a;
+  --color-primary: #1E2D5F;
+  --color-primary-content: #ffffff;
+  --color-secondary: #FBBF24;
+  --color-secondary-content: #1a1a1a;
+  --color-accent: #FB923C;
+  --color-accent-content: #ffffff;
   --color-neutral: #f9fafb;
   --color-neutral-content: #1a1a1a;
   --color-base-100: #000000;
@@ -124,19 +124,19 @@
 
 /* 彩票风格的自定义样式 */
 .lottery-gradient {
-  background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B6B);
+  background: linear-gradient(135deg, #1E2D5F, #1E40AF, #FB923C);
 }
 
 .lottery-card {
-  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
-  border: 2px solid #FFD700;
-  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+  border: 2px solid #2563EB;
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
   transition: all 0.3s ease;
 }
 
 .lottery-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.4);
 }
 
 .scratch-card {
@@ -156,10 +156,10 @@
 
 @keyframes prize-glow {
   from {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.5);
   }
   to {
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 30px rgba(251, 146, 60, 0.8);
   }
 }
 
@@ -185,7 +185,7 @@
 }
 
 .countdown-timer {
-  background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+  background: linear-gradient(90deg, #FB923C, #1E3A8A);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -294,45 +294,55 @@
 
 /* 改进的彩票卡片样式 */
 .lottery-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 2px solid #D97700;
-  box-shadow: 0 8px 32px rgba(217, 119, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+  border: 2px solid #2563EB;
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
   transition: all 0.3s ease;
   color: #000000;
 }
 
 [data-theme="dark"] .lottery-card {
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-  border: 2px solid #FFD700;
+  background: linear-gradient(135deg, #000000 0%, #0f172a 100%);
+  border: 2px solid #1E3A8A;
   color: #ffffff;
 }
 
 .lottery-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(217, 119, 0, 0.4);
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.4);
 }
 
 /* 改进的渐变背景 */
 .lottery-gradient {
-  background: linear-gradient(135deg, #D97700, #F59E0B, #DC2626);
+  background: linear-gradient(135deg, #1E2D5F, #1E40AF, #FB923C);
 }
 
 /* 语言切换器样式 */
 .lang-switcher {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(30, 64, 175, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(30, 64, 175, 0.3);
   border-radius: 0.5rem;
   padding: 0.25rem 0.5rem;
-  color: white;
+  color: #1E40AF;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
+[data-theme="dark"] .lang-switcher {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .lang-switcher:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(30, 64, 175, 0.2);
   transform: translateY(-1px);
+}
+
+[data-theme="dark"] .lang-switcher:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .lang-dropdown {

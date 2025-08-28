@@ -80,7 +80,7 @@ const StatsPage: NextPage = () => {
 
   // 奖项分布数据
   const prizeDistribution = [
-    { level: "superGrand", count: 2, percentage: 0.16, totalAmount: "3.612 ETH", color: "bg-yellow-400" },
+    { level: "superGrand", count: 2, percentage: 0.16, totalAmount: "3.612 ETH", color: "bg-blue-600" },
     { level: "grand", count: 31, percentage: 2.49, totalAmount: "5.418 ETH", color: "bg-orange-500" },
     { level: "medium", count: 93, percentage: 7.46, totalAmount: "2.709 ETH", color: "bg-blue-500" },
     { level: "small", count: 187, percentage: 15.00, totalAmount: "0.903 ETH", color: "bg-green-500" },
@@ -221,7 +221,7 @@ const StatsPage: NextPage = () => {
 
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <TrophyIcon className="h-5 w-5 text-yellow-500" />
+                  <TrophyIcon className="h-5 w-5 text-orange-500" />
                   <span className="text-sm">{t('stats.biggestWin')}</span>
                 </div>
                 <span className="font-semibold text-success">{platformStats.biggestWin}</span>
@@ -327,7 +327,7 @@ const StatsPage: NextPage = () => {
                   <tr key={winner.rank} className="hover:bg-base-200">
                     <td className="text-center">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
-                        winner.rank === 1 ? "bg-yellow-500" :
+                        winner.rank === 1 ? "bg-blue-600" :
                         winner.rank === 2 ? "bg-gray-400" :
                         winner.rank === 3 ? "bg-orange-600" : "bg-gray-500"
                       }`}>
@@ -344,7 +344,7 @@ const StatsPage: NextPage = () => {
                     <td className="text-center hidden md:table-cell">
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${
                         winner.winRate >= 30 ? "bg-green-100 text-green-600" :
-                        winner.winRate >= 25 ? "bg-yellow-100 text-yellow-600" :
+                        winner.winRate >= 25 ? "bg-orange-100 text-orange-600" :
                         "bg-gray-100 text-gray-600"
                       }`}>
                         {winner.winRate}%

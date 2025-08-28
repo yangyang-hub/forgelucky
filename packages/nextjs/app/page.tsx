@@ -45,7 +45,7 @@ const Home: NextPage = () => {
   const { writeContractAsync: deposit } = useScaffoldWriteContract("ForgeLucky");
 
   const prizeStructure = [
-    { level: t('home.superGrand'), probability: "1/" + t('cycles.cycle').toLowerCase(), reward: "40%", color: "bg-gradient-to-r from-yellow-400 to-yellow-600" },
+    { level: t('home.superGrand'), probability: "1/" + t('cycles.cycle').toLowerCase(), reward: "40%", color: "bg-gradient-to-r from-blue-500 to-blue-700" },
     { level: t('home.grand'), probability: "2.5%", reward: "30%", color: "bg-gradient-to-r from-orange-400 to-red-500" },
     { level: t('home.medium'), probability: "7.5%", reward: "20%", color: "bg-gradient-to-r from-blue-400 to-purple-500" },
     { level: t('home.small'), probability: "15%", reward: "10%", color: "bg-gradient-to-r from-green-400 to-teal-500" },

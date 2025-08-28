@@ -134,8 +134,8 @@ const CyclesPage: NextPage = () => {
       },
       [CycleStatus.ENDED]: { 
         name: t('cycles.ended'), 
-        color: "text-yellow-600", 
-        bg: "bg-yellow-100",
+        color: "text-orange-600", 
+        bg: "bg-orange-100",
         icon: <ClockIcon className="h-5 w-5" />
       },
       [CycleStatus.FINALIZED]: { 
@@ -279,7 +279,7 @@ const CyclesPage: NextPage = () => {
                       {statusInfo.name}
                     </div>
                     {cycle.superGrandAwarded && (
-                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-600">
+                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-600">
                         <TrophyIcon className="h-4 w-4" />
                         {t('cycles.superGrandAwarded')}
                       </div>
@@ -341,7 +341,7 @@ const CyclesPage: NextPage = () => {
                     </h4>
                     <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
                       {/* 超级大奖 */}
-                      <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white p-4 rounded-xl text-center">
+                      <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-4 rounded-xl text-center">
                         <div className="text-sm opacity-90">{t('cycles.superGrandPrize')}</div>
                         <div className="text-xl font-bold">{cycle.prizeStats.superGrand.count}</div>
                         <div className="text-xs">{cycle.prizeStats.superGrand.totalAmount}</div>

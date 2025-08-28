@@ -8,6 +8,7 @@ import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon, HomeIcon, TicketIcon, ChartBarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { LanguageSwitcher } from "~~/components/LanguageSwitcher";
+import { SwitchTheme } from "~~/components/SwitchTheme";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
 
@@ -104,7 +105,7 @@ export const Header = () => {
         </details>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
-            <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
               🎲
             </div>
           </div>
@@ -118,6 +119,7 @@ export const Header = () => {
         </ul>
       </div>
       <div className="navbar-end grow mr-4 flex items-center gap-3">
+        <SwitchTheme />
         <LanguageSwitcher />
         <RainbowKitCustomConnectButton />
         {isLocalNetwork && <FaucetButton />}

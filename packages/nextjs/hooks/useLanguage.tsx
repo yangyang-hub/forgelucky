@@ -514,7 +514,7 @@ interface LanguageProviderProps {
  * 语言提供者组件
  */
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('zh');
+  const [language, setLanguage] = useState<Language>('en');
 
   // 从本地存储读取语言设置
   useEffect(() => {

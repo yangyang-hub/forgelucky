@@ -133,7 +133,7 @@ const TicketsPage: NextPage = () => {
       [PrizeLevel.SMALL_PRIZE]: { name: t('home.small'), color: "text-green-600", bg: "bg-green-100" },
       [PrizeLevel.MEDIUM_PRIZE]: { name: t('home.medium'), color: "text-blue-600", bg: "bg-blue-100" },
       [PrizeLevel.GRAND_PRIZE]: { name: t('home.grand'), color: "text-orange-600", bg: "bg-orange-100" },
-      [PrizeLevel.SUPER_GRAND]: { name: t('home.superGrand'), color: "text-yellow-600", bg: "bg-yellow-100" }
+      [PrizeLevel.SUPER_GRAND]: { name: t('home.superGrand'), color: "text-blue-600", bg: "bg-blue-100" }
     };
     return prizeInfo[level];
   };
