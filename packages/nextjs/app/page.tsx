@@ -209,16 +209,15 @@ const Home: NextPage = () => {
                 </button>
 
                 <div className="flex gap-2">
-                  <select
-                    className="select select-bordered flex-1"
+                  {/* 改成数字输入框 1-100 */}
+                  <input
+                    type="number"
+                    className="input input-bordered flex-1"
+                    min={1}
+                    max={100}
                     value={batchCount}
                     onChange={e => setBatchCount(Number(e.target.value))}
-                  >
-                    <option value={5}>5{t("common.tickets")}</option>
-                    <option value={10}>10{t("common.tickets")}</option>
-                    <option value={20}>20{t("common.tickets")}</option>
-                    <option value={50}>50{t("common.tickets")}</option>
-                  </select>
+                  />
                   <button
                     className="btn btn-secondary flex-1"
                     disabled={!connectedAddress}

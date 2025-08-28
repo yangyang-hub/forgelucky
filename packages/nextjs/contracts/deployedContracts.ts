@@ -476,71 +476,6 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "getAllCycles",
-          inputs: [],
-          outputs: [
-            {
-              name: "allCycles",
-              type: "tuple[]",
-              internalType: "struct ForgeLucky.Cycle[]",
-              components: [
-                {
-                  name: "id",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "startTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "endTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "totalTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "prizePool",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "platformFee",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "isFinalized",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "drawnTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "superGrandDrawn",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "superGrandTicketId",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-              ],
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
           name: "getApproved",
           inputs: [
             {
@@ -653,65 +588,6 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "getCycleStats",
-          inputs: [
-            {
-              name: "cycleId",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "superGrandCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "grandCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "mediumCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "smallCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "noPrizeCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "superGrandTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "grandTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "mediumTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "smallTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
           name: "getCycleTickets",
           inputs: [
             {
@@ -725,82 +601,6 @@ const deployedContracts = {
               name: "",
               type: "uint256[]",
               internalType: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "getCyclesRange",
-          inputs: [
-            {
-              name: "startId",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "count",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "cycles_",
-              type: "tuple[]",
-              internalType: "struct ForgeLucky.Cycle[]",
-              components: [
-                {
-                  name: "id",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "startTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "endTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "totalTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "prizePool",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "platformFee",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "isFinalized",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "drawnTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "superGrandDrawn",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "superGrandTicketId",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-              ],
             },
           ],
           stateMutability: "view",
@@ -883,45 +683,6 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "getUserStats",
-          inputs: [
-            {
-              name: "user",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-          outputs: [
-            {
-              name: "totalTickets",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "totalWinnings",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "winCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "drawableCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "claimedCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
           name: "getUserTickets",
           inputs: [
             {
@@ -935,60 +696,6 @@ const deployedContracts = {
               name: "",
               type: "uint256[]",
               internalType: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "getUserTicketsDetails",
-          inputs: [
-            {
-              name: "user",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-          outputs: [
-            {
-              name: "tokenIds",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "cycleIds",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "purchaseTimes",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "isDrawnArray",
-              type: "bool[]",
-              internalType: "bool[]",
-            },
-            {
-              name: "prizeLevels",
-              type: "uint8[]",
-              internalType: "uint8[]",
-            },
-            {
-              name: "prizeAmounts",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "isClaimedArray",
-              type: "bool[]",
-              internalType: "bool[]",
-            },
-            {
-              name: "canDrawArray",
-              type: "bool[]",
-              internalType: "bool[]",
             },
           ],
           stateMutability: "view",
@@ -2017,7 +1724,7 @@ const deployedContracts = {
   },
   31337: {
     ForgeLucky: {
-      address: "0xaa6f9e2d6dd80644cd98a686b2395a69da549577",
+      address: "0x7ac43fdb699e5de6a56e5bfac858be35fe68bb77",
       abi: [
         {
           type: "constructor",
@@ -2486,71 +2193,6 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "getAllCycles",
-          inputs: [],
-          outputs: [
-            {
-              name: "allCycles",
-              type: "tuple[]",
-              internalType: "struct ForgeLucky.Cycle[]",
-              components: [
-                {
-                  name: "id",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "startTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "endTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "totalTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "prizePool",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "platformFee",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "isFinalized",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "drawnTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "superGrandDrawn",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "superGrandTicketId",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-              ],
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
           name: "getApproved",
           inputs: [
             {
@@ -2663,65 +2305,6 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "getCycleStats",
-          inputs: [
-            {
-              name: "cycleId",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "superGrandCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "grandCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "mediumCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "smallCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "noPrizeCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "superGrandTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "grandTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "mediumTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "smallTotal",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
           name: "getCycleTickets",
           inputs: [
             {
@@ -2735,82 +2318,6 @@ const deployedContracts = {
               name: "",
               type: "uint256[]",
               internalType: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "getCyclesRange",
-          inputs: [
-            {
-              name: "startId",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "count",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "cycles_",
-              type: "tuple[]",
-              internalType: "struct ForgeLucky.Cycle[]",
-              components: [
-                {
-                  name: "id",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "startTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "endTime",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "totalTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "prizePool",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "platformFee",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "isFinalized",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "drawnTickets",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                {
-                  name: "superGrandDrawn",
-                  type: "bool",
-                  internalType: "bool",
-                },
-                {
-                  name: "superGrandTicketId",
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-              ],
             },
           ],
           stateMutability: "view",
@@ -2893,45 +2400,6 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "getUserStats",
-          inputs: [
-            {
-              name: "user",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-          outputs: [
-            {
-              name: "totalTickets",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "totalWinnings",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "winCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "drawableCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "claimedCount",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
           name: "getUserTickets",
           inputs: [
             {
@@ -2945,60 +2413,6 @@ const deployedContracts = {
               name: "",
               type: "uint256[]",
               internalType: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "getUserTicketsDetails",
-          inputs: [
-            {
-              name: "user",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-          outputs: [
-            {
-              name: "tokenIds",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "cycleIds",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "purchaseTimes",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "isDrawnArray",
-              type: "bool[]",
-              internalType: "bool[]",
-            },
-            {
-              name: "prizeLevels",
-              type: "uint8[]",
-              internalType: "uint8[]",
-            },
-            {
-              name: "prizeAmounts",
-              type: "uint256[]",
-              internalType: "uint256[]",
-            },
-            {
-              name: "isClaimedArray",
-              type: "bool[]",
-              internalType: "bool[]",
-            },
-            {
-              name: "canDrawArray",
-              type: "bool[]",
-              internalType: "bool[]",
             },
           ],
           stateMutability: "view",
@@ -4023,6 +3437,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
+      deployedOnBlock: 5,
     },
   },
 } as const;
