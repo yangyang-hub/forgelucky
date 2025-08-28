@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { 
@@ -12,7 +12,10 @@ import {
   BanknotesIcon
 } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
+import { formatEther, parseEther } from "viem";
+import { notification } from "~~/utils/scaffold-eth";
 
 /**
  * 我的彩票页面
@@ -29,11 +32,11 @@ enum TicketStatus {
 
 // 奖项等级枚举
 enum PrizeLevel {
-  NO_PRIZE = "no_prize",
-  SMALL_PRIZE = "small_prize", 
-  MEDIUM_PRIZE = "medium_prize",
-  GRAND_PRIZE = "grand_prize",
-  SUPER_GRAND = "super_grand"
+  NO_PRIZE = 0,
+  SMALL_PRIZE = 1, 
+  MEDIUM_PRIZE = 2,
+  GRAND_PRIZE = 3,
+  SUPER_GRAND = 4
 }
 
 // 彩票数据接口
@@ -48,41 +51,80 @@ interface Ticket {
   canClaim: boolean;
 }
 
-// 模拟用户彩票数据
-const mockTickets: Ticket[] = [
-  {
-    id: 1,
-    cycleId: 1,
-    purchaseTime: new Date("2024-01-15"),
-    status: TicketStatus.DRAWABLE,
-    canDraw: true,
-    canClaim: false
-  },
-  {
-    id: 2, 
-    cycleId: 1,
-    purchaseTime: new Date("2024-01-15"),
-    status: TicketStatus.DRAWN,
-    prizeLevel: PrizeLevel.SMALL_PRIZE,
-    prizeAmount: "0.05 ETH",
-    canDraw: false,
-    canClaim: true
-  },
-  {
-    id: 3,
-    cycleId: 2,
-    purchaseTime: new Date("2024-01-20"),
-    status: TicketStatus.ACTIVE,
-    canDraw: false,
-    canClaim: false
-  }
-];
-
 const TicketsPage: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const { t } = useLanguage();
   const [selectedTab, setSelectedTab] = useState<"all" | "drawable" | "claimed">("all");
-  const [userBalance] = useState("0.15"); // 模拟用户余额
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+
+  // 读取合约数据
+  const { data: userTicketsDetails, refetch: refetchUserTickets } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "getUserTicketsDetails",
+    args: [connectedAddress || "0x0000000000000000000000000000000000000000"],
+    watch: true,
+  });
+
+  const { data: userInfo } = useScaffoldReadContract({
+    contractName: "ForgeLucky", 
+    functionName: "getUserInfo",
+    args: [connectedAddress || "0x0000000000000000000000000000000000000000"],
+    watch: true,
+  });
+
+  // 写入合约函数
+  const { writeContractAsync: drawTicket } = useScaffoldWriteContract("ForgeLucky");
+  const { writeContractAsync: claimPrize } = useScaffoldWriteContract("ForgeLucky");
+  const { writeContractAsync: deposit } = useScaffoldWriteContract("ForgeLucky");
+  const { writeContractAsync: withdrawBalance } = useScaffoldWriteContract("ForgeLucky");
+
+  // 处理合约数据并转换为前端格式
+  useEffect(() => {
+    if (userTicketsDetails && connectedAddress) {
+      const [
+        tokenIds,
+        cycleIds,
+        purchaseTimes,
+        isDrawnArray,
+        prizeLevels,
+        prizeAmounts,
+        isClaimedArray,
+        canDrawArray
+      ] = userTicketsDetails;
+
+      const processedTickets: Ticket[] = tokenIds.map((tokenId, index) => {
+        const isDrawn = isDrawnArray[index];
+        const isClaimed = isClaimedArray[index];
+        const canDraw = canDrawArray[index];
+        const prizeLevel = prizeLevels[index];
+        const prizeAmount = prizeAmounts[index];
+
+        let status: TicketStatus;
+        if (isClaimed) {
+          status = TicketStatus.CLAIMED;
+        } else if (isDrawn) {
+          status = TicketStatus.DRAWN;
+        } else if (canDraw) {
+          status = TicketStatus.DRAWABLE;
+        } else {
+          status = TicketStatus.ACTIVE;
+        }
+
+        return {
+          id: Number(tokenId),
+          cycleId: Number(cycleIds[index]),
+          purchaseTime: new Date(Number(purchaseTimes[index]) * 1000),
+          status,
+          prizeLevel: prizeLevel as PrizeLevel,
+          prizeAmount: prizeAmount > 0 ? `${formatEther(prizeAmount)} ETH` : undefined,
+          canDraw,
+          canClaim: isDrawn && prizeLevel > 0 && !isClaimed
+        };
+      });
+
+      setTickets(processedTickets);
+    }
+  }, [userTicketsDetails, connectedAddress]);
 
   // 获取奖项等级显示信息
   const getPrizeLevelInfo = (level: PrizeLevel) => {
@@ -108,7 +150,7 @@ const TicketsPage: NextPage = () => {
   };
 
   // 筛选彩票
-  const filteredTickets = mockTickets.filter(ticket => {
+  const filteredTickets = tickets.filter(ticket => {
     if (selectedTab === "drawable") return ticket.canDraw;
     if (selectedTab === "claimed") return ticket.status === TicketStatus.CLAIMED;
     return true;
@@ -116,12 +158,81 @@ const TicketsPage: NextPage = () => {
 
   // 统计信息
   const stats = {
-    total: mockTickets.length,
-    drawable: mockTickets.filter(t => t.canDraw).length,
-    claimed: mockTickets.filter(t => t.status === TicketStatus.CLAIMED).length,
-    totalWinnings: mockTickets
+    total: tickets.length,
+    drawable: tickets.filter(t => t.canDraw).length,
+    claimed: tickets.filter(t => t.status === TicketStatus.CLAIMED).length,
+    totalWinnings: tickets
       .filter(t => t.prizeAmount)
       .reduce((sum, t) => sum + parseFloat(t.prizeAmount!.split(" ")[0]), 0)
+  };
+
+  // 处理刮奖
+  const handleDrawTicket = async (ticketId: number) => {
+    try {
+      await drawTicket({
+        functionName: "drawTicket",
+        args: [BigInt(ticketId)],
+      });
+      
+      notification.success(t('common.drawSuccess'));
+      // 重新获取数据
+      await refetchUserTickets();
+    } catch (error) {
+      console.error(error);
+      notification.error(t('common.drawFailed'));
+    }
+  };
+
+  // 处理领取奖金
+  const handleClaimPrize = async (ticketId: number) => {
+    try {
+      await claimPrize({
+        functionName: "claimPrize",
+        args: [BigInt(ticketId)],
+      });
+      
+      notification.success(t('common.claimSuccess'));
+      // 重新获取数据
+      await refetchUserTickets();
+    } catch (error) {
+      console.error(error);
+      notification.error(t('common.claimFailed'));
+    }
+  };
+
+  // 处理充值
+  const handleDeposit = async () => {
+    try {
+      await deposit({
+        functionName: "deposit",
+        value: parseEther("0.1"), // 充值0.1 ETH
+      });
+      
+      notification.success(t('common.depositSuccess'));
+    } catch (error) {
+      console.error(error);
+      notification.error(t('common.depositFailed'));
+    }
+  };
+
+  // 处理提现
+  const handleWithdraw = async () => {
+    try {
+      const balance = userInfo?.[0] || 0n;
+      if (balance === 0n) {
+        notification.error("No balance to withdraw");
+        return;
+      }
+
+      await withdrawBalance({
+        functionName: "withdrawAllBalance",
+      });
+      
+      notification.success(t('common.withdrawSuccess'));
+    } catch (error) {
+      console.error(error);
+      notification.error(t('common.withdrawFailed'));
+    }
   };
 
   if (!connectedAddress) {
@@ -164,7 +275,9 @@ const TicketsPage: NextPage = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 mb-1">{t('tickets.platformBalance')}</p>
-                  <p className="text-xl font-bold text-success">{userBalance} {t('common.eth')}</p>
+                  <p className="text-xl font-bold text-success">
+                    {userInfo ? `${formatEther(userInfo[0])} ${t('common.eth')}` : `0 ${t('common.eth')}`}
+                  </p>
                 </div>
               </div>
             </div>
@@ -198,11 +311,17 @@ const TicketsPage: NextPage = () => {
 
           {/* 操作按钮 */}
           <div className="flex flex-wrap gap-4 mt-6">
-            <button className="btn btn-primary flex-1 min-w-[120px]">
+            <button 
+              className="btn btn-primary flex-1 min-w-[120px]"
+              onClick={handleDeposit}
+            >
               <BanknotesIcon className="h-5 w-5" />
               {t('tickets.depositBalance')}
             </button>
-            <button className="btn btn-secondary flex-1 min-w-[120px]">
+            <button 
+              className="btn btn-secondary flex-1 min-w-[120px]"
+              onClick={handleWithdraw}
+            >
               <CurrencyDollarIcon className="h-5 w-5" />
               {t('tickets.withdrawBalance')}
             </button>
@@ -239,7 +358,7 @@ const TicketsPage: NextPage = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTickets.map((ticket) => {
             const statusInfo = getStatusInfo(ticket.status);
-            const prizeInfo = ticket.prizeLevel ? getPrizeLevelInfo(ticket.prizeLevel) : null;
+            const prizeInfo = ticket.prizeLevel !== undefined ? getPrizeLevelInfo(ticket.prizeLevel) : null;
 
             return (
               <div key={ticket.id} className="lottery-card p-6 rounded-2xl">
@@ -261,7 +380,7 @@ const TicketsPage: NextPage = () => {
                 </div>
 
                 {/* 奖项信息 */}
-                {prizeInfo && (
+                {prizeInfo && ticket.prizeLevel !== PrizeLevel.NO_PRIZE && (
                   <div className="mb-4 p-3 rounded-lg bg-base-200">
                     <div className={`inline-block px-2 py-1 rounded text-xs font-semibold ${prizeInfo.bg} ${prizeInfo.color} mb-2`}>
                       {prizeInfo.name}
@@ -277,14 +396,20 @@ const TicketsPage: NextPage = () => {
                 {/* 操作按钮 */}
                 <div className="space-y-2">
                   {ticket.canDraw && (
-                    <button className="btn btn-primary w-full">
+                    <button 
+                      className="btn btn-primary w-full"
+                      onClick={() => handleDrawTicket(ticket.id)}
+                    >
                       <SparklesIcon className="h-5 w-5" />
                       {t('tickets.scratchTicket')}
                     </button>
                   )}
                   
                   {ticket.canClaim && (
-                    <button className="btn btn-success w-full">
+                    <button 
+                      className="btn btn-success w-full"
+                      onClick={() => handleClaimPrize(ticket.id)}
+                    >
                       <CurrencyDollarIcon className="h-5 w-5" />
                       {t('tickets.claimPrize')}
                     </button>

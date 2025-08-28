@@ -715,6 +715,178 @@ contract ForgeLucky is ERC721, ERC721Enumerable, Ownable, Pausable, ReentrancyGu
             : 0;
     }
     
+    /**
+     * @dev 批量获取用户彩票详细信息
+     * @param user 用户地址
+     * @return tokenIds 彩票ID数组
+     * @return cycleIds 周期ID数组 
+     * @return purchaseTimes 购买时间数组
+     * @return isDrawnArray 是否已开奖数组
+     * @return prizeLevels 奖项等级数组
+     * @return prizeAmounts 奖金数组
+     * @return isClaimedArray 是否已领取数组
+     * @return canDrawArray 是否可开奖数组
+     */
+    function getUserTicketsDetails(address user) external view returns (
+        uint256[] memory tokenIds,
+        uint256[] memory cycleIds,
+        uint256[] memory purchaseTimes,
+        bool[] memory isDrawnArray,
+        uint8[] memory prizeLevels,
+        uint256[] memory prizeAmounts,
+        bool[] memory isClaimedArray,
+        bool[] memory canDrawArray
+    ) {
+        uint256[] memory userTokenIds = userTickets[user];
+        uint256 length = userTokenIds.length;
+        
+        tokenIds = new uint256[](length);
+        cycleIds = new uint256[](length);
+        purchaseTimes = new uint256[](length);
+        isDrawnArray = new bool[](length);
+        prizeLevels = new uint8[](length);
+        prizeAmounts = new uint256[](length);
+        isClaimedArray = new bool[](length);
+        canDrawArray = new bool[](length);
+        
+        for (uint256 i = 0; i < length; i++) {
+            uint256 tokenId = userTokenIds[i];
+            Ticket storage ticket = tickets[tokenId];
+            
+            tokenIds[i] = tokenId;
+            cycleIds[i] = ticket.cycleId;
+            purchaseTimes[i] = ticket.purchaseTime;
+            isDrawnArray[i] = ticket.isDrawn;
+            prizeLevels[i] = uint8(ticket.prizeLevel);
+            prizeAmounts[i] = ticket.prizeAmount;
+            isClaimedArray[i] = ticket.isClaimed;
+            canDrawArray[i] = (_ownerOf(tokenId) != address(0) && !ticket.isDrawn && block.timestamp > cycles[ticket.cycleId].endTime);
+        }
+    }
+    
+    /**
+     * @dev 获取周期统计信息
+     * @param cycleId 周期ID
+     * @return superGrandCount 超级大奖数量
+     * @return grandCount 大奖数量
+     * @return mediumCount 中奖数量
+     * @return smallCount 小奖数量
+     * @return noPrizeCount 未中奖数量
+     * @return superGrandTotal 超级大奖总金额
+     * @return grandTotal 大奖总金额
+     * @return mediumTotal 中奖总金额
+     * @return smallTotal 小奖总金额
+     */
+    function getCycleStats(uint256 cycleId) external view returns (
+        uint256 superGrandCount,
+        uint256 grandCount,
+        uint256 mediumCount,
+        uint256 smallCount,
+        uint256 noPrizeCount,
+        uint256 superGrandTotal,
+        uint256 grandTotal,
+        uint256 mediumTotal,
+        uint256 smallTotal
+    ) {
+        require(cycleId <= currentCycleId, "Invalid cycle ID");
+        
+        uint256[] memory ticketIds = cycleTickets[cycleId];
+        
+        for (uint256 i = 0; i < ticketIds.length; i++) {
+            Ticket storage ticket = tickets[ticketIds[i]];
+            
+            if (!ticket.isDrawn) continue;
+            
+            if (ticket.prizeLevel == PrizeLevel.SUPER_GRAND) {
+                superGrandCount++;
+                superGrandTotal += ticket.prizeAmount;
+            } else if (ticket.prizeLevel == PrizeLevel.GRAND_PRIZE) {
+                grandCount++;
+                grandTotal += ticket.prizeAmount;
+            } else if (ticket.prizeLevel == PrizeLevel.MEDIUM_PRIZE) {
+                mediumCount++;
+                mediumTotal += ticket.prizeAmount;
+            } else if (ticket.prizeLevel == PrizeLevel.SMALL_PRIZE) {
+                smallCount++;
+                smallTotal += ticket.prizeAmount;
+            } else {
+                noPrizeCount++;
+            }
+        }
+    }
+    
+    /**
+     * @dev 获取所有周期基本信息
+     * @return allCycles 所有周期信息数组
+     */
+    function getAllCycles() external view returns (Cycle[] memory allCycles) {
+        allCycles = new Cycle[](currentCycleId);
+        
+        for (uint256 i = 1; i <= currentCycleId; i++) {
+            allCycles[i - 1] = cycles[i];
+        }
+    }
+    
+    /**
+     * @dev 获取用户统计信息
+     * @param user 用户地址
+     * @return totalTickets 总彩票数
+     * @return totalWinnings 总中奖金额
+     * @return winCount 中奖次数
+     * @return drawableCount 可开奖数量
+     * @return claimedCount 已领取数量
+     */
+    function getUserStats(address user) external view returns (
+        uint256 totalTickets,
+        uint256 totalWinnings,
+        uint256 winCount,
+        uint256 drawableCount,
+        uint256 claimedCount
+    ) {
+        uint256[] memory userTokenIds = userTickets[user];
+        totalTickets = userTokenIds.length;
+        
+        for (uint256 i = 0; i < userTokenIds.length; i++) {
+            Ticket storage ticket = tickets[userTokenIds[i]];
+            
+            if (ticket.isDrawn) {
+                if (ticket.prizeLevel != PrizeLevel.NO_PRIZE) {
+                    winCount++;
+                    totalWinnings += ticket.prizeAmount;
+                }
+                if (ticket.isClaimed) {
+                    claimedCount++;
+                }
+            }
+            
+            if (_ownerOf(userTokenIds[i]) != address(0) && !tickets[userTokenIds[i]].isDrawn && block.timestamp > cycles[tickets[userTokenIds[i]].cycleId].endTime) {
+                drawableCount++;
+            }
+        }
+    }
+
+    /**
+     * @dev 获取历史周期范围信息（分页查询）
+     * @param startId 起始周期ID
+     * @param count 查询数量
+     * @return cycles_ 周期信息数组
+     */
+    function getCyclesRange(uint256 startId, uint256 count) external view returns (Cycle[] memory cycles_) {
+        require(startId > 0 && startId <= currentCycleId, "Invalid start cycle ID");
+        
+        uint256 endId = startId + count - 1;
+        if (endId > currentCycleId) {
+            endId = currentCycleId;
+        }
+        
+        uint256 actualCount = endId - startId + 1;
+        cycles_ = new Cycle[](actualCount);
+        
+        for (uint256 i = 0; i < actualCount; i++) {
+            cycles_[i] = cycles[startId + i];
+        }
+    }
+
     // =================================================================================
     // 重写函数
     // =================================================================================

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { NextPage } from "next";
 import { 
   ClockIcon, 
@@ -10,7 +10,9 @@ import {
   ChartBarIcon,
   FireIcon
 } from "@heroicons/react/24/outline";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
+import { formatEther } from "viem";
 
 /**
  * 周期信息展示页面
@@ -47,69 +49,79 @@ interface Cycle {
   };
 }
 
-// 模拟周期数据
-const mockCycles: Cycle[] = [
-  {
-    id: 3,
-    status: CycleStatus.ACTIVE,
-    startTime: new Date("2024-01-22"),
-    endTime: new Date("2024-01-29"),
-    totalTickets: 87,
-    prizePool: "0.87 ETH",
-    platformFee: "0 ETH",
-    drawnTickets: 0,
-    superGrandAwarded: false,
-    prizeStats: {
-      superGrand: { count: 0, totalAmount: "0 ETH" },
-      grand: { count: 0, totalAmount: "0 ETH" },
-      medium: { count: 0, totalAmount: "0 ETH" },
-      small: { count: 0, totalAmount: "0 ETH" },
-      noPrize: { count: 0 }
-    }
-  },
-  {
-    id: 2,
-    status: CycleStatus.ENDED,
-    startTime: new Date("2024-01-15"),
-    endTime: new Date("2024-01-22"),
-    totalTickets: 234,
-    prizePool: "2.316 ETH",
-    platformFee: "0.024 ETH",
-    drawnTickets: 156,
-    superGrandAwarded: false,
-    prizeStats: {
-      superGrand: { count: 0, totalAmount: "0 ETH" },
-      grand: { count: 3, totalAmount: "0.695 ETH" },
-      medium: { count: 12, totalAmount: "0.463 ETH" },
-      small: { count: 23, totalAmount: "0.232 ETH" },
-      noPrize: { count: 118 }
-    }
-  },
-  {
-    id: 1,
-    status: CycleStatus.FINALIZED,
-    startTime: new Date("2024-01-08"),
-    endTime: new Date("2024-01-15"),
-    totalTickets: 456,
-    prizePool: "4.5144 ETH",
-    platformFee: "0.0456 ETH",
-    drawnTickets: 456,
-    superGrandAwarded: true,
-    superGrandTicketId: 123,
-    superGrandAmount: "1.806 ETH",
-    prizeStats: {
-      superGrand: { count: 1, totalAmount: "1.806 ETH" },
-      grand: { count: 11, totalAmount: "1.354 ETH" },
-      medium: { count: 34, totalAmount: "0.903 ETH" },
-      small: { count: 68, totalAmount: "0.451 ETH" },
-      noPrize: { count: 342 }
-    }
-  }
-];
-
 const CyclesPage: NextPage = () => {
   const { t } = useLanguage();
   const [selectedTab, setSelectedTab] = useState<"all" | "active" | "ended" | "finalized">("all");
+  const [cycles, setCycles] = useState<Cycle[]>([]);
+
+  // 读取合约数据
+  const { data: currentCycleId } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "currentCycleId",
+    watch: true,
+  });
+
+  const { data: allCycles } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "getAllCycles",
+    watch: true,
+  });
+
+  const { data: contractStats } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "getContractStats",
+    watch: true,
+  });
+
+  // 处理合约数据并转换为前端格式
+  useEffect(() => {
+    if (allCycles && currentCycleId) {
+      const processedCycles: Cycle[] = [];
+
+      for (let i = 0; i < allCycles.length; i++) {
+        const cycleData = allCycles[i];
+        const now = Math.floor(Date.now() / 1000);
+        const endTime = Number(cycleData.endTime);
+        
+        let status: CycleStatus;
+        if (cycleData.isFinalized) {
+          status = CycleStatus.FINALIZED;
+        } else if (now > endTime) {
+          status = CycleStatus.ENDED;
+        } else {
+          status = CycleStatus.ACTIVE;
+        }
+
+        // 这里我们需要额外获取每个周期的统计数据
+        // 目前先用空数据，稍后会添加获取统计的功能
+        const cycle: Cycle = {
+          id: Number(cycleData.id),
+          status,
+          startTime: new Date(Number(cycleData.startTime) * 1000),
+          endTime: new Date(Number(cycleData.endTime) * 1000),
+          totalTickets: Number(cycleData.totalTickets),
+          prizePool: `${formatEther(cycleData.prizePool)} ETH`,
+          platformFee: `${formatEther(cycleData.platformFee)} ETH`,
+          drawnTickets: Number(cycleData.drawnTickets),
+          superGrandAwarded: cycleData.superGrandDrawn,
+          superGrandTicketId: cycleData.superGrandDrawn ? Number(cycleData.superGrandTicketId) : undefined,
+          prizeStats: {
+            superGrand: { count: 0, totalAmount: "0 ETH" },
+            grand: { count: 0, totalAmount: "0 ETH" },
+            medium: { count: 0, totalAmount: "0 ETH" },
+            small: { count: 0, totalAmount: "0 ETH" },
+            noPrize: { count: 0 }
+          }
+        };
+
+        processedCycles.push(cycle);
+      }
+
+      // 按ID倒序排列，最新的在前面
+      processedCycles.sort((a, b) => b.id - a.id);
+      setCycles(processedCycles);
+    }
+  }, [allCycles, currentCycleId]);
 
   // 获取状态显示信息
   const getStatusInfo = (status: CycleStatus) => {
@@ -137,7 +149,7 @@ const CyclesPage: NextPage = () => {
   };
 
   // 筛选周期
-  const filteredCycles = mockCycles.filter(cycle => {
+  const filteredCycles = cycles.filter(cycle => {
     if (selectedTab === "active") return cycle.status === CycleStatus.ACTIVE;
     if (selectedTab === "ended") return cycle.status === CycleStatus.ENDED;
     if (selectedTab === "finalized") return cycle.status === CycleStatus.FINALIZED;
@@ -172,7 +184,7 @@ const CyclesPage: NextPage = () => {
   };
 
   // 计算总体统计
-  const totalStats = mockCycles.reduce((acc, cycle) => ({
+  const totalStats = cycles.reduce((acc, cycle) => ({
     totalCycles: acc.totalCycles + 1,
     totalTickets: acc.totalTickets + cycle.totalTickets,
     totalPrizePool: acc.totalPrizePool + parseFloat(cycle.prizePool.split(" ")[0]),
@@ -194,19 +206,27 @@ const CyclesPage: NextPage = () => {
         {/* 总体统计卡片 */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="lottery-card p-6 rounded-2xl text-center">
-            <div className="text-3xl font-bold text-primary mb-2">{totalStats.totalCycles}</div>
+            <div className="text-3xl font-bold text-primary mb-2">
+              {contractStats ? Number(contractStats[0]) : 0}
+            </div>
             <div className="text-sm text-gray-600">{t('cycles.totalCycles')}</div>
           </div>
           <div className="lottery-card p-6 rounded-2xl text-center">
-            <div className="text-3xl font-bold text-secondary mb-2">{totalStats.totalTickets}</div>
+            <div className="text-3xl font-bold text-secondary mb-2">
+              {contractStats ? Number(contractStats[1]) : 0}
+            </div>
             <div className="text-sm text-gray-600">{t('cycles.totalTicketsSales')}</div>
           </div>
           <div className="lottery-card p-6 rounded-2xl text-center">
-            <div className="text-3xl font-bold text-accent mb-2">{totalStats.totalPrizePool.toFixed(3)}</div>
+            <div className="text-3xl font-bold text-accent mb-2">
+              {contractStats ? formatEther(contractStats[2]) : "0"}
+            </div>
             <div className="text-sm text-gray-600">{t('cycles.totalPrizePool')}</div>
           </div>
           <div className="lottery-card p-6 rounded-2xl text-center">
-            <div className="text-3xl font-bold text-info mb-2">{totalStats.totalPlatformFees.toFixed(4)}</div>
+            <div className="text-3xl font-bold text-info mb-2">
+              {contractStats ? formatEther(contractStats[3]) : "0"}
+            </div>
             <div className="text-sm text-gray-600">{t('cycles.platformFees')}</div>
           </div>
         </div>
@@ -217,25 +237,25 @@ const CyclesPage: NextPage = () => {
             className={`tab ${selectedTab === "all" ? "tab-active" : ""}`}
             onClick={() => setSelectedTab("all")}
           >
-            {t('cycles.allCycles')} ({mockCycles.length})
+            {t('cycles.allCycles')} ({cycles.length})
           </button>
           <button 
             className={`tab ${selectedTab === "active" ? "tab-active" : ""}`}
             onClick={() => setSelectedTab("active")}
           >
-            {t('cycles.activeCycles')} ({mockCycles.filter(c => c.status === CycleStatus.ACTIVE).length})
+            {t('cycles.activeCycles')} ({cycles.filter(c => c.status === CycleStatus.ACTIVE).length})
           </button>
           <button 
             className={`tab ${selectedTab === "ended" ? "tab-active" : ""}`}
             onClick={() => setSelectedTab("ended")}
           >
-            {t('cycles.endedCycles')} ({mockCycles.filter(c => c.status === CycleStatus.ENDED).length})
+            {t('cycles.endedCycles')} ({cycles.filter(c => c.status === CycleStatus.ENDED).length})
           </button>
           <button 
             className={`tab ${selectedTab === "finalized" ? "tab-active" : ""}`}
             onClick={() => setSelectedTab("finalized")}
           >
-            {t('cycles.finalizedCycles')} ({mockCycles.filter(c => c.status === CycleStatus.FINALIZED).length})
+            {t('cycles.finalizedCycles')} ({cycles.filter(c => c.status === CycleStatus.FINALIZED).length})
           </button>
         </div>
 

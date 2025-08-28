@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { NextPage } from "next";
 import { 
   ChartBarIcon, 
@@ -12,7 +12,9 @@ import {
   BanknotesIcon,
   ClockIcon
 } from "@heroicons/react/24/outline";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
+import { formatEther } from "viem";
 
 /**
  * 统计数据页面
@@ -23,18 +25,58 @@ const StatsPage: NextPage = () => {
   const { t } = useLanguage();
   const [selectedPeriod, setSelectedPeriod] = useState<"7d" | "30d" | "90d" | "all">("30d");
 
-  // 模拟统计数据
-  const platformStats = {
-    totalTicketsSold: 1247,
-    totalUsers: 328,
-    totalPrizesPaid: "12.453 ETH",
-    totalPlatformFees: "0.134 ETH",
-    averageTicketsPerCycle: 156,
-    averageWinRate: 24.8,
-    biggestWin: "1.806 ETH",
-    activeCycles: 1,
-    completedCycles: 12
-  };
+  const [platformStats, setPlatformStats] = useState({
+    totalTicketsSold: 0,
+    totalUsers: 0,
+    totalPrizesPaid: "0 ETH",
+    totalPlatformFees: "0 ETH",
+    averageTicketsPerCycle: 0,
+    averageWinRate: 0,
+    biggestWin: "0 ETH",
+    activeCycles: 0,
+    completedCycles: 0
+  });
+
+  // 读取合约统计数据
+  const { data: contractStats } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "getContractStats",
+    watch: true,
+  });
+
+  const { data: platformStatsData } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "getPlatformStats",
+    watch: true,
+  });
+
+  const { data: currentCycleId } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "currentCycleId",
+    watch: true,
+  });
+
+  // 处理合约数据
+  useEffect(() => {
+    if (contractStats && platformStatsData && currentCycleId) {
+      const totalCycles = Number(contractStats[0]);
+      const totalTicketsSold = Number(contractStats[1]);
+      const totalPrizesPaid = formatEther(contractStats[2]);
+      const totalPlatformFees = formatEther(platformStatsData[1]);
+      
+      setPlatformStats({
+        totalTicketsSold,
+        totalUsers: Math.floor(totalTicketsSold * 0.3), // 估算用户数
+        totalPrizesPaid: `${totalPrizesPaid} ETH`,
+        totalPlatformFees: `${totalPlatformFees} ETH`,
+        averageTicketsPerCycle: totalCycles > 0 ? Math.floor(totalTicketsSold / totalCycles) : 0,
+        averageWinRate: 25.0, // 理论中奖率
+        biggestWin: "0 ETH", // 需要从历史数据计算
+        activeCycles: 1,
+        completedCycles: totalCycles - 1
+      });
+    }
+  }, [contractStats, platformStatsData, currentCycleId]);
 
   // 奖项分布数据
   const prizeDistribution = [
