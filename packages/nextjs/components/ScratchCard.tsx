@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
-import { SparklesIcon, GiftIcon } from "@heroicons/react/24/outline";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { GiftIcon, SparklesIcon } from "@heroicons/react/24/outline";
 
 /**
  * 刮奖特效组件
@@ -21,7 +21,7 @@ interface ScratchCardProps {
   canScratch: boolean;
   // 宽度
   width?: number;
-  // 高度  
+  // 高度
   height?: number;
 }
 
@@ -44,40 +44,40 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
   // 获取奖项显示信息
   const getPrizeInfo = () => {
     const prizeInfoMap = {
-      NO_PRIZE: { 
-        name: "很遗憾", 
+      NO_PRIZE: {
+        name: "很遗憾",
         subtitle: "未中奖",
-        emoji: "😔", 
+        emoji: "😔",
         color: "#6b7280",
-        bgColor: "#f3f4f6"
+        bgColor: "#f3f4f6",
       },
-      SMALL_PRIZE: { 
-        name: "恭喜中奖!", 
+      SMALL_PRIZE: {
+        name: "恭喜中奖!",
         subtitle: "小奖",
-        emoji: "🎉", 
+        emoji: "🎉",
         color: "#059669",
-        bgColor: "#d1fae5"
+        bgColor: "#d1fae5",
       },
-      MEDIUM_PRIZE: { 
-        name: "太棒了!", 
+      MEDIUM_PRIZE: {
+        name: "太棒了!",
         subtitle: "中奖",
-        emoji: "🎊", 
+        emoji: "🎊",
         color: "#2563eb",
-        bgColor: "#dbeafe"
+        bgColor: "#dbeafe",
       },
-      GRAND_PRIZE: { 
-        name: "了不起!", 
+      GRAND_PRIZE: {
+        name: "了不起!",
         subtitle: "大奖",
-        emoji: "🏆", 
+        emoji: "🏆",
         color: "#ea580c",
-        bgColor: "#fed7aa"
+        bgColor: "#fed7aa",
       },
-      SUPER_GRAND: { 
-        name: "超级幸运!", 
+      SUPER_GRAND: {
+        name: "超级幸运!",
         subtitle: "超级大奖",
-        emoji: "👑", 
+        emoji: "👑",
         color: "#ca8a04",
-        bgColor: "#fef3c7"
+        bgColor: "#fef3c7",
       },
     };
     return prizeInfoMap[prizeLevel];
@@ -140,31 +140,6 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
     return (transparentPixels / totalPixels) * 100;
   }, [width, height]);
 
-  // 刮除效果
-  const scratch = useCallback((x: number, y: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas || !canScratch || isComplete) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.beginPath();
-    ctx.arc(x, y, 20, 0, 2 * Math.PI);
-    ctx.fill();
-
-    // 计算刮除进度
-    const progress = calculateScratchProgress();
-    setScratchProgress(progress);
-
-    // 如果刮除超过60%，自动完成
-    if (progress > 60 && !isComplete) {
-      setTimeout(() => {
-        completeCard();
-      }, 500);
-    }
-  }, [canScratch, isComplete, calculateScratchProgress]);
-
   // 完成刮奖
   const completeCard = useCallback(() => {
     const canvas = canvasRef.current;
@@ -187,6 +162,34 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
     // 回调通知刮奖完成
     onScratchComplete(ticketId);
   }, [width, height, isComplete, prizeLevel, ticketId, onScratchComplete]);
+
+  // 刮除效果
+  const scratch = useCallback(
+    (x: number, y: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas || !canScratch || isComplete) return;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(x, y, 20, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // 计算刮除进度
+      const progress = calculateScratchProgress();
+      setScratchProgress(progress);
+
+      // 如果刮除超过60%，自动完成
+      if (progress > 60 && !isComplete) {
+        setTimeout(() => {
+          completeCard();
+        }, 500);
+      }
+    },
+    [canScratch, isComplete, calculateScratchProgress, completeCard],
+  );
 
   // 鼠标事件处理
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -278,18 +281,12 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
         }}
       >
         <div className="text-6xl mb-2">{prizeInfo.emoji}</div>
-        <h3 
-          className="text-xl font-bold mb-1"
-          style={{ color: prizeInfo.color }}
-        >
+        <h3 className="text-xl font-bold mb-1" style={{ color: prizeInfo.color }}>
           {prizeInfo.name}
         </h3>
         <p className="text-sm opacity-80 mb-2">{prizeInfo.subtitle}</p>
         {prizeAmount && (
-          <p 
-            className="text-lg font-bold"
-            style={{ color: prizeInfo.color }}
-          >
+          <p className="text-lg font-bold" style={{ color: prizeInfo.color }}>
             {prizeAmount}
           </p>
         )}
@@ -328,7 +325,7 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
       {canScratch && !isComplete && scratchProgress > 0 && (
         <div className="absolute bottom-2 left-2 right-2">
           <div className="bg-white/80 rounded-full p-2">
-            <div 
+            <div
               className="bg-primary h-1 rounded-full transition-all duration-300"
               style={{ width: `${Math.min(scratchProgress, 100)}%` }}
             />
@@ -338,10 +335,7 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
 
       {/* 手动完成按钮 */}
       {canScratch && !isComplete && scratchProgress > 30 && (
-        <button
-          onClick={completeCard}
-          className="absolute top-2 right-2 btn btn-sm btn-primary"
-        >
+        <button onClick={completeCard} className="absolute top-2 right-2 btn btn-sm btn-primary">
           <GiftIcon className="h-4 w-4" />
           全部刮开
         </button>
@@ -388,10 +382,8 @@ export const ScratchModal: React.FC<ScratchModalProps> = ({
           <SparklesIcon className="h-8 w-8 text-primary" />
           刮开彩票 #{ticketId}
         </h2>
-        
-        <p className="text-gray-600 mb-6">
-          用鼠标或手指刮开银色涂层查看中奖结果
-        </p>
+
+        <p className="text-gray-600 mb-6">用鼠标或手指刮开银色涂层查看中奖结果</p>
 
         <div className="flex justify-center mb-6">
           <ScratchCard
@@ -405,10 +397,7 @@ export const ScratchModal: React.FC<ScratchModalProps> = ({
           />
         </div>
 
-        <button
-          onClick={onClose}
-          className="btn btn-ghost btn-sm"
-        >
+        <button onClick={onClose} className="btn btn-ghost btn-sm">
           关闭
         </button>
       </div>

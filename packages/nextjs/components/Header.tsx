@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon, BugAntIcon, HomeIcon, TicketIcon, ChartBarIcon, ClockIcon } from "@heroicons/react/24/outline";
-import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { Bars3Icon, BugAntIcon, ChartBarIcon, ClockIcon, HomeIcon, TicketIcon } from "@heroicons/react/24/outline";
 import { LanguageSwitcher } from "~~/components/LanguageSwitcher";
 import { NetworkSelector } from "~~/components/NetworkSelector";
 import { SwitchTheme } from "~~/components/SwitchTheme";
+import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
 
@@ -25,27 +24,27 @@ export const HeaderMenuLinks = () => {
 
   const menuLinks: HeaderMenuLink[] = [
     {
-      label: t('nav.home'),
+      label: t("nav.home"),
       href: "/",
       icon: <HomeIcon className="h-4 w-4" />,
     },
     {
-      label: t('nav.myTickets'),
+      label: t("nav.myTickets"),
       href: "/tickets",
       icon: <TicketIcon className="h-4 w-4" />,
     },
     {
-      label: t('nav.cycles'),
+      label: t("nav.cycles"),
       href: "/cycles",
       icon: <ClockIcon className="h-4 w-4" />,
     },
     {
-      label: t('nav.stats'), 
+      label: t("nav.stats"),
       href: "/stats",
       icon: <ChartBarIcon className="h-4 w-4" />,
     },
     {
-      label: t('nav.debug'),
+      label: t("nav.debug"),
       href: "/debug",
       icon: <BugAntIcon className="h-4 w-4" />,
     },
@@ -112,7 +111,7 @@ export const Header = () => {
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight text-primary">ForgeLucky</span>
-            <span className="text-xs text-muted">{t('home.subtitle').split(' - ')[1]}</span>
+            <span className="text-xs text-muted">{t("home.subtitle").split(" - ")[1]}</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">

@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
-import { 
-  ChartBarIcon, 
-  TrophyIcon, 
-  UserGroupIcon, 
-  CurrencyDollarIcon,
-  TicketIcon,
-  SparklesIcon,
+import { formatEther } from "viem";
+import {
   BanknotesIcon,
-  ClockIcon
+  ChartBarIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  SparklesIcon,
+  TicketIcon,
+  TrophyIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
-import { formatEther } from "viem";
 
 /**
  * 统计数据页面
@@ -34,7 +34,7 @@ const StatsPage: NextPage = () => {
     averageWinRate: 0,
     biggestWin: "0 ETH",
     activeCycles: 0,
-    completedCycles: 0
+    completedCycles: 0,
   });
 
   // 读取合约统计数据
@@ -63,7 +63,7 @@ const StatsPage: NextPage = () => {
       const totalTicketsSold = Number(contractStats[1]);
       const totalPrizesPaid = formatEther(contractStats[2]);
       const totalPlatformFees = formatEther(platformStatsData[1]);
-      
+
       setPlatformStats({
         totalTicketsSold,
         totalUsers: Math.floor(totalTicketsSold * 0.3), // 估算用户数
@@ -73,7 +73,7 @@ const StatsPage: NextPage = () => {
         averageWinRate: 25.0, // 理论中奖率
         biggestWin: "0 ETH", // 需要从历史数据计算
         activeCycles: 1,
-        completedCycles: totalCycles - 1
+        completedCycles: totalCycles - 1,
       });
     }
   }, [contractStats, platformStatsData, currentCycleId]);
@@ -83,15 +83,15 @@ const StatsPage: NextPage = () => {
     { level: "superGrand", count: 2, percentage: 0.16, totalAmount: "3.612 ETH", color: "bg-blue-600" },
     { level: "grand", count: 31, percentage: 2.49, totalAmount: "5.418 ETH", color: "bg-orange-500" },
     { level: "medium", count: 93, percentage: 7.46, totalAmount: "2.709 ETH", color: "bg-blue-500" },
-    { level: "small", count: 187, percentage: 15.00, totalAmount: "0.903 ETH", color: "bg-green-500" },
-    { level: "noPrize", count: 934, percentage: 74.9, totalAmount: "0 ETH", color: "bg-gray-400" }
+    { level: "small", count: 187, percentage: 15.0, totalAmount: "0.903 ETH", color: "bg-green-500" },
+    { level: "noPrize", count: 934, percentage: 74.9, totalAmount: "0 ETH", color: "bg-gray-400" },
   ];
 
   // 每日销售数据（模拟）
   const dailySales = Array.from({ length: 30 }, (_, i) => ({
     date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000),
     tickets: Math.floor(Math.random() * 50) + 10,
-    revenue: (Math.floor(Math.random() * 50) + 10) * 0.01
+    revenue: (Math.floor(Math.random() * 50) + 10) * 0.01,
   }));
 
   // 排行榜数据（模拟）
@@ -100,7 +100,7 @@ const StatsPage: NextPage = () => {
     { rank: 2, address: "0x2345...6789", totalWins: "1.834 ETH", ticketsWon: 12, winRate: 28.6 },
     { rank: 3, address: "0x3456...7890", totalWins: "1.645 ETH", ticketsWon: 18, winRate: 25.4 },
     { rank: 4, address: "0x4567...8901", totalWins: "1.423 ETH", ticketsWon: 9, winRate: 33.3 },
-    { rank: 5, address: "0x5678...9012", totalWins: "1.297 ETH", ticketsWon: 14, winRate: 23.3 }
+    { rank: 5, address: "0x5678...9012", totalWins: "1.297 ETH", ticketsWon: 14, winRate: 23.3 },
   ];
 
   // 格式化地址显示
@@ -111,10 +111,10 @@ const StatsPage: NextPage = () => {
   // 获取期间标签
   const getPeriodLabel = (period: string) => {
     const labels = {
-      "7d": t('stats.last7Days'),
-      "30d": t('stats.last30Days'), 
-      "90d": t('stats.last90Days'),
-      "all": t('stats.allTime')
+      "7d": t("stats.last7Days"),
+      "30d": t("stats.last30Days"),
+      "90d": t("stats.last90Days"),
+      all: t("stats.allTime"),
     };
     return labels[period as keyof typeof labels];
   };
@@ -126,15 +126,15 @@ const StatsPage: NextPage = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4 flex items-center justify-center gap-2">
             <ChartBarIcon className="h-10 w-10 text-primary" />
-            {t('stats.title')}
+            {t("stats.title")}
           </h1>
-          <p className="text-gray-600">{t('stats.subtitle')}</p>
+          <p className="text-gray-600">{t("stats.subtitle")}</p>
         </div>
 
         {/* 时间段选择 */}
         <div className="flex justify-center mb-8">
           <div className="tabs tabs-boxed">
-            {["7d", "30d", "90d", "all"].map((period) => (
+            {["7d", "30d", "90d", "all"].map(period => (
               <button
                 key={period}
                 className={`tab ${selectedPeriod === period ? "tab-active" : ""}`}
@@ -153,8 +153,8 @@ const StatsPage: NextPage = () => {
               <TicketIcon className="h-12 w-12 text-primary" />
             </div>
             <div className="text-3xl font-bold text-primary mb-2">{platformStats.totalTicketsSold}</div>
-            <div className="text-sm text-gray-600 mb-1">{t('stats.totalTicketsSold')}</div>
-            <div className="text-xs text-success">+12% {t('stats.thisMonth')}</div>
+            <div className="text-sm text-gray-600 mb-1">{t("stats.totalTicketsSold")}</div>
+            <div className="text-xs text-success">+12% {t("stats.thisMonth")}</div>
           </div>
 
           <div className="lottery-card p-6 rounded-2xl text-center">
@@ -162,8 +162,8 @@ const StatsPage: NextPage = () => {
               <UserGroupIcon className="h-12 w-12 text-secondary" />
             </div>
             <div className="text-3xl font-bold text-secondary mb-2">{platformStats.totalUsers}</div>
-            <div className="text-sm text-gray-600 mb-1">{t('stats.totalUsers')}</div>
-            <div className="text-xs text-success">+8% {t('stats.thisMonth')}</div>
+            <div className="text-sm text-gray-600 mb-1">{t("stats.totalUsers")}</div>
+            <div className="text-xs text-success">+8% {t("stats.thisMonth")}</div>
           </div>
 
           <div className="lottery-card p-6 rounded-2xl text-center">
@@ -171,8 +171,8 @@ const StatsPage: NextPage = () => {
               <CurrencyDollarIcon className="h-12 w-12 text-accent" />
             </div>
             <div className="text-3xl font-bold text-accent mb-2">{platformStats.totalPrizesPaid}</div>
-            <div className="text-sm text-gray-600 mb-1">{t('stats.totalPrizes')}</div>
-            <div className="text-xs text-success">+15% {t('stats.thisMonth')}</div>
+            <div className="text-sm text-gray-600 mb-1">{t("stats.totalPrizes")}</div>
+            <div className="text-xs text-success">+15% {t("stats.thisMonth")}</div>
           </div>
 
           <div className="lottery-card p-6 rounded-2xl text-center">
@@ -180,8 +180,8 @@ const StatsPage: NextPage = () => {
               <TrophyIcon className="h-12 w-12 text-warning" />
             </div>
             <div className="text-3xl font-bold text-warning mb-2">{platformStats.averageWinRate}%</div>
-            <div className="text-sm text-gray-600 mb-1">{t('stats.avgWinRate')}</div>
-            <div className="text-xs text-info">{t('stats.stable')}</div>
+            <div className="text-sm text-gray-600 mb-1">{t("stats.avgWinRate")}</div>
+            <div className="text-xs text-info">{t("stats.stable")}</div>
           </div>
         </div>
 
@@ -191,38 +191,44 @@ const StatsPage: NextPage = () => {
           <div className="lottery-card p-6 rounded-2xl">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
               <SparklesIcon className="h-6 w-6 text-primary" />
-              {t('stats.platformOverview')}
+              {t("stats.platformOverview")}
             </h3>
-            
+
             <div className="space-y-4">
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <ClockIcon className="h-5 w-5 text-blue-500" />
-                  <span className="text-sm">{t('stats.activeCycles')}</span>
+                  <span className="text-sm">{t("stats.activeCycles")}</span>
                 </div>
-                <span className="font-semibold">{platformStats.activeCycles} {t('common.pieces')}</span>
+                <span className="font-semibold">
+                  {platformStats.activeCycles} {t("common.pieces")}
+                </span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <ChartBarIcon className="h-5 w-5 text-green-500" />
-                  <span className="text-sm">{t('stats.completedCycles')}</span>
+                  <span className="text-sm">{t("stats.completedCycles")}</span>
                 </div>
-                <span className="font-semibold">{platformStats.completedCycles} {t('common.pieces')}</span>
+                <span className="font-semibold">
+                  {platformStats.completedCycles} {t("common.pieces")}
+                </span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <TicketIcon className="h-5 w-5 text-purple-500" />
-                  <span className="text-sm">{t('stats.avgTicketsPerCycle')}</span>
+                  <span className="text-sm">{t("stats.avgTicketsPerCycle")}</span>
                 </div>
-                <span className="font-semibold">{platformStats.averageTicketsPerCycle} {t('common.tickets')}</span>
+                <span className="font-semibold">
+                  {platformStats.averageTicketsPerCycle} {t("common.tickets")}
+                </span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <TrophyIcon className="h-5 w-5 text-orange-500" />
-                  <span className="text-sm">{t('stats.biggestWin')}</span>
+                  <span className="text-sm">{t("stats.biggestWin")}</span>
                 </div>
                 <span className="font-semibold text-success">{platformStats.biggestWin}</span>
               </div>
@@ -230,7 +236,7 @@ const StatsPage: NextPage = () => {
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <BanknotesIcon className="h-5 w-5 text-orange-500" />
-                  <span className="text-sm">{t('stats.platformFeeIncome')}</span>
+                  <span className="text-sm">{t("stats.platformFeeIncome")}</span>
                 </div>
                 <span className="font-semibold text-info">{platformStats.totalPlatformFees}</span>
               </div>
@@ -241,25 +247,28 @@ const StatsPage: NextPage = () => {
           <div className="lottery-card p-6 rounded-2xl">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
               <TrophyIcon className="h-6 w-6 text-primary" />
-              {t('stats.prizeDistribution')}
+              {t("stats.prizeDistribution")}
             </h3>
-            
+
             <div className="space-y-4">
               {prizeDistribution.map((prize, index) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="font-medium">{t(`home.${prize.level}`)}</span>
-                    <span>{prize.count} {t('stats.times')} ({prize.percentage}%)</span>
+                    <span>
+                      {prize.count} {t("stats.times")} ({prize.percentage}%)
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full ${prize.color}`}
-                      style={{ width: `${prize.percentage}%` }}
-                    />
+                    <div className={`h-2 rounded-full ${prize.color}`} style={{ width: `${prize.percentage}%` }} />
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
-                    <span>{t('stats.totalPrizeAmount')}: {prize.totalAmount}</span>
-                    <span>{t('stats.percentage')}: {prize.percentage.toFixed(1)}%</span>
+                    <span>
+                      {t("stats.totalPrizeAmount")}: {prize.totalAmount}
+                    </span>
+                    <span>
+                      {t("stats.percentage")}: {prize.percentage.toFixed(1)}%
+                    </span>
                   </div>
                 </div>
               ))}
@@ -271,16 +280,16 @@ const StatsPage: NextPage = () => {
         <div className="lottery-card p-6 rounded-2xl mb-12">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
             <ChartBarIcon className="h-6 w-6 text-primary" />
-            {t('stats.salesTrend')}
+            {t("stats.salesTrend")}
           </h3>
-          
+
           {/* 简单的条形图展示 */}
           <div className="chart-container">
             <div className="chart-bars">
               {dailySales.slice(-15).map((day, index) => {
                 const maxTickets = Math.max(...dailySales.map(d => d.tickets));
                 const height = (day.tickets / maxTickets) * 100;
-                
+
                 return (
                   <div key={index} className="flex flex-col justify-end items-center flex-1 min-w-[30px]">
                     <div className="text-xs text-gray-600 mb-1">{day.tickets}</div>
@@ -297,9 +306,11 @@ const StatsPage: NextPage = () => {
               })}
             </div>
           </div>
-          
+
           <div className="mt-4 text-center text-sm text-gray-600">
-            <p>{t('stats.horizontalAxis')}: {t('stats.date')} | {t('stats.verticalAxis')}: {t('stats.ticketsSold')}</p>
+            <p>
+              {t("stats.horizontalAxis")}: {t("stats.date")} | {t("stats.verticalAxis")}: {t("stats.ticketsSold")}
+            </p>
           </div>
         </div>
 
@@ -307,30 +318,36 @@ const StatsPage: NextPage = () => {
         <div className="lottery-card p-6 rounded-2xl">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
             <TrophyIcon className="h-6 w-6 text-primary" />
-            {t('stats.winnersRanking')}
+            {t("stats.winnersRanking")}
           </h3>
-          
+
           <div className="responsive-table">
             <table className="table w-full">
               <thead>
                 <tr>
-                  <th className="text-center">{t('stats.rank')}</th>
-                  <th>{t('stats.address')}</th>
-                  <th className="text-center">{t('stats.totalWinnings')}</th>
-                  <th className="text-center hidden sm:table-cell">{t('stats.winCount')}</th>
-                  <th className="text-center hidden md:table-cell">{t('stats.winRate')}</th>
-                  <th className="text-center">{t('stats.medal')}</th>
+                  <th className="text-center">{t("stats.rank")}</th>
+                  <th>{t("stats.address")}</th>
+                  <th className="text-center">{t("stats.totalWinnings")}</th>
+                  <th className="text-center hidden sm:table-cell">{t("stats.winCount")}</th>
+                  <th className="text-center hidden md:table-cell">{t("stats.winRate")}</th>
+                  <th className="text-center">{t("stats.medal")}</th>
                 </tr>
               </thead>
               <tbody>
-                {topWinners.map((winner) => (
+                {topWinners.map(winner => (
                   <tr key={winner.rank} className="hover:bg-base-200">
                     <td className="text-center">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
-                        winner.rank === 1 ? "bg-blue-600" :
-                        winner.rank === 2 ? "bg-gray-400" :
-                        winner.rank === 3 ? "bg-orange-600" : "bg-gray-500"
-                      }`}>
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
+                          winner.rank === 1
+                            ? "bg-blue-600"
+                            : winner.rank === 2
+                              ? "bg-gray-400"
+                              : winner.rank === 3
+                                ? "bg-orange-600"
+                                : "bg-gray-500"
+                        }`}
+                      >
                         {winner.rank}
                       </div>
                     </td>
@@ -342,11 +359,15 @@ const StatsPage: NextPage = () => {
                     <td className="text-center font-semibold text-success text-sm">{winner.totalWins}</td>
                     <td className="text-center hidden sm:table-cell">{winner.ticketsWon}</td>
                     <td className="text-center hidden md:table-cell">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        winner.winRate >= 30 ? "bg-green-100 text-green-600" :
-                        winner.winRate >= 25 ? "bg-orange-100 text-orange-600" :
-                        "bg-gray-100 text-gray-600"
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-semibold ${
+                          winner.winRate >= 30
+                            ? "bg-green-100 text-green-600"
+                            : winner.winRate >= 25
+                              ? "bg-orange-100 text-orange-600"
+                              : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
                         {winner.winRate}%
                       </span>
                     </td>
@@ -362,11 +383,9 @@ const StatsPage: NextPage = () => {
               </tbody>
             </table>
           </div>
-          
+
           <div className="text-center mt-4">
-            <button className="btn btn-outline btn-sm">
-              {t('stats.viewFullRanking')}
-            </button>
+            <button className="btn btn-outline btn-sm">{t("stats.viewFullRanking")}</button>
           </div>
         </div>
       </div>

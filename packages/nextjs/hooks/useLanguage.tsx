@@ -1,11 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 /**
  * 语言类型定义
  */
-export type Language = 'zh' | 'en';
+export type Language = "zh" | "en";
 
 /**
  * 语言上下文接口
@@ -28,10 +28,10 @@ const translations_zh = {
   // 导航菜单
   nav: {
     home: "首页",
-    myTickets: "我的彩票", 
+    myTickets: "我的彩票",
     cycles: "周期信息",
     stats: "统计数据",
-    debug: "调试合约"
+    debug: "调试合约",
   },
 
   // 首页
@@ -43,7 +43,7 @@ const translations_zh = {
     ticketsSold: "已售彩票",
     cycleEndsIn: "本周期结束倒计时",
     cycleEnded: "已结束",
-    
+
     buyTickets: "购买彩票",
     ticketPrice: "每张彩票价格",
     buyOneTicket: "购买单张彩票",
@@ -70,10 +70,10 @@ const translations_zh = {
     gameRules: "📋 游戏规则",
     step1Title: "购买彩票",
     step1Desc: "支付0.01 ETH购买NFT彩票，每张彩票都是独特的",
-    step2Title: "等待周期结束", 
+    step2Title: "等待周期结束",
     step2Desc: "每个周期持续7天，周期结束后才可开奖",
     step3Title: "刮开领奖",
-    step3Desc: "手动刮开彩票查看结果，中奖即可领取ETH奖励"
+    step3Desc: "手动刮开彩票查看结果，中奖即可领取ETH奖励",
   },
 
   // 彩票页面
@@ -110,7 +110,7 @@ const translations_zh = {
     buyFirstTicket: "购买您的第一张彩票开始游戏！",
     waitForDraw: "等待周期结束后回来开奖",
     tryLuck: "快去购买彩票试试手气吧",
-    buyTicketNow: "立即购买彩票"
+    buyTicketNow: "立即购买彩票",
   },
 
   // 周期页面
@@ -124,7 +124,7 @@ const translations_zh = {
 
     allCycles: "全部周期",
     activeCycles: "进行中",
-    endedCycles: "已结束", 
+    endedCycles: "已结束",
     finalizedCycles: "已结算",
 
     cycle: "周期 #",
@@ -162,7 +162,7 @@ const translations_zh = {
     detailedStats: "详细统计",
 
     noCycleData: "暂无周期数据",
-    waitingForData: "请等待周期数据加载"
+    waitingForData: "请等待周期数据加载",
   },
 
   // 统计页面
@@ -206,7 +206,7 @@ const translations_zh = {
     winCount: "中奖次数",
     winRate: "中奖率",
     medal: "勋章",
-    viewFullRanking: "查看完整排行榜"
+    viewFullRanking: "查看完整排行榜",
   },
 
   // 通用
@@ -232,14 +232,14 @@ const translations_zh = {
     clear: "清除",
     reset: "重置",
     submit: "提交",
-    
+
     connectWallet: "连接钱包",
     disconnectWallet: "断开钱包",
-    
+
     eth: "ETH",
     tickets: "张",
     pieces: "个",
-    
+
     purchaseSuccess: "购买彩票成功！",
     purchaseFailed: "购买失败",
     batchPurchaseSuccess: "成功购买{count}张彩票！",
@@ -247,15 +247,15 @@ const translations_zh = {
     balancePurchaseSuccess: "使用余额购买成功！",
     balancePurchaseFailed: "余额购买失败",
     depositSuccess: "充值成功！",
-    depositFailed: "充值失败"
+    depositFailed: "充值失败",
   },
 
   // 404页面
   notFound: {
     title: "页面未找到",
     message: "您访问的页面不存在。",
-    goHome: "返回首页"
-  }
+    goHome: "返回首页",
+  },
 };
 
 /**
@@ -267,8 +267,8 @@ const translations_en = {
     home: "Home",
     myTickets: "My Tickets",
     cycles: "Cycles",
-    stats: "Statistics", 
-    debug: "Debug"
+    stats: "Statistics",
+    debug: "Debug",
   },
 
   // Home page
@@ -276,7 +276,7 @@ const translations_en = {
     title: "🎲 ForgeLucky",
     subtitle: "Decentralized NFT Lottery System - Fair and Transparent Scratch-off Game",
     currentCycle: "Current Cycle",
-    prizePool: "Prize Pool", 
+    prizePool: "Prize Pool",
     ticketsSold: "Tickets Sold",
     cycleEndsIn: "Cycle Ends In",
     cycleEnded: "Ended",
@@ -310,7 +310,7 @@ const translations_en = {
     step2Title: "Wait for Cycle End",
     step2Desc: "Each cycle lasts 7 days, drawing available after cycle ends",
     step3Title: "Scratch & Claim",
-    step3Desc: "Manually scratch tickets to see results and claim ETH rewards"
+    step3Desc: "Manually scratch tickets to see results and claim ETH rewards",
   },
 
   // Tickets page
@@ -318,7 +318,7 @@ const translations_en = {
     title: "My Tickets",
     subtitle: "Manage your tickets, scratch and claim rewards",
     accountInfo: "Account Info",
-    walletAddress: "Wallet Address", 
+    walletAddress: "Wallet Address",
     platformBalance: "Platform Balance",
     ticketsStats: "Tickets Stats",
     totalTickets: "Total Tickets",
@@ -335,19 +335,19 @@ const translations_en = {
 
     ticketId: "Ticket #",
     cycleId: "Cycle #",
-    scratchTicket: "Scratch Ticket", 
+    scratchTicket: "Scratch Ticket",
     claimPrize: "Claim Prize",
     prizeClaimed: "Prize Claimed",
     notWon: "Sorry, no prize",
     cycleNotEnded: "Available after cycle ends",
 
     noTickets: "No tickets",
-    noDrawableTickets: "No drawable tickets", 
+    noDrawableTickets: "No drawable tickets",
     noClaimedTickets: "No claimed tickets",
     buyFirstTicket: "Buy your first ticket to start playing!",
     waitForDraw: "Wait for cycle to end and come back to draw",
     tryLuck: "Go buy some tickets and try your luck!",
-    buyTicketNow: "Buy Tickets Now"
+    buyTicketNow: "Buy Tickets Now",
   },
 
   // Cycles page
@@ -366,7 +366,7 @@ const translations_en = {
 
     cycle: "Cycle #",
     active: "Active",
-    ended: "Ended", 
+    ended: "Ended",
     finalized: "Finalized",
     superGrandAwarded: "Super Grand Awarded",
     timeRemaining: "Time Remaining",
@@ -382,14 +382,14 @@ const translations_en = {
     totalDrawn: "Total Drawn",
     drawRate: "Draw Rate",
 
-    fundingInfo: "Funding Info", 
+    fundingInfo: "Funding Info",
     prizePool: "Prize Pool",
     platformFee: "Platform Fee",
     winRate: "Win Rate",
 
     prizeStats: "Prize Statistics",
     superGrandPrize: "Super Grand",
-    grandPrize: "Grand Prize", 
+    grandPrize: "Grand Prize",
     mediumPrize: "Medium Prize",
     smallPrize: "Small Prize",
     noPrize: "No Prize",
@@ -399,7 +399,7 @@ const translations_en = {
     detailedStats: "Detailed Stats",
 
     noCycleData: "No cycle data",
-    waitingForData: "Waiting for cycle data to load"
+    waitingForData: "Waiting for cycle data to load",
   },
 
   // Stats page
@@ -407,13 +407,13 @@ const translations_en = {
     title: "Statistics",
     subtitle: "View detailed platform statistics and data analysis",
     last7Days: "Last 7 Days",
-    last30Days: "Last 30 Days", 
+    last30Days: "Last 30 Days",
     last90Days: "Last 90 Days",
     allTime: "All Time",
 
     totalTicketsSold: "Total Tickets Sold",
     totalUsers: "Total Users",
-    totalPrizes: "Total Prizes", 
+    totalPrizes: "Total Prizes",
     avgWinRate: "Avg Win Rate",
     thisMonth: "this month",
     stable: "stable at 25%",
@@ -432,7 +432,7 @@ const translations_en = {
 
     salesTrend: "Sales Trend (Last 30 Days)",
     date: "Date",
-    ticketsSold: "Tickets Sold", 
+    ticketsSold: "Tickets Sold",
     horizontalAxis: "X-axis",
     verticalAxis: "Y-axis",
 
@@ -440,10 +440,10 @@ const translations_en = {
     rank: "Rank",
     address: "Address",
     totalWinnings: "Total Winnings",
-    winCount: "Win Count", 
+    winCount: "Win Count",
     winRate: "Win Rate",
     medal: "Medal",
-    viewFullRanking: "View Full Ranking"
+    viewFullRanking: "View Full Ranking",
   },
 
   // Common
@@ -453,7 +453,7 @@ const translations_en = {
     success: "Success",
     failed: "Failed",
     confirm: "Confirm",
-    cancel: "Cancel", 
+    cancel: "Cancel",
     close: "Close",
     back: "Back",
     next: "Next",
@@ -467,16 +467,16 @@ const translations_en = {
     sort: "Sort",
     refresh: "Refresh",
     clear: "Clear",
-    reset: "Reset", 
+    reset: "Reset",
     submit: "Submit",
-    
+
     connectWallet: "Connect Wallet",
     disconnectWallet: "Disconnect Wallet",
-    
+
     eth: "ETH",
     tickets: "tickets",
     pieces: "pcs",
-    
+
     purchaseSuccess: "Ticket purchased successfully!",
     purchaseFailed: "Purchase failed",
     batchPurchaseSuccess: "Successfully purchased {count} tickets!",
@@ -484,15 +484,15 @@ const translations_en = {
     balancePurchaseSuccess: "Purchase with balance successful!",
     balancePurchaseFailed: "Balance purchase failed",
     depositSuccess: "Deposit successful!",
-    depositFailed: "Deposit failed"
+    depositFailed: "Deposit failed",
   },
 
-  // 404 page  
+  // 404 page
   notFound: {
     title: "Page Not Found",
     message: "The page you're looking for doesn't exist.",
-    goHome: "Go Home"
-  }
+    goHome: "Go Home",
+  },
 };
 
 /**
@@ -500,7 +500,7 @@ const translations_en = {
  */
 const translations = {
   zh: translations_zh,
-  en: translations_en
+  en: translations_en,
 };
 
 /**
@@ -514,19 +514,19 @@ interface LanguageProviderProps {
  * 语言提供者组件
  */
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>("en");
 
   // 从本地存储读取语言设置
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage && (savedLanguage === 'zh' || savedLanguage === 'en')) {
+    const savedLanguage = localStorage.getItem("language") as Language;
+    if (savedLanguage && (savedLanguage === "zh" || savedLanguage === "en")) {
       setLanguage(savedLanguage);
     }
   }, []);
 
   // 保存语言设置到本地存储
   useEffect(() => {
-    localStorage.setItem('language', language);
+    localStorage.setItem("language", language);
   }, [language]);
 
   /**
@@ -535,31 +535,27 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
    * @returns 翻译结果
    */
   const t = (key: string): string => {
-    const keys = key.split('.');
+    const keys = key.split(".");
     let result: any = translations[language];
-    
+
     for (const k of keys) {
-      if (result && typeof result === 'object' && k in result) {
+      if (result && typeof result === "object" && k in result) {
         result = result[k];
       } else {
         return key; // 如果找不到翻译，返回原键值
       }
     }
-    
-    return typeof result === 'string' ? result : key;
+
+    return typeof result === "string" ? result : key;
   };
 
   const value: LanguageContextType = {
     language,
     setLanguage,
-    t
+    t,
   };
 
-  return (
-    <LanguageContext.Provider value={value}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
 
 /**
@@ -569,7 +565,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    throw new Error("useLanguage must be used within a LanguageProvider");
   }
   return context;
 };

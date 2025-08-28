@@ -4,7 +4,7 @@ import { hardhat, mainnet } from "viem/chains";
 import { createConfig } from "wagmi";
 import scaffoldConfig, { DEFAULT_ALCHEMY_API_KEY, ScaffoldConfig } from "~~/scaffold.config";
 import { getAlchemyHttpUrl } from "~~/utils/scaffold-eth";
-import { sonicTestnet, sonicMainnet } from "~~/utils/scaffold-eth/sonicChains";
+import { sonicMainnet, sonicTestnet } from "~~/utils/scaffold-eth/sonicChains";
 
 const { targetNetworks } = scaffoldConfig;
 
@@ -20,14 +20,13 @@ export const wagmiConfig = createConfig({
   client: ({ chain }) => {
     let rpcFallbacks = [http()];
     const rpcOverrideUrl = (scaffoldConfig.rpcOverrides as ScaffoldConfig["rpcOverrides"])?.[chain.id];
-    
+
     if (rpcOverrideUrl) {
       rpcFallbacks = [http(rpcOverrideUrl), http()];
     } else if (chain.id === sonicTestnet.id || chain.id === sonicMainnet.id) {
       // Sonic networks use their own RPC endpoints
-      const sonicRpcUrl = chain.id === sonicTestnet.id 
-        ? "https://rpc.testnet.soniclabs.com"
-        : "https://rpc.soniclabs.com";
+      const sonicRpcUrl =
+        chain.id === sonicTestnet.id ? "https://rpc.testnet.soniclabs.com" : "https://rpc.soniclabs.com";
       rpcFallbacks = [http(sonicRpcUrl)];
     } else {
       const alchemyHttpUrl = getAlchemyHttpUrl(chain.id);
@@ -36,7 +35,7 @@ export const wagmiConfig = createConfig({
         rpcFallbacks = isUsingDefaultKey ? [http(), http(alchemyHttpUrl)] : [http(alchemyHttpUrl), http()];
       }
     }
-    
+
     return createClient({
       chain,
       transport: fallback(rpcFallbacks),

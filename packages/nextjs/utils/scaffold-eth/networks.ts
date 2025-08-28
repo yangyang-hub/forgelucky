@@ -1,6 +1,6 @@
+import { sonicMainnet, sonicTestnet } from "./sonicChains";
 import * as chains from "viem/chains";
 import scaffoldConfig from "~~/scaffold.config";
-import { sonicTestnet, sonicMainnet } from "./sonicChains";
 
 type ChainAttributes = {
   // color | [lightThemeColor, darkThemeColor]

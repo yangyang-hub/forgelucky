@@ -1,5 +1,5 @@
+import { sonicMainnet, sonicTestnet } from "./utils/scaffold-eth/sonicChains";
 import * as chains from "viem/chains";
-import { sonicTestnet, sonicMainnet } from "./utils/scaffold-eth/sonicChains";
 
 export type BaseConfig = {
   targetNetworks: readonly chains.Chain[];
@@ -19,9 +19,9 @@ const scaffoldConfig = {
   // For local development, use only foundry
   // For production, add the networks you want to support
   targetNetworks: [
-    chains.foundry,    // Local development
-    sonicTestnet,      // Sonic testnet for testing
-    sonicMainnet,      // Sonic mainnet for production
+    chains.foundry, // Local development
+    sonicTestnet, // Sonic testnet for testing
+    sonicMainnet, // Sonic mainnet for production
   ],
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 30000,

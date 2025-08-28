@@ -2,14 +2,12 @@
  * Sonic Network Definitions
  * Custom chain configurations for Sonic testnet and mainnet
  */
-
 import { Chain } from "viem";
 
 // Sonic Testnet
 export const sonicTestnet: Chain = {
   id: 64165,
   name: "Sonic Testnet",
-  network: "sonic-testnet",
   nativeCurrency: {
     decimals: 18,
     name: "Sonic",
@@ -17,9 +15,6 @@ export const sonicTestnet: Chain = {
   },
   rpcUrls: {
     default: {
-      http: ["https://rpc.testnet.soniclabs.com"],
-    },
-    public: {
       http: ["https://rpc.testnet.soniclabs.com"],
     },
   },
@@ -36,7 +31,6 @@ export const sonicTestnet: Chain = {
 export const sonicMainnet: Chain = {
   id: 146,
   name: "Sonic",
-  network: "sonic",
   nativeCurrency: {
     decimals: 18,
     name: "Sonic",
@@ -44,9 +38,6 @@ export const sonicMainnet: Chain = {
   },
   rpcUrls: {
     default: {
-      http: ["https://rpc.soniclabs.com"],
-    },
-    public: {
       http: ["https://rpc.soniclabs.com"],
     },
   },

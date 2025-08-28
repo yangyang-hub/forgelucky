@@ -18,11 +18,11 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #1E40AF;
+  --color-primary: #1e40af;
   --color-primary-content: #ffffff;
-  --color-secondary: #FB923C;
+  --color-secondary: #fb923c;
   --color-secondary-content: #ffffff;
-  --color-accent: #F59E0B;
+  --color-accent: #f59e0b;
   --color-accent-content: #ffffff;
   --color-neutral: #1f2937;
   --color-neutral-content: #ffffff;
@@ -43,11 +43,11 @@
 @plugin "daisyui/theme" {
   name: "dark";
 
-  --color-primary: #1E2D5F;
+  --color-primary: #1e2d5f;
   --color-primary-content: #ffffff;
-  --color-secondary: #FBBF24;
+  --color-secondary: #fbbf24;
   --color-secondary-content: #1a1a1a;
-  --color-accent: #FB923C;
+  --color-accent: #fb923c;
   --color-accent-content: #ffffff;
   --color-neutral: #f9fafb;
   --color-neutral-content: #1a1a1a;
@@ -124,12 +124,12 @@
 
 /* 彩票风格的自定义样式 */
 .lottery-gradient {
-  background: linear-gradient(135deg, #1E2D5F, #1E40AF, #FB923C);
+  background: linear-gradient(135deg, #1e2d5f, #1e40af, #fb923c);
 }
 
 .lottery-card {
   background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
-  border: 2px solid #2563EB;
+  border: 2px solid #2563eb;
   box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
   transition: all 0.3s ease;
 }
@@ -179,13 +179,13 @@
 }
 
 .number-display {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .countdown-timer {
-  background: linear-gradient(90deg, #FB923C, #1E3A8A);
+  background: linear-gradient(90deg, #fb923c, #1e3a8a);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -197,11 +197,11 @@
     padding-top: 2rem;
     padding-bottom: 2rem;
   }
-  
+
   .lottery-card {
     padding: 1rem;
   }
-  
+
   .stats-grid-15 {
     grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
   }
@@ -212,15 +212,15 @@
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .hero-stats > div {
     min-width: 120px;
   }
-  
+
   .mobile-stack {
     flex-direction: column !important;
   }
-  
+
   .mobile-full-width {
     width: 100% !important;
   }
@@ -295,7 +295,7 @@
 /* 改进的彩票卡片样式 */
 .lottery-card {
   background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
-  border: 2px solid #2563EB;
+  border: 2px solid #2563eb;
   box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
   transition: all 0.3s ease;
   color: #000000;
@@ -303,7 +303,7 @@
 
 [data-theme="dark"] .lottery-card {
   background: linear-gradient(135deg, #000000 0%, #0f172a 100%);
-  border: 2px solid #1E3A8A;
+  border: 2px solid #1e3a8a;
   color: #ffffff;
 }
 
@@ -314,7 +314,7 @@
 
 /* 改进的渐变背景 */
 .lottery-gradient {
-  background: linear-gradient(135deg, #1E2D5F, #1E40AF, #FB923C);
+  background: linear-gradient(135deg, #1e2d5f, #1e40af, #fb923c);
 }
 
 /* 语言切换器样式 */
@@ -324,7 +324,7 @@
   border: 1px solid rgba(30, 64, 175, 0.3);
   border-radius: 0.5rem;
   padding: 0.25rem 0.5rem;
-  color: #1E40AF;
+  color: #1e40af;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
