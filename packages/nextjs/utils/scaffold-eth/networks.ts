@@ -1,5 +1,6 @@
 import * as chains from "viem/chains";
 import scaffoldConfig from "~~/scaffold.config";
+import { sonicTestnet, sonicMainnet } from "./sonicChains";
 
 type ChainAttributes = {
   // color | [lightThemeColor, darkThemeColor]
@@ -34,6 +35,7 @@ export const RPC_CHAIN_NAMES: Record<number, string> = {
   [chains.baseSepolia.id]: "base-sepolia",
   [chains.celo.id]: "celo-mainnet",
   [chains.celoAlfajores.id]: "celo-alfajores",
+  // Sonic networks don't use Alchemy, so no entries here
 };
 
 export const getAlchemyHttpUrl = (chainId: number) => {
@@ -89,6 +91,13 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.celoAlfajores.id]: {
     color: "#476520",
+  },
+  // Sonic Networks
+  [sonicTestnet.id]: {
+    color: ["#1a5dff", "#4d8aff"],
+  },
+  [sonicMainnet.id]: {
+    color: ["#0040b3", "#1a5dff"],
   },
 };
 

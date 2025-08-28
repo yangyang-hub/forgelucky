@@ -8,6 +8,7 @@ import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon, HomeIcon, TicketIcon, ChartBarIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { LanguageSwitcher } from "~~/components/LanguageSwitcher";
+import { NetworkSelector } from "~~/components/NetworkSelector";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
@@ -119,6 +120,7 @@ export const Header = () => {
         </ul>
       </div>
       <div className="navbar-end grow mr-4 flex items-center gap-3">
+        <NetworkSelector />
         <SwitchTheme />
         <LanguageSwitcher />
         <RainbowKitCustomConnectButton />

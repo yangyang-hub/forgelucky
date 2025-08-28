@@ -1,4 +1,5 @@
 import * as chains from "viem/chains";
+import { sonicTestnet, sonicMainnet } from "./utils/scaffold-eth/sonicChains";
 
 export type BaseConfig = {
   targetNetworks: readonly chains.Chain[];
@@ -15,7 +16,13 @@ export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.foundry],
+  // For local development, use only foundry
+  // For production, add the networks you want to support
+  targetNetworks: [
+    chains.foundry,    // Local development
+    sonicTestnet,      // Sonic testnet for testing
+    sonicMainnet,      // Sonic mainnet for production
+  ],
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 30000,
   // This is ours Alchemy's default API key.
@@ -28,6 +35,9 @@ const scaffoldConfig = {
   rpcOverrides: {
     // Example:
     // [chains.mainnet.id]: "https://mainnet.buidlguidl.com",
+    // Sonic networks use their own RPC endpoints (configured in sonicChains.ts)
+    [sonicTestnet.id]: "https://rpc.testnet.soniclabs.com",
+    [sonicMainnet.id]: "https://rpc.soniclabs.com",
   },
   // This is ours WalletConnect's default project ID.
   // You can get your own at https://cloud.walletconnect.com

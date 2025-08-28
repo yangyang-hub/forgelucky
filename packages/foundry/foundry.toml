@@ -27,6 +27,9 @@ scroll = "https://rpc.scroll.io"
 pgn = "https://rpc.publicgoods.network"
 pgnTestnet = "https://sepolia.publicgoods.network"
 
+# Sonic Networks
+sonicTestnet = "https://rpc.testnet.soniclabs.com/"
+sonicMainnet = "https://rpc.soniclabs.com/"
 
 localhost = "http://127.0.0.1:8545"
 
