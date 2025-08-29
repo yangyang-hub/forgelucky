@@ -17,7 +17,6 @@ import { notification } from "~~/utils/scaffold-eth";
  */
 
 // 常量定义
-const DEPOSIT_AMOUNT_MULTIPLIER = 10;
 const BATCH_COUNT_LIMITS = { min: 1, max: 100 };
 
 const Home: NextPage = () => {
@@ -25,31 +24,31 @@ const Home: NextPage = () => {
   const { t } = useLanguage();
   const [batchCount, setBatchCount] = useState<number>(5);
 
-  // 读取合约数据 - 优化了默认参数
-  const { data: prizePool } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
-    functionName: "getTotalPrizePool",
-  });
+  // 读取合约数据 - 已移除不存在的函数调用
+  // const { data: prizePool } = useScaffoldReadContract({
+  //   contractName: "ForgeLuckyInstant",
+  //   functionName: "getTotalPrizePool", // 此函数不存在
+  // });
 
-  const { data: totalTickets } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
-    functionName: "getTotalTicketsSold",
-  });
+  // const { data: totalTickets } = useScaffoldReadContract({
+  //   contractName: "ForgeLuckyInstant",
+  //   functionName: "getTotalTicketsSold", // 此函数不存在
+  // });
 
   const { data: ticketPrice } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
+    contractName: "ForgeLuckyInstant",
     functionName: "TICKET_PRICE",
   });
 
   const { data: userInfo } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
+    contractName: "ForgeLuckyInstant",
     functionName: "getUserInfo",
     args: [connectedAddress || "0x0000000000000000000000000000000000000000"],
     watch: true,
   });
 
   // 合约写入函数 - 合并为一个 hook
-  const { writeContractAsync: writeContract } = useScaffoldWriteContract("ForgeLucky");
+  const { writeContractAsync: writeContract } = useScaffoldWriteContract("ForgeLuckyInstant");
 
   // 缓存奖励结构数据
   const prizeStructure = useMemo(
@@ -88,12 +87,12 @@ const Home: NextPage = () => {
     notification.error(message);
   };
 
-  // 购买单张彩票
+  // 购买彩票函数已更新
   const handleBuyTicket = async () => {
     if (!ticketPrice) return;
     try {
       await writeContract({
-        functionName: "buyTicketWithETH",
+        functionName: "buyTicket",
         value: ticketPrice,
       });
       notification.success(t("common.purchaseSuccess"));
@@ -102,12 +101,12 @@ const Home: NextPage = () => {
     }
   };
 
-  // 批量购买彩票
+  // 批量购买彩票已更新
   const handleBuyTicketsBatch = async () => {
     if (!ticketPrice) return;
     try {
       await writeContract({
-        functionName: "buyTicketsWithETH",
+        functionName: "batchBuyTickets",
         args: [BigInt(batchCount)],
         value: ticketPrice * BigInt(batchCount),
       });
@@ -117,31 +116,9 @@ const Home: NextPage = () => {
     }
   };
 
-  // 使用余额购买
-  const handleBuyWithBalance = async () => {
-    try {
-      await writeContract({
-        functionName: "buyTicketWithBalance",
-      });
-      notification.success(t("common.balancePurchaseSuccess"));
-    } catch (error) {
-      handleError(error, t("common.balancePurchaseFailed"));
-    }
-  };
+  // 使用余额购买功能已移除
 
-  // 充值到平台
-  const handleDeposit = async () => {
-    if (!ticketPrice) return;
-    try {
-      await writeContract({
-        functionName: "deposit",
-        value: ticketPrice * BigInt(DEPOSIT_AMOUNT_MULTIPLIER),
-      });
-      notification.success(t("common.depositSuccess"));
-    } catch (error) {
-      handleError(error, t("common.depositFailed"));
-    }
-  };
+  // 充值功能已移除
 
   // 验证批量购买数量
   const handleBatchCountChange = (value: number) => {
@@ -167,9 +144,7 @@ const Home: NextPage = () => {
               </div>
               <div className="text-center">
                 <div className="text-base font-semibold mb-1 opacity-90">{t("home.prizePool")}</div>
-                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">
-                  {prizePool ? `${parseFloat(formatEther(prizePool)).toFixed(2)}` : "..."}
-                </div>
+                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">{"--"}</div>
                 <div className="text-lg font-semibold opacity-90">{t("common.eth")}</div>
               </div>
               <div className="mt-3 text-center">
@@ -189,9 +164,7 @@ const Home: NextPage = () => {
               </div>
               <div className="text-center">
                 <div className="text-base font-semibold mb-1 opacity-90">{t("home.ticketsSold")}</div>
-                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">
-                  {totalTickets ? totalTickets.toString() : "..."}
-                </div>
+                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">{"--"}</div>
                 <div className="text-lg font-semibold opacity-90">{t("common.tickets")}</div>
               </div>
               <div className="mt-3 text-center">
@@ -252,12 +225,6 @@ const Home: NextPage = () => {
                     {t("home.batchBuy")}
                   </button>
                 </div>
-
-                <div className="divider text-muted">{t("common.loading").includes("或") ? "或" : "or"}</div>
-
-                <button className="btn btn-accent w-full" disabled={!connectedAddress} onClick={handleBuyWithBalance}>
-                  {t("home.buyWithBalance")}
-                </button>
               </div>
 
               {!connectedAddress && (
@@ -281,16 +248,10 @@ const Home: NextPage = () => {
                     <Address address={connectedAddress} />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="text-center p-4 bg-base-200 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{userInfo ? userInfo[1].toString() : "0"}</div>
+                      <div className="text-2xl font-bold text-primary">{userInfo ? userInfo[0].toString() : "0"}</div>
                       <div className="text-sm text-muted">{t("home.ticketsOwned")}</div>
-                    </div>
-                    <div className="text-center p-4 bg-base-200 rounded-lg">
-                      <div className="text-2xl font-bold text-success">
-                        {userInfo ? `${formatEther(userInfo[0])} ${t("common.eth")}` : `0 ${t("common.eth")}`}
-                      </div>
-                      <div className="text-sm text-muted">{t("home.platformBalance")}</div>
                     </div>
                   </div>
 
@@ -298,9 +259,6 @@ const Home: NextPage = () => {
                     <Link href="/tickets" className="btn btn-outline w-full">
                       {t("home.viewMyTickets")}
                     </Link>
-                    <button className="btn btn-ghost w-full" onClick={handleDeposit}>
-                      {t("home.depositToPlatform")}
-                    </button>
                   </div>
                 </div>
               ) : (

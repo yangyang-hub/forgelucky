@@ -2,16 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
-import { formatEther, parseEther } from "viem";
+import { parseEther } from "viem";
 import { useAccount } from "wagmi";
-import {
-  BanknotesIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-  GiftIcon,
-  SparklesIcon,
-  TicketIcon,
-} from "@heroicons/react/24/outline";
+import { ClockIcon, CurrencyDollarIcon, GiftIcon, SparklesIcon, TicketIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
@@ -64,13 +57,6 @@ const TicketsPage: NextPage = () => {
     watch: true,
   });
 
-  const { data: userInfo } = useScaffoldReadContract({
-    contractName: "ForgeLuckyInstant",
-    functionName: "getUserInfo",
-    args: [connectedAddress || "0x0000000000000000000000000000000000000000"],
-    watch: true,
-  });
-
   const { data: probabilityStats } = useScaffoldReadContract({
     contractName: "ForgeLuckyInstant",
     functionName: "getProbabilityStats",
@@ -80,8 +66,6 @@ const TicketsPage: NextPage = () => {
   // 写入合约函数
   const { writeContractAsync: drawTicket } = useScaffoldWriteContract("ForgeLuckyInstant");
   const { writeContractAsync: claimPrize } = useScaffoldWriteContract("ForgeLuckyInstant");
-  const { writeContractAsync: deposit } = useScaffoldWriteContract("ForgeLuckyInstant");
-  const { writeContractAsync: withdrawBalance } = useScaffoldWriteContract("ForgeLuckyInstant");
   const { writeContractAsync: buyTicket } = useScaffoldWriteContract("ForgeLuckyInstant");
   const { writeContractAsync: batchDrawUserTickets } = useScaffoldWriteContract("ForgeLuckyInstant");
   const { writeContractAsync: batchBuyTickets } = useScaffoldWriteContract("ForgeLuckyInstant");
@@ -234,40 +218,9 @@ const TicketsPage: NextPage = () => {
     }
   };
 
-  // 处理充值
-  const handleDeposit = async () => {
-    try {
-      await deposit({
-        functionName: "deposit",
-        value: parseEther("10"), // 充值10 S
-      });
+  // 充值功能已移除
 
-      notification.success(t("common.depositSuccess"));
-    } catch (error) {
-      console.error(error);
-      notification.error(t("common.depositFailed"));
-    }
-  };
-
-  // 处理提现
-  const handleWithdraw = async () => {
-    try {
-      const balance = userInfo?.[0] || 0n;
-      if (balance === 0n) {
-        notification.error("No balance to withdraw");
-        return;
-      }
-
-      await withdrawBalance({
-        functionName: "withdrawAllBalance",
-      });
-
-      notification.success(t("common.withdrawSuccess"));
-    } catch (error) {
-      console.error(error);
-      notification.error(t("common.withdrawFailed"));
-    }
-  };
+  // 提现功能已移除
 
   if (!connectedAddress) {
     return (
@@ -306,12 +259,6 @@ const TicketsPage: NextPage = () => {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">{t("tickets.walletAddress")}</p>
                   <Address address={connectedAddress} />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{t("tickets.platformBalance")}</p>
-                  <p className="text-xl font-bold text-success">
-                    {userInfo ? `${formatEther(userInfo[0])} ${t("common.eth")}` : `0 ${t("common.eth")}`}
-                  </p>
                 </div>
               </div>
             </div>
@@ -381,15 +328,6 @@ const TicketsPage: NextPage = () => {
 
           {/* 操作按钮 */}
           <div className="flex flex-wrap gap-4 mt-6">
-            <button className="btn btn-primary flex-1 min-w-[120px]" onClick={handleDeposit}>
-              <BanknotesIcon className="h-5 w-5" />
-              {t("tickets.depositBalance")}
-            </button>
-            <button className="btn btn-secondary flex-1 min-w-[120px]" onClick={handleWithdraw}>
-              <CurrencyDollarIcon className="h-5 w-5" />
-              {t("tickets.withdrawBalance")}
-            </button>
-
             {/* 单票购买 */}
             <button className="btn btn-accent flex-1 min-w-[120px]" onClick={handleBuyTicket}>
               <GiftIcon className="h-5 w-5" />

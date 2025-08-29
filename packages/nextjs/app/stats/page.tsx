@@ -33,25 +33,25 @@ const StatsPage: NextPage = () => {
     biggestWin: "0 S",
   });
 
-  // 读取合约统计数据
-  const { data: contractStats } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
-    functionName: "getContractStats",
+  // 读取合约统计数据 - 使用实际存在的函数
+  const { data: systemStats } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getSystemStats",
     watch: true,
   });
 
-  const { data: platformStatsData } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
-    functionName: "getPlatformStats",
+  const { data: poolStats } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getPoolStats",
     watch: true,
   });
 
   // 处理合约数据
   useEffect(() => {
-    if (contractStats && platformStatsData) {
-      const totalTicketsSold = Number(contractStats[1]);
-      const totalPrizesPaid = formatEther(contractStats[2]);
-      const totalPlatformFees = formatEther(platformStatsData[1]);
+    if (systemStats && poolStats) {
+      const totalTicketsSold = Number(systemStats.totalTickets);
+      const totalPrizesPaid = formatEther(poolStats[4]); // totalPool is at index 4
+      const totalPlatformFees = formatEther(systemStats.platformFees);
 
       setPlatformStats({
         totalTicketsSold,
@@ -62,7 +62,7 @@ const StatsPage: NextPage = () => {
         biggestWin: "0 S", // 需要从历史数据计算
       });
     }
-  }, [contractStats, platformStatsData]);
+  }, [systemStats, poolStats]);
 
   // 奖项分布数据
   const prizeDistribution = [

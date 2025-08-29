@@ -133,8 +133,6 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
     /// @notice 系统统计信息
     SystemStats public systemStats;
     
-    /// @notice 用户余额
-    mapping(address => uint256) public userBalances;
     
     /// @notice 购买记录（用于退款）
     struct Purchase {
@@ -159,8 +157,6 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
     event PrizePoolUpdated(PrizeLevel indexed prizeLevel, uint256 newTotal);
     event PlatformFeesWithdrawn(address indexed owner, uint256 amount);
     event PoolReset(address indexed admin, uint256 totalRefunds);
-    event Deposited(address indexed user, uint256 amount);
-    event Withdrawn(address indexed user, uint256 amount);
     
     // =================================================================================
     // 修饰符
@@ -204,14 +200,6 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
         _processSingleTicketPurchase(msg.sender);
     }
     
-    /**
-     * @notice 使用余额购买彩票（不开奖）
-     */
-    function buyTicketWithBalance() external whenNotPaused nonReentrant {
-        require(userBalances[msg.sender] >= TICKET_PRICE, "Insufficient balance");
-        userBalances[msg.sender] -= TICKET_PRICE;
-        _processSingleTicketPurchase(msg.sender);
-    }
     
     /**
      * @notice 批量购买彩票（不开奖）
@@ -225,20 +213,6 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
         }
     }
     
-    /**
-     * @notice 批量购买彩票使用余额（不开奖）
-     */
-    function batchBuyTicketsWithBalance(uint256 count) external whenNotPaused nonReentrant {
-        require(count <= MAX_BATCH_SIZE, "Exceeds max batch size");
-        uint256 totalCost = TICKET_PRICE * count;
-        require(userBalances[msg.sender] >= totalCost, "Insufficient balance");
-        
-        userBalances[msg.sender] -= totalCost;
-        
-        for (uint256 i = 0; i < count; i++) {
-            _processSingleTicketPurchase(msg.sender);
-        }
-    }
     
     // =================================================================================
     // 开奖和领奖功能
@@ -502,31 +476,6 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
         systemStats.growthFund += growthAmount;
     }
     
-    // =================================================================================
-    // 用户余额管理
-    // =================================================================================
-    
-    /**
-     * @notice 充值到用户余额
-     */
-    function deposit() external payable whenNotPaused {
-        require(msg.value > 0, "Invalid amount");
-        userBalances[msg.sender] += msg.value;
-        emit Deposited(msg.sender, msg.value);
-    }
-    
-    /**
-     * @notice 提取用户余额
-     */
-    function withdrawBalance(uint256 amount) external nonReentrant {
-        require(amount > 0, "Invalid amount");
-        require(userBalances[msg.sender] >= amount, "Insufficient balance");
-        
-        userBalances[msg.sender] -= amount;
-        SafeTransfer.safeTransferETH(msg.sender, amount);
-        
-        emit Withdrawn(msg.sender, amount);
-    }
     
     // =================================================================================
     // 管理员功能
@@ -551,12 +500,12 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
     function resetPoolsAndRefund() external onlyOwner whenPaused nonReentrant {
         uint256 totalRefunds = 0;
         
-        // 计算每个用户的退款金额
+        // 重置时将退款直接转账给用户，不使用余额系统
         for (uint256 i = 0; i < purchases.length; i++) {
             Purchase memory purchase = purchases[i];
             if (userPurchaseAmounts[purchase.buyer] > 0) {
                 uint256 refundAmount = userPurchaseAmounts[purchase.buyer];
-                userBalances[purchase.buyer] += refundAmount;
+                SafeTransfer.safeTransferETH(purchase.buyer, refundAmount);
                 totalRefunds += refundAmount;
                 userPurchaseAmounts[purchase.buyer] = 0;
             }
@@ -601,13 +550,11 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
      * @notice 获取用户信息
      */
     function getUserInfo(address user) external view returns (
-        uint256 balance,
         uint256 totalTickets,
         uint256 totalWinnings,
         uint256 claimableAmount,
         uint256 purchaseAmount
     ) {
-        balance = userBalances[user];
         uint256[] memory userTokens = userTickets[user];
         totalTickets = userTokens.length;
         purchaseAmount = userPurchaseAmounts[user];
@@ -777,17 +724,6 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
         }
     }
     
-    /**
-     * @notice 提取所有余额
-     */
-    function withdrawAllBalance() external nonReentrant {
-        uint256 balance = userBalances[msg.sender];
-        require(balance > 0, "No balance to withdraw");
-        
-        userBalances[msg.sender] = 0;
-        SafeTransfer.safeTransferETH(msg.sender, balance);
-        emit Withdrawn(msg.sender, balance);
-    }
     
     /**
      * @notice 获取彩票信息

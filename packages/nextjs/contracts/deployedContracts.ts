@@ -5,9 +5,197 @@
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
-  14601: {
+  31337: {
+    RandomGenerator: {
+      address: "0x700b6a60ce7eaaea56f065753d8dcb9653dbad35",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "admin",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "authorizeContract",
+          inputs: [
+            {
+              name: "contractAddr",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "deauthorizeContract",
+          inputs: [
+            {
+              name: "contractAddr",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "generateSecureRandom",
+          inputs: [
+            {
+              name: "tokenId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "timestamp",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "extraSeed",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [
+            {
+              name: "randomNumber",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "getAdmin",
+          inputs: [],
+          outputs: [
+            {
+              name: "admin",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "isAuthorized",
+          inputs: [
+            {
+              name: "contractAddr",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "authorized",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "pause",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "paused",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "transferAdmin",
+          inputs: [
+            {
+              name: "newAdmin",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "unpause",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "updateNonce",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "event",
+          name: "Paused",
+          inputs: [
+            {
+              name: "account",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "Unpaused",
+          inputs: [
+            {
+              name: "account",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "EnforcedPause",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ExpectedPause",
+          inputs: [],
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 33,
+    },
     ForgeLuckyInstant: {
-      address: "0xb2bcc9a63ad3368887b80d09971135c2010a37d9",
+      address: "0xa15bb66138824a1c7167f5e85b957d04dd34e468",
       abi: [
         {
           type: "constructor",
@@ -15,14 +203,14 @@ const deployedContracts = {
             {
               name: "randomGeneratorAddr",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "receive",
-          stateMutability: "payable"
+          stateMutability: "payable",
         },
         {
           type: "function",
@@ -32,10 +220,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -45,10 +233,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -58,10 +246,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -71,10 +259,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -84,10 +272,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -97,10 +285,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -110,10 +298,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -123,10 +311,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -136,10 +324,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -149,10 +337,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -162,10 +350,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -175,10 +363,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -188,10 +376,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -200,11 +388,11 @@ const deployedContracts = {
             {
               name: "tokenIds",
               type: "uint256[]",
-              internalType: "uint256[]"
-            }
+              internalType: "uint256[]",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -213,16 +401,16 @@ const deployedContracts = {
             {
               name: "to",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -231,17 +419,17 @@ const deployedContracts = {
             {
               name: "owner",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -250,24 +438,11 @@ const deployedContracts = {
             {
               name: "count",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [],
-          stateMutability: "payable"
-        },
-        {
-          type: "function",
-          name: "batchBuyTicketsWithBalance",
-          inputs: [
-            {
-              name: "count",
-              type: "uint256",
-              internalType: "uint256"
-            }
-          ],
-          outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "payable",
         },
         {
           type: "function",
@@ -276,32 +451,25 @@ const deployedContracts = {
             {
               name: "tokenIds",
               type: "uint256[]",
-              internalType: "uint256[]"
-            }
+              internalType: "uint256[]",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
           name: "batchDrawUserTickets",
           inputs: [],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
           name: "buyTicket",
           inputs: [],
           outputs: [],
-          stateMutability: "payable"
-        },
-        {
-          type: "function",
-          name: "buyTicketWithBalance",
-          inputs: [],
-          outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "payable",
         },
         {
           type: "function",
@@ -310,17 +478,17 @@ const deployedContracts = {
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "bool",
-              internalType: "bool"
-            }
+              internalType: "bool",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -329,18 +497,11 @@ const deployedContracts = {
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
-        },
-        {
-          type: "function",
-          name: "deposit",
-          inputs: [],
-          outputs: [],
-          stateMutability: "payable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -349,11 +510,11 @@ const deployedContracts = {
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -362,17 +523,17 @@ const deployedContracts = {
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -382,30 +543,30 @@ const deployedContracts = {
             {
               name: "superGrandPool",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "grandPool",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "mediumPool",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "smallPool",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "totalPool",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -415,35 +576,35 @@ const deployedContracts = {
             {
               name: "superGrandRate",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "grandRate",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "mediumRate",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "smallRate",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "totalWinRate",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "noWinRate",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "pure"
+          stateMutability: "pure",
         },
         {
           type: "function",
@@ -458,27 +619,27 @@ const deployedContracts = {
                 {
                   name: "totalSales",
                   type: "uint256",
-                  internalType: "uint256"
+                  internalType: "uint256",
                 },
                 {
                   name: "platformFees",
                   type: "uint256",
-                  internalType: "uint256"
+                  internalType: "uint256",
                 },
                 {
                   name: "growthFund",
                   type: "uint256",
-                  internalType: "uint256"
+                  internalType: "uint256",
                 },
                 {
                   name: "totalTickets",
                   type: "uint256",
-                  internalType: "uint256"
-                }
-              ]
-            }
+                  internalType: "uint256",
+                },
+              ],
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -487,8 +648,8 @@ const deployedContracts = {
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [
             {
@@ -498,33 +659,33 @@ const deployedContracts = {
               components: [
                 {
                   name: "purchaseTime",
-                  type: "uint256",
-                  internalType: "uint256"
+                  type: "uint128",
+                  internalType: "uint128",
+                },
+                {
+                  name: "prizeAmount",
+                  type: "uint128",
+                  internalType: "uint128",
                 },
                 {
                   name: "isDrawn",
                   type: "bool",
-                  internalType: "bool"
-                },
-                {
-                  name: "prizeLevel",
-                  type: "uint8",
-                  internalType: "enum ForgeLuckyInstant.PrizeLevel"
-                },
-                {
-                  name: "prizeAmount",
-                  type: "uint256",
-                  internalType: "uint256"
+                  internalType: "bool",
                 },
                 {
                   name: "isClaimed",
                   type: "bool",
-                  internalType: "bool"
-                }
-              ]
-            }
+                  internalType: "bool",
+                },
+                {
+                  name: "prizeLevel",
+                  type: "uint8",
+                  internalType: "enum ForgeLuckyInstant.PrizeLevel",
+                },
+              ],
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -533,37 +694,32 @@ const deployedContracts = {
             {
               name: "user",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [
             {
-              name: "balance",
-              type: "uint256",
-              internalType: "uint256"
-            },
-            {
               name: "totalTickets",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "totalWinnings",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "claimableAmount",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "purchaseAmount",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -572,36 +728,66 @@ const deployedContracts = {
             {
               name: "user",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "uint256[]",
-              internalType: "uint256[]"
-            }
+              internalType: "uint256[]",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
-          name: "getUserUndrawnTickets",
+          name: "getUserTicketsDetails",
           inputs: [
             {
               name: "user",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [
             {
-              name: "undrawnTickets",
+              name: "tokenIds",
               type: "uint256[]",
-              internalType: "uint256[]"
-            }
+              internalType: "uint256[]",
+            },
+            {
+              name: "purchaseTimes",
+              type: "uint256[]",
+              internalType: "uint256[]",
+            },
+            {
+              name: "isDrawnArray",
+              type: "bool[]",
+              internalType: "bool[]",
+            },
+            {
+              name: "prizeLevels",
+              type: "uint8[]",
+              internalType: "enum ForgeLuckyInstant.PrizeLevel[]",
+            },
+            {
+              name: "prizeAmounts",
+              type: "uint256[]",
+              internalType: "uint256[]",
+            },
+            {
+              name: "isClaimedArray",
+              type: "bool[]",
+              internalType: "bool[]",
+            },
+            {
+              name: "canDrawArray",
+              type: "bool[]",
+              internalType: "bool[]",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -610,17 +796,36 @@ const deployedContracts = {
             {
               name: "user",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [
             {
               name: "unclaimedTickets",
               type: "uint256[]",
-              internalType: "uint256[]"
-            }
+              internalType: "uint256[]",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "getUserUndrawnTickets",
+          inputs: [
+            {
+              name: "user",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "undrawnTickets",
+              type: "uint256[]",
+              internalType: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -629,22 +834,22 @@ const deployedContracts = {
             {
               name: "owner",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "operator",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "bool",
-              internalType: "bool"
-            }
+              internalType: "bool",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -654,10 +859,10 @@ const deployedContracts = {
             {
               name: "",
               type: "string",
-              internalType: "string"
-            }
+              internalType: "string",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -667,10 +872,10 @@ const deployedContracts = {
             {
               name: "",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -679,24 +884,24 @@ const deployedContracts = {
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
           name: "pause",
           inputs: [],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -706,10 +911,100 @@ const deployedContracts = {
             {
               name: "",
               type: "bool",
-              internalType: "bool"
-            }
+              internalType: "bool",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "prizePools",
+          inputs: [
+            {
+              name: "",
+              type: "uint8",
+              internalType: "enum ForgeLuckyInstant.PrizeLevel",
+            },
+          ],
+          outputs: [
+            {
+              name: "totalFunds",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "totalClaimed",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "totalTickets",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "winCount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "purchases",
+          inputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [
+            {
+              name: "buyer",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "timestamp",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "randomGenerator",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IRandomGenerator",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "renounceOwnership",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "resetPoolsAndRefund",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -718,21 +1013,21 @@ const deployedContracts = {
             {
               name: "from",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "to",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -741,26 +1036,26 @@ const deployedContracts = {
             {
               name: "from",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "to",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
+              internalType: "uint256",
             },
             {
               name: "data",
               type: "bytes",
-              internalType: "bytes"
-            }
+              internalType: "bytes",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -769,16 +1064,16 @@ const deployedContracts = {
             {
               name: "operator",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "approved",
               type: "bool",
-              internalType: "bool"
-            }
+              internalType: "bool",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -787,17 +1082,17 @@ const deployedContracts = {
             {
               name: "interfaceId",
               type: "bytes4",
-              internalType: "bytes4"
-            }
+              internalType: "bytes4",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "bool",
-              internalType: "bool"
-            }
+              internalType: "bool",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -807,10 +1102,77 @@ const deployedContracts = {
             {
               name: "",
               type: "string",
-              internalType: "string"
-            }
+              internalType: "string",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "systemStats",
+          inputs: [],
+          outputs: [
+            {
+              name: "totalSales",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "platformFees",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "growthFund",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "totalTickets",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "tickets",
+          inputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [
+            {
+              name: "purchaseTime",
+              type: "uint128",
+              internalType: "uint128",
+            },
+            {
+              name: "prizeAmount",
+              type: "uint128",
+              internalType: "uint128",
+            },
+            {
+              name: "isDrawn",
+              type: "bool",
+              internalType: "bool",
+            },
+            {
+              name: "isClaimed",
+              type: "bool",
+              internalType: "bool",
+            },
+            {
+              name: "prizeLevel",
+              type: "uint8",
+              internalType: "enum ForgeLuckyInstant.PrizeLevel",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -819,17 +1181,17 @@ const deployedContracts = {
             {
               name: "index",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -838,22 +1200,22 @@ const deployedContracts = {
             {
               name: "owner",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "index",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -862,17 +1224,17 @@ const deployedContracts = {
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "string",
-              internalType: "string"
-            }
+              internalType: "string",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -882,10 +1244,10 @@ const deployedContracts = {
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -894,21 +1256,21 @@ const deployedContracts = {
             {
               name: "from",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "to",
               type: "address",
-              internalType: "address"
+              internalType: "address",
             },
             {
               name: "tokenId",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
@@ -917,61 +1279,491 @@ const deployedContracts = {
             {
               name: "newOwner",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
           name: "unpause",
           inputs: [],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
           type: "function",
-          name: "userBalances",
+          name: "userPurchaseAmounts",
           inputs: [
             {
               name: "",
               type: "address",
-              internalType: "address"
-            }
+              internalType: "address",
+            },
           ],
           outputs: [
             {
               name: "",
               type: "uint256",
-              internalType: "uint256"
-            }
+              internalType: "uint256",
+            },
           ],
-          stateMutability: "view"
+          stateMutability: "view",
         },
         {
           type: "function",
-          name: "withdrawAllBalance",
+          name: "userTickets",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "withdrawPlatformFees",
           inputs: [],
           outputs: [],
-          stateMutability: "nonpayable"
+          stateMutability: "nonpayable",
         },
         {
-          type: "function",
-          name: "withdrawBalance",
+          type: "event",
+          name: "Approval",
           inputs: [
+            {
+              name: "owner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "approved",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "tokenId",
+              type: "uint256",
+              indexed: true,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "ApprovalForAll",
+          inputs: [
+            {
+              name: "owner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "operator",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "approved",
+              type: "bool",
+              indexed: false,
+              internalType: "bool",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "OwnershipTransferred",
+          inputs: [
+            {
+              name: "previousOwner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "newOwner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "Paused",
+          inputs: [
+            {
+              name: "account",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "PlatformFeesWithdrawn",
+          inputs: [
+            {
+              name: "owner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
             {
               name: "amount",
               type: "uint256",
-              internalType: "uint256"
-            }
+              indexed: false,
+              internalType: "uint256",
+            },
           ],
-          outputs: [],
-          stateMutability: "nonpayable"
-        }
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "PoolReset",
+          inputs: [
+            {
+              name: "admin",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "totalRefunds",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "PrizeClaimed",
+          inputs: [
+            {
+              name: "claimer",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "tokenId",
+              type: "uint256",
+              indexed: true,
+              internalType: "uint256",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "PrizePoolUpdated",
+          inputs: [
+            {
+              name: "prizeLevel",
+              type: "uint8",
+              indexed: true,
+              internalType: "enum ForgeLuckyInstant.PrizeLevel",
+            },
+            {
+              name: "newTotal",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "TicketDrawn",
+          inputs: [
+            {
+              name: "tokenId",
+              type: "uint256",
+              indexed: true,
+              internalType: "uint256",
+            },
+            {
+              name: "owner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "prizeLevel",
+              type: "uint8",
+              indexed: false,
+              internalType: "enum ForgeLuckyInstant.PrizeLevel",
+            },
+            {
+              name: "prizeAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "TicketPurchased",
+          inputs: [
+            {
+              name: "buyer",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "tokenId",
+              type: "uint256",
+              indexed: true,
+              internalType: "uint256",
+            },
+            {
+              name: "timestamp",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "Transfer",
+          inputs: [
+            {
+              name: "from",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "to",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "tokenId",
+              type: "uint256",
+              indexed: true,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "Unpaused",
+          inputs: [
+            {
+              name: "account",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "ERC721EnumerableForbiddenBatchMint",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ERC721IncorrectOwner",
+          inputs: [
+            {
+              name: "sender",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "tokenId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "owner",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721InsufficientApproval",
+          inputs: [
+            {
+              name: "operator",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "tokenId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721InvalidApprover",
+          inputs: [
+            {
+              name: "approver",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721InvalidOperator",
+          inputs: [
+            {
+              name: "operator",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721InvalidOwner",
+          inputs: [
+            {
+              name: "owner",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721InvalidReceiver",
+          inputs: [
+            {
+              name: "receiver",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721InvalidSender",
+          inputs: [
+            {
+              name: "sender",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721NonexistentToken",
+          inputs: [
+            {
+              name: "tokenId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ERC721OutOfBoundsIndex",
+          inputs: [
+            {
+              name: "owner",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "index",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "EnforcedPause",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ExpectedPause",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "OwnableInvalidOwner",
+          inputs: [
+            {
+              name: "owner",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "OwnableUnauthorizedAccount",
+          inputs: [
+            {
+              name: "account",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ReentrancyGuardReentrantCall",
+          inputs: [],
+        },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 5,
+      deployedOnBlock: 34,
     },
   },
 } as const;

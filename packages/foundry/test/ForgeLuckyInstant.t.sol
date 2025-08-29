@@ -176,31 +176,6 @@ contract ForgeLuckyInstantTest is Test {
         vm.stopPrank();
     }
     
-    function testBalanceOperations() public {
-        vm.startPrank(user1);
-        
-        // Test deposit
-        uint256 depositAmount = 1 ether;
-        forgeLuckyInstant.deposit{value: depositAmount}();
-        
-        (uint256 balance,,,,) = forgeLuckyInstant.getUserInfo(user1);
-        assertEq(balance, depositAmount);
-        
-        // Test buy with balance
-        forgeLuckyInstant.buyTicketWithBalance();
-        (uint256 newBalance,,,,) = forgeLuckyInstant.getUserInfo(user1);
-        assertEq(newBalance, depositAmount - TICKET_PRICE);
-        
-        // Test withdraw
-        forgeLuckyInstant.withdrawBalance(newBalance);
-        (uint256 finalBalance,,,,) = forgeLuckyInstant.getUserInfo(user1);
-        assertEq(finalBalance, 0);
-        
-        console.log("Balance operations working correctly");
-        
-        vm.stopPrank();
-    }
-    
     function testClaimPrize() public {
         vm.startPrank(user1);
         
@@ -268,10 +243,6 @@ contract ForgeLuckyInstantTest is Test {
         // Test incorrect payment
         vm.expectRevert("Incorrect payment");
         forgeLuckyInstant.buyTicket{value: TICKET_PRICE - 1}();
-        
-        // Test insufficient balance
-        vm.expectRevert("Insufficient balance");
-        forgeLuckyInstant.buyTicketWithBalance();
         
         // Test draw non-existent ticket
         vm.expectRevert("Ticket not exists");

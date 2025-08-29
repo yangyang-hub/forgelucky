@@ -225,7 +225,7 @@ contract DeployForgeLuckyInstant is ScaffoldETHDeploy {
         console.log("Buying test ticket...");
         
         // 获取购买前的统计信息
-        (uint256 balanceBefore, uint256 totalTicketsBefore,,,) = forgeLuckyInstant.getUserInfo(deployer);
+        (uint256 totalTicketsBefore,,,) = forgeLuckyInstant.getUserInfo(deployer);
         
         // 购买彩票
         forgeLuckyInstant.buyTicket{value: msg.value}();
@@ -234,7 +234,7 @@ contract DeployForgeLuckyInstant is ScaffoldETHDeploy {
         forgeLuckyInstant.drawTicket(forgeLuckyInstant.totalSupply()); // 最新的token ID
         
         // 获取购买后的统计信息
-        (uint256 balanceAfter, uint256 totalTicketsAfter, uint256 totalWinnings, uint256 claimableAmount,) = 
+        (uint256 totalTicketsAfter, uint256 totalWinnings, uint256 claimableAmount,) = 
             forgeLuckyInstant.getUserInfo(deployer);
         
         console.log("Test ticket purchased successfully:");
