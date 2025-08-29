@@ -5,16 +5,15 @@ import Link from "next/link";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
-import { ClockIcon, CurrencyDollarIcon, GiftIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { CurrencyDollarIcon, GiftIcon, SparklesIcon, TicketIcon, TrophyIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
 import { notification } from "~~/utils/scaffold-eth";
-import { formatTimeRemainingCompact } from "~~/utils/timeUtils";
 
 /**
  * 首页 - 彩票购买主界面
- * 功能：展示当前周期信息、购买彩票、查看奖励体系
+ * 功能：购买彩票、查看奖励体系、用户信息管理
  */
 
 // 常量定义
@@ -23,13 +22,18 @@ const BATCH_COUNT_LIMITS = { min: 1, max: 100 };
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [batchCount, setBatchCount] = useState<number>(5);
 
   // 读取合约数据 - 优化了默认参数
-  const { data: currentCycle } = useScaffoldReadContract({
+  const { data: prizePool } = useScaffoldReadContract({
     contractName: "ForgeLucky",
-    functionName: "getCurrentCycle",
+    functionName: "getTotalPrizePool",
+  });
+
+  const { data: totalTickets } = useScaffoldReadContract({
+    contractName: "ForgeLucky",
+    functionName: "getTotalTicketsSold",
   });
 
   const { data: ticketPrice } = useScaffoldReadContract({
@@ -52,7 +56,7 @@ const Home: NextPage = () => {
     () => [
       {
         level: t("home.superGrand"),
-        probability: "1/" + t("cycles.cycle").toLowerCase(),
+        probability: "0.1%",
         reward: "40%",
         color: "bg-gradient-to-r from-blue-500 to-blue-700",
       },
@@ -77,12 +81,6 @@ const Home: NextPage = () => {
     ],
     [t],
   );
-
-  // 优化的时间格式化函数
-  const formattedTimeRemaining = useMemo(() => {
-    if (!currentCycle) return "...";
-    return formatTimeRemainingCompact(currentCycle.endTime, language, t("home.cycleEnded"));
-  }, [currentCycle, language, t]);
 
   // 通用错误处理函数
   const handleError = (error: any, message: string) => {
@@ -158,30 +156,51 @@ const Home: NextPage = () => {
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-4">{t("home.title")}</h1>
           <p className="text-xl mb-8">{t("home.subtitle")}</p>
-          <div className="flex flex-wrap justify-center items-center gap-4 mb-8 hero-stats">
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[120px] text-center">
-              <div className="text-sm opacity-90">{t("home.currentCycle")}</div>
-              <div className="text-2xl font-bold">#{currentCycle ? currentCycle.id.toString() : "..."}</div>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[120px] text-center">
-              <div className="text-sm opacity-90">{t("home.prizePool")}</div>
-              <div className="text-2xl font-bold">
-                {currentCycle ? `${formatEther(currentCycle.prizePool)} ${t("common.eth")}` : "..."}
+          {/* 主要统计数据 - 更显眼的设计 */}
+          <div className="grid md:grid-cols-2 gap-6 mb-10 max-w-3xl mx-auto">
+            {/* 奖金池 */}
+            <div className="bg-gradient-to-br from-blue-700 via-indigo-800 to-purple-900 rounded-2xl p-6 text-white shadow-lg transform hover:scale-102 transition-all duration-300 border-2 border-blue-400/30">
+              <div className="flex items-center justify-center mb-3">
+                <div className="bg-blue-400/20 rounded-full p-3">
+                  <TrophyIcon className="h-8 w-8 text-blue-200" />
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-base font-semibold mb-1 opacity-90">{t("home.prizePool")}</div>
+                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">
+                  {prizePool ? `${parseFloat(formatEther(prizePool)).toFixed(2)}` : "..."}
+                </div>
+                <div className="text-lg font-semibold opacity-90">{t("common.eth")}</div>
+              </div>
+              <div className="mt-3 text-center">
+                <div className="inline-flex items-center bg-blue-400/20 rounded-full px-3 py-1">
+                  <SparklesIcon className="h-4 w-4 mr-1" />
+                  <span className="text-xs font-medium">{t("home.totalRewards")}</span>
+                </div>
               </div>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[120px] text-center">
-              <div className="text-sm opacity-90">{t("home.ticketsSold")}</div>
-              <div className="text-2xl font-bold">{currentCycle ? currentCycle.totalTickets.toString() : "..."}</div>
-            </div>
-          </div>
 
-          {/* 倒计时 */}
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 inline-block">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <ClockIcon className="h-6 w-6" />
-              <span className="text-lg font-semibold">{t("home.cycleEndsIn")}</span>
+            {/* 已售彩票 */}
+            <div className="bg-gradient-to-br from-amber-600 via-yellow-700 to-orange-800 rounded-2xl p-6 text-white shadow-lg transform hover:scale-102 transition-all duration-300 border-2 border-yellow-400/30">
+              <div className="flex items-center justify-center mb-3">
+                <div className="bg-yellow-400/20 rounded-full p-3">
+                  <TicketIcon className="h-8 w-8 text-yellow-200" />
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-base font-semibold mb-1 opacity-90">{t("home.ticketsSold")}</div>
+                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">
+                  {totalTickets ? totalTickets.toString() : "..."}
+                </div>
+                <div className="text-lg font-semibold opacity-90">{t("common.tickets")}</div>
+              </div>
+              <div className="mt-3 text-center">
+                <div className="inline-flex items-center bg-yellow-400/20 rounded-full px-3 py-1">
+                  <GiftIcon className="h-4 w-4 mr-1" />
+                  <span className="text-xs font-medium">{t("home.totalSold")}</span>
+                </div>
+              </div>
             </div>
-            <div className="text-3xl font-bold countdown-timer">{formattedTimeRemaining}</div>
           </div>
         </div>
       </div>

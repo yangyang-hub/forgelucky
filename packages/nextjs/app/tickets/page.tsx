@@ -42,7 +42,6 @@ enum PrizeLevel {
 // 彩票数据接口
 interface Ticket {
   id: number;
-  cycleId: number;
   purchaseTime: Date;
   status: TicketStatus;
   prizeLevel?: PrizeLevel;
@@ -95,7 +94,6 @@ const TicketsPage: NextPage = () => {
         // TODO: 后续需要优化为使用单独的hooks来获取每个票的详细信息
         return {
           id: Number(tokenId),
-          cycleId: 0, // 新合约没有cycle概念
           purchaseTime: new Date(), // 默认值，需要从合约获取
           status: TicketStatus.DRAWABLE, // 默认状态
           prizeLevel: PrizeLevel.NO_PRIZE, // 默认未中奖
@@ -126,9 +124,9 @@ const TicketsPage: NextPage = () => {
   // 获取状态显示信息
   const getStatusInfo = (status: TicketStatus) => {
     const statusInfo = {
-      [TicketStatus.ACTIVE]: { name: t("cycles.active"), color: "text-blue-600", bg: "bg-blue-100" },
+      [TicketStatus.ACTIVE]: { name: "Active", color: "text-blue-600", bg: "bg-blue-100" },
       [TicketStatus.DRAWABLE]: { name: t("tickets.drawable"), color: "text-green-600", bg: "bg-green-100" },
-      [TicketStatus.DRAWN]: { name: t("cycles.ended"), color: "text-orange-600", bg: "bg-orange-100" },
+      [TicketStatus.DRAWN]: { name: "Drawn", color: "text-orange-600", bg: "bg-orange-100" },
       [TicketStatus.CLAIMED]: { name: t("tickets.claimed"), color: "text-gray-500", bg: "bg-gray-100" },
     };
     return statusInfo[status];
@@ -506,7 +504,7 @@ const TicketsPage: NextPage = () => {
 
                   {ticket.status === TicketStatus.ACTIVE && (
                     <div className="text-center p-4 bg-info/20 rounded-lg">
-                      <p className="text-sm text-info">{t("tickets.cycleNotEnded")}</p>
+                      <p className="text-sm text-info">Drawing not available yet</p>
                     </div>
                   )}
 

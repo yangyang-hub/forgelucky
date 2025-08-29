@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon, BugAntIcon, ChartBarIcon, ClockIcon, HomeIcon, TicketIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, ChartBarIcon, HomeIcon, TicketIcon } from "@heroicons/react/24/outline";
 import { LanguageSwitcher } from "~~/components/LanguageSwitcher";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
@@ -31,11 +31,6 @@ export const HeaderMenuLinks = () => {
       label: t("nav.myTickets"),
       href: "/tickets",
       icon: <TicketIcon className="h-4 w-4" />,
-    },
-    {
-      label: t("nav.cycles"),
-      href: "/cycles",
-      icon: <ClockIcon className="h-4 w-4" />,
     },
     {
       label: t("nav.stats"),

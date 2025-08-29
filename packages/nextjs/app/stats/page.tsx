@@ -6,7 +6,6 @@ import { formatEther } from "viem";
 import {
   BanknotesIcon,
   ChartBarIcon,
-  ClockIcon,
   CurrencyDollarIcon,
   SparklesIcon,
   TicketIcon,
@@ -30,11 +29,8 @@ const StatsPage: NextPage = () => {
     totalUsers: 0,
     totalPrizesPaid: "0 S",
     totalPlatformFees: "0 S",
-    averageTicketsPerCycle: 0,
     averageWinRate: 0,
     biggestWin: "0 S",
-    activeCycles: 0,
-    completedCycles: 0,
   });
 
   // 读取合约统计数据
@@ -50,16 +46,9 @@ const StatsPage: NextPage = () => {
     watch: true,
   });
 
-  const { data: currentCycleId } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
-    functionName: "currentCycleId",
-    watch: true,
-  });
-
   // 处理合约数据
   useEffect(() => {
-    if (contractStats && platformStatsData && currentCycleId) {
-      const totalCycles = Number(contractStats[0]);
+    if (contractStats && platformStatsData) {
       const totalTicketsSold = Number(contractStats[1]);
       const totalPrizesPaid = formatEther(contractStats[2]);
       const totalPlatformFees = formatEther(platformStatsData[1]);
@@ -69,14 +58,11 @@ const StatsPage: NextPage = () => {
         totalUsers: Math.floor(totalTicketsSold * 0.3), // 估算用户数
         totalPrizesPaid: `${totalPrizesPaid} S`,
         totalPlatformFees: `${totalPlatformFees} S`,
-        averageTicketsPerCycle: totalCycles > 0 ? Math.floor(totalTicketsSold / totalCycles) : 0,
         averageWinRate: 25.0, // 理论中奖率
         biggestWin: "0 S", // 需要从历史数据计算
-        activeCycles: 1,
-        completedCycles: totalCycles - 1,
       });
     }
-  }, [contractStats, platformStatsData, currentCycleId]);
+  }, [contractStats, platformStatsData]);
 
   // 奖项分布数据
   const prizeDistribution = [
@@ -195,36 +181,6 @@ const StatsPage: NextPage = () => {
             </h3>
 
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <ClockIcon className="h-5 w-5 text-blue-500" />
-                  <span className="text-sm">{t("stats.activeCycles")}</span>
-                </div>
-                <span className="font-semibold">
-                  {platformStats.activeCycles} {t("common.pieces")}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <ChartBarIcon className="h-5 w-5 text-green-500" />
-                  <span className="text-sm">{t("stats.completedCycles")}</span>
-                </div>
-                <span className="font-semibold">
-                  {platformStats.completedCycles} {t("common.pieces")}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <TicketIcon className="h-5 w-5 text-purple-500" />
-                  <span className="text-sm">{t("stats.avgTicketsPerCycle")}</span>
-                </div>
-                <span className="font-semibold">
-                  {platformStats.averageTicketsPerCycle} {t("common.tickets")}
-                </span>
-              </div>
-
               <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <TrophyIcon className="h-5 w-5 text-orange-500" />

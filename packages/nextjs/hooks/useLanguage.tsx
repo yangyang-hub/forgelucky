@@ -37,7 +37,6 @@ const translations_zh = {
   nav: {
     home: "首页",
     myTickets: "我的彩票",
-    cycles: "周期信息",
     stats: "统计数据",
     debug: "调试合约",
   },
@@ -46,11 +45,8 @@ const translations_zh = {
   home: {
     title: "🎲 ForgeLucky",
     subtitle: "去中心化NFT彩票系统 - 公平透明的刮刮乐游戏",
-    currentCycle: "当前周期",
     prizePool: "奖金池",
     ticketsSold: "已售彩票",
-    cycleEndsIn: "本周期结束倒计时",
-    cycleEnded: "已结束",
 
     buyTickets: "购买彩票",
     ticketPrice: "每张彩票价格",
@@ -67,19 +63,23 @@ const translations_zh = {
     depositToPlatform: "充值到平台",
     connectWalletInfo: "连接钱包查看账户信息",
 
+    pendingPrizes: "待领取奖金",
+    totalRewards: "累积奖金",
+    totalSold: "总销售量",
+
     rewardSystem: "🏆 奖励体系",
     superGrand: "超级大奖",
     grand: "大奖",
     medium: "中奖",
     small: "小奖",
     probability: "中奖概率",
-    rewardInfo: "总中奖率：25% | 每个周期只有一个超级大奖 | 基于区块链随机数确保公平",
+    rewardInfo: "总中奖率：25% | 基于区块链随机数确保公平",
 
     gameRules: "📋 游戏规则",
     step1Title: "购买彩票",
     step1Desc: "支付0.01 S购买NFT彩票，每张彩票都是独特的",
-    step2Title: "等待周期结束",
-    step2Desc: "每个周期持续7天，周期结束后才可开奖",
+    step2Title: "立即开奖",
+    step2Desc: "购买后即可立即刮开彩票查看结果",
     step3Title: "刮开领奖",
     step3Desc: "手动刮开彩票查看结果，中奖即可领取S奖励",
   },
@@ -108,72 +108,18 @@ const translations_zh = {
     claimedTickets: "已领奖",
 
     ticketId: "彩票 #",
-    cycleId: "周期 #",
     scratchTicket: "刮开彩票",
     claimPrize: "领取奖金",
     prizeClaimed: "奖金已领取",
     notWon: "很遗憾，未中奖",
-    cycleNotEnded: "周期结束后可开奖",
 
     noTickets: "暂无彩票",
     noDrawableTickets: "暂无可开奖彩票",
     noClaimedTickets: "暂无已领奖彩票",
     buyFirstTicket: "购买您的第一张彩票开始游戏！",
-    waitForDraw: "等待周期结束后回来开奖",
+    waitForDraw: "等待开奖功能可用",
     tryLuck: "快去购买彩票试试手气吧",
     buyTicketNow: "立即购买彩票",
-  },
-
-  // 周期页面
-  cycles: {
-    title: "周期信息",
-    subtitle: "查看历史和当前周期的详细统计信息",
-    totalCycles: "总周期数",
-    totalTicketsSales: "总彩票销售",
-    totalPrizePool: "总奖金池(S)",
-    platformFees: "平台费用(S)",
-
-    allCycles: "全部周期",
-    activeCycles: "进行中",
-    endedCycles: "已结束",
-    finalizedCycles: "已结算",
-
-    cycle: "周期 #",
-    active: "进行中",
-    ended: "已结束",
-    finalized: "已结算",
-    superGrandAwarded: "超级大奖已出",
-    timeRemaining: "剩余时间",
-
-    timeInfo: "时间信息",
-    startTime: "开始",
-    endTime: "结束",
-    duration: "持续",
-    days: "天",
-
-    ticketInfo: "彩票信息",
-    totalSales: "总销售",
-    totalDrawn: "已开奖",
-    drawRate: "开奖率",
-
-    fundingInfo: "资金信息",
-    prizePool: "奖金池",
-    platformFee: "平台费",
-    winRate: "中奖率",
-
-    prizeStats: "奖项统计",
-    superGrandPrize: "超级大奖",
-    grandPrize: "大奖",
-    mediumPrize: "中奖",
-    smallPrize: "小奖",
-    noPrize: "未中奖",
-
-    buyTicket: "购买彩票",
-    viewDrawableTickets: "查看可开奖彩票",
-    detailedStats: "详细统计",
-
-    noCycleData: "暂无周期数据",
-    waitingForData: "请等待周期数据加载",
   },
 
   // 统计页面
@@ -193,9 +139,6 @@ const translations_zh = {
     stable: "稳定在25%",
 
     platformOverview: "平台概览",
-    activeCycles: "活跃周期",
-    completedCycles: "完成周期",
-    avgTicketsPerCycle: "周期平均销售",
     biggestWin: "最大单笔奖金",
     platformFeeIncome: "平台费用收入",
 
@@ -287,7 +230,6 @@ const translations_en = {
   nav: {
     home: "Home",
     myTickets: "My Tickets",
-    cycles: "Cycles",
     stats: "Statistics",
     debug: "Debug",
   },
@@ -296,11 +238,8 @@ const translations_en = {
   home: {
     title: "🎲 ForgeLucky",
     subtitle: "Decentralized NFT Lottery System - Fair and Transparent Scratch-off Game",
-    currentCycle: "Current Cycle",
     prizePool: "Prize Pool",
     ticketsSold: "Tickets Sold",
-    cycleEndsIn: "Cycle Ends In",
-    cycleEnded: "Ended",
 
     buyTickets: "Buy Tickets",
     ticketPrice: "Price per Ticket",
@@ -317,19 +256,23 @@ const translations_en = {
     depositToPlatform: "Deposit to Platform",
     connectWalletInfo: "Connect wallet to view account info",
 
+    pendingPrizes: "Pending Prizes",
+    totalRewards: "Total Rewards",
+    totalSold: "Total Sales",
+
     rewardSystem: "🏆 Reward System",
     superGrand: "Super Grand",
     grand: "Grand Prize",
     medium: "Medium Prize",
     small: "Small Prize",
     probability: "Win Rate",
-    rewardInfo: "Total Win Rate: 25% | Only 1 Super Grand per cycle | Blockchain randomness ensures fairness",
+    rewardInfo: "Total Win Rate: 25% | Blockchain randomness ensures fairness",
 
     gameRules: "📋 Game Rules",
     step1Title: "Buy Tickets",
     step1Desc: "Pay 0.01 S for unique NFT lottery tickets",
-    step2Title: "Wait for Cycle End",
-    step2Desc: "Each cycle lasts 7 days, drawing available after cycle ends",
+    step2Title: "Instant Draw",
+    step2Desc: "Scratch tickets immediately after purchase to see results",
     step3Title: "Scratch & Claim",
     step3Desc: "Manually scratch tickets to see results and claim S rewards",
   },
@@ -358,72 +301,18 @@ const translations_en = {
     claimedTickets: "Claimed",
 
     ticketId: "Ticket #",
-    cycleId: "Cycle #",
     scratchTicket: "Scratch Ticket",
     claimPrize: "Claim Prize",
     prizeClaimed: "Prize Claimed",
     notWon: "Sorry, no prize",
-    cycleNotEnded: "Available after cycle ends",
 
     noTickets: "No tickets",
     noDrawableTickets: "No drawable tickets",
     noClaimedTickets: "No claimed tickets",
     buyFirstTicket: "Buy your first ticket to start playing!",
-    waitForDraw: "Wait for cycle to end and come back to draw",
+    waitForDraw: "Waiting for draw feature to be available",
     tryLuck: "Go buy some tickets and try your luck!",
     buyTicketNow: "Buy Tickets Now",
-  },
-
-  // Cycles page
-  cycles: {
-    title: "Cycles Info",
-    subtitle: "View detailed statistics for all historical and current cycles",
-    totalCycles: "Total Cycles",
-    totalTicketsSales: "Total Tickets Sales",
-    totalPrizePool: "Total Prize Pool(S)",
-    platformFees: "Platform Fees(S)",
-
-    allCycles: "All Cycles",
-    activeCycles: "Active",
-    endedCycles: "Ended",
-    finalizedCycles: "Finalized",
-
-    cycle: "Cycle #",
-    active: "Active",
-    ended: "Ended",
-    finalized: "Finalized",
-    superGrandAwarded: "Super Grand Awarded",
-    timeRemaining: "Time Remaining",
-
-    timeInfo: "Time Info",
-    startTime: "Start",
-    endTime: "End",
-    duration: "Duration",
-    days: "days",
-
-    ticketInfo: "Ticket Info",
-    totalSales: "Total Sales",
-    totalDrawn: "Total Drawn",
-    drawRate: "Draw Rate",
-
-    fundingInfo: "Funding Info",
-    prizePool: "Prize Pool",
-    platformFee: "Platform Fee",
-    winRate: "Win Rate",
-
-    prizeStats: "Prize Statistics",
-    superGrandPrize: "Super Grand",
-    grandPrize: "Grand Prize",
-    mediumPrize: "Medium Prize",
-    smallPrize: "Small Prize",
-    noPrize: "No Prize",
-
-    buyTicket: "Buy Ticket",
-    viewDrawableTickets: "View Drawable Tickets",
-    detailedStats: "Detailed Stats",
-
-    noCycleData: "No cycle data",
-    waitingForData: "Waiting for cycle data to load",
   },
 
   // Stats page
@@ -443,9 +332,6 @@ const translations_en = {
     stable: "stable at 25%",
 
     platformOverview: "Platform Overview",
-    activeCycles: "Active Cycles",
-    completedCycles: "Completed Cycles",
-    avgTicketsPerCycle: "Avg Tickets/Cycle",
     biggestWin: "Biggest Single Win",
     platformFeeIncome: "Platform Fee Income",
 
