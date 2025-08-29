@@ -28,8 +28,8 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
     // 常量定义
     // =================================================================================
     
-    /// @notice 彩票价格：0.01 ETH
-    uint256 public constant TICKET_PRICE = 0.01 ether;
+    /// @notice 彩票价格：1 S
+    uint256 public constant TICKET_PRICE = 1 ether;
     
     /// @notice 平台费用率：0.5% (基数为10000)
     uint256 public constant PLATFORM_FEE_RATE = 50;

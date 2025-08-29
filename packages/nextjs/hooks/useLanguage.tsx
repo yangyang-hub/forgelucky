@@ -77,7 +77,7 @@ const translations_zh = {
 
     gameRules: "📋 游戏规则",
     step1Title: "购买彩票",
-    step1Desc: "支付0.01 S购买NFT彩票，每张彩票都是独特的",
+    step1Desc: "支付1 S购买NFT彩票，每张彩票都是独特的",
     step2Title: "立即开奖",
     step2Desc: "购买后即可立即刮开彩票查看结果",
     step3Title: "刮开领奖",
@@ -270,7 +270,7 @@ const translations_en = {
 
     gameRules: "📋 Game Rules",
     step1Title: "Buy Tickets",
-    step1Desc: "Pay 0.01 S for unique NFT lottery tickets",
+    step1Desc: "Pay 1 S for unique NFT lottery tickets",
     step2Title: "Instant Draw",
     step2Desc: "Scratch tickets immediately after purchase to see results",
     step3Title: "Scratch & Claim",

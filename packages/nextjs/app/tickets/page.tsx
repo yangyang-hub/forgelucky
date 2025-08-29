@@ -171,7 +171,7 @@ const TicketsPage: NextPage = () => {
     try {
       await buyTicket({
         functionName: "buyTicket",
-        value: parseEther("0.01"), // 票价
+        value: parseEther("1"), // 票价
       });
 
       notification.success(t("common.buySuccess"));
@@ -189,7 +189,7 @@ const TicketsPage: NextPage = () => {
       await batchBuyTickets({
         functionName: "batchBuyTickets",
         args: [BigInt(count)],
-        value: parseEther((0.01 * count).toString()), // 总票价
+        value: parseEther((1 * count).toString()), // 总票价
       });
 
       notification.success(`${t("common.buySuccess")} ${count} 张彩票`);
@@ -239,7 +239,7 @@ const TicketsPage: NextPage = () => {
     try {
       await deposit({
         functionName: "deposit",
-        value: parseEther("0.1"), // 充值0.1 S
+        value: parseEther("10"), // 充值10 S
       });
 
       notification.success(t("common.depositSuccess"));

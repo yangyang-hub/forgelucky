@@ -77,7 +77,7 @@ const StatsPage: NextPage = () => {
   const dailySales = Array.from({ length: 30 }, (_, i) => ({
     date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000),
     tickets: Math.floor(Math.random() * 50) + 10,
-    revenue: (Math.floor(Math.random() * 50) + 10) * 0.01,
+    revenue: (Math.floor(Math.random() * 50) + 10) * 1,
   }));
 
   // 排行榜数据（模拟）
