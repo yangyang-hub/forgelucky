@@ -44,33 +44,33 @@ contract ForgeLuckyInstant is ERC721, ERC721Enumerable, Ownable, Pausable, Reent
     // 奖项配置 - 提高中奖率到25%，降低奖金金额
     // =================================================================================
     
-    /// @notice 超级大奖概率：0.1% (10/10000)
-    uint256 public constant SUPER_GRAND_RATE = 10;
+    /// @notice 超级大奖概率：0.01% (1/10000)
+    uint256 public constant SUPER_GRAND_RATE = 1;
     
-    /// @notice 大奖概率：0.8% (80/10000)
-    uint256 public constant GRAND_PRIZE_RATE = 80;
+    /// @notice 大奖概率：2.5% (250/10000)
+    uint256 public constant GRAND_PRIZE_RATE = 250;
     
-    /// @notice 中奖概率：4% (400/10000)
-    uint256 public constant MEDIUM_PRIZE_RATE = 400;
+    /// @notice 中奖概率：7.5% (750/10000)
+    uint256 public constant MEDIUM_PRIZE_RATE = 750;
     
-    /// @notice 小奖概率：20.1% (2010/10000)
-    uint256 public constant SMALL_PRIZE_RATE = 2010;
-    
+    /// @notice 小奖概率：14.99% (1499/10000)
+    uint256 public constant SMALL_PRIZE_RATE = 1499;
+
     // 奖池分配比例 - 调整比例以支持更高中奖率和更低奖金
-    /// @notice 超级大奖池占比：20%
-    uint256 public constant SUPER_GRAND_POOL_RATIO = 2000;
+    /// @notice 超级大奖池占比：30%
+    uint256 public constant SUPER_GRAND_POOL_RATIO = 4000;
     
-    /// @notice 大奖池占比：18%
-    uint256 public constant GRAND_PRIZE_POOL_RATIO = 1800;
+    /// @notice 大奖池占比：30%
+    uint256 public constant GRAND_PRIZE_POOL_RATIO = 3000;
     
-    /// @notice 中奖池占比：25%
-    uint256 public constant MEDIUM_PRIZE_POOL_RATIO = 2500;
+    /// @notice 中奖池占比：20%
+    uint256 public constant MEDIUM_PRIZE_POOL_RATIO = 2000;
     
-    /// @notice 小奖池占比：30%
-    uint256 public constant SMALL_PRIZE_POOL_RATIO = 3000;
+    /// @notice 小奖池占比：10%
+    uint256 public constant SMALL_PRIZE_POOL_RATIO = 1000;
     
-    /// @notice 奖池增长基金占比：6.5% (总收入-平台费用-奖池分配)
-    uint256 public constant GROWTH_FUND_RATIO = 650;
+    /// @notice 奖池增长基金占比：9.5% (总收入-平台费用-奖池分配)
+    uint256 public constant GROWTH_FUND_RATIO = 950;
     
     // =================================================================================
     // 枚举定义

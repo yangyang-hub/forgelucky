@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
-import { parseEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { ClockIcon, CurrencyDollarIcon, GiftIcon, SparklesIcon, TicketIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
@@ -60,6 +60,13 @@ const TicketsPage: NextPage = () => {
   const { data: probabilityStats } = useScaffoldReadContract({
     contractName: "ForgeLuckyInstant",
     functionName: "getProbabilityStats",
+    watch: true,
+  });
+
+  // 获取奖池统计
+  const { data: poolStats } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getPoolStats",
     watch: true,
   });
 
@@ -296,29 +303,62 @@ const TicketsPage: NextPage = () => {
                 中奖概率统计
               </h3>
               {probabilityStats ? (
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-blue-600">超大奖:</span>
-                    <span className="font-semibold">{(Number(probabilityStats[0]) / 100).toFixed(2)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-orange-600">大奖:</span>
-                    <span className="font-semibold">{(Number(probabilityStats[1]) / 100).toFixed(2)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-blue-600">中奖:</span>
-                    <span className="font-semibold">{(Number(probabilityStats[2]) / 100).toFixed(2)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-green-600">小奖:</span>
-                    <span className="font-semibold">{(Number(probabilityStats[3]) / 100).toFixed(2)}%</span>
-                  </div>
-                  <div className="border-t pt-2 mt-2">
-                    <div className="flex justify-between font-bold">
-                      <span className="text-success">总中奖率:</span>
-                      <span className="text-success">{(Number(probabilityStats[4]) / 100).toFixed(2)}%</span>
+                <div className="space-y-3">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">超大奖:</span>
+                      <span className="font-semibold">{(Number(probabilityStats[0]) / 100).toFixed(2)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-orange-600">大奖:</span>
+                      <span className="font-semibold">{(Number(probabilityStats[1]) / 100).toFixed(2)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">中奖:</span>
+                      <span className="font-semibold">{(Number(probabilityStats[2]) / 100).toFixed(2)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-green-600">小奖:</span>
+                      <span className="font-semibold">{(Number(probabilityStats[3]) / 100).toFixed(2)}%</span>
+                    </div>
+                    <div className="border-t pt-2 mt-2">
+                      <div className="flex justify-between font-bold">
+                        <span className="text-success">总中奖率:</span>
+                        <span className="text-success">{(Number(probabilityStats[4]) / 100).toFixed(2)}%</span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* 奖池金额统计 */}
+                  {poolStats && (
+                    <div className="border-t pt-3 mt-3">
+                      <h4 className="text-sm font-semibold mb-2 text-gray-700">当前奖池金额 (ETH):</h4>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-blue-600">超大奖池:</span>
+                          <span className="font-semibold">{parseFloat(formatEther(poolStats[0])).toFixed(4)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-orange-600">大奖池:</span>
+                          <span className="font-semibold">{parseFloat(formatEther(poolStats[1])).toFixed(4)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-blue-600">中奖池:</span>
+                          <span className="font-semibold">{parseFloat(formatEther(poolStats[2])).toFixed(4)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-green-600">小奖池:</span>
+                          <span className="font-semibold">{parseFloat(formatEther(poolStats[3])).toFixed(4)}</span>
+                        </div>
+                        <div className="border-t pt-1 mt-1">
+                          <div className="flex justify-between font-bold text-primary">
+                            <span>总奖池:</span>
+                            <span>{parseFloat(formatEther(poolStats[4])).toFixed(4)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-gray-500">加载中...</div>

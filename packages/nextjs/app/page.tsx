@@ -47,39 +47,105 @@ const Home: NextPage = () => {
     watch: true,
   });
 
+  // 获取概率统计
+  const { data: probabilityStats } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getProbabilityStats",
+    watch: true,
+  });
+
+  // 获取奖池统计
+  const { data: poolStats } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getPoolStats",
+    watch: true,
+  });
+
+  // 获取系统统计
+  const { data: systemStats } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getSystemStats",
+    watch: true,
+  });
+
   // 合约写入函数 - 合并为一个 hook
   const { writeContractAsync: writeContract } = useScaffoldWriteContract("ForgeLuckyInstant");
 
-  // 缓存奖励结构数据
-  const prizeStructure = useMemo(
-    () => [
+  // 动态奖励结构数据 - 从合约获取实际数据
+  const prizeStructure = useMemo(() => {
+    if (!probabilityStats || !poolStats || !ticketPrice) {
+      // 返回默认结构，显示加载状态
+      return [
+        {
+          level: t("home.superGrand"),
+          probability: "...",
+          reward: "...",
+          rewardAmount: "...",
+          color: "bg-gradient-to-r from-blue-500 to-blue-700",
+        },
+        {
+          level: t("home.grand"),
+          probability: "...",
+          reward: "...",
+          rewardAmount: "...",
+          color: "bg-gradient-to-r from-orange-400 to-red-500",
+        },
+        {
+          level: t("home.medium"),
+          probability: "...",
+          reward: "...",
+          rewardAmount: "...",
+          color: "bg-gradient-to-r from-blue-400 to-purple-500",
+        },
+        {
+          level: t("home.small"),
+          probability: "...",
+          reward: "...",
+          rewardAmount: "...",
+          color: "bg-gradient-to-r from-green-400 to-teal-500",
+        },
+      ];
+    }
+
+    // 计算可中奖金额（基于合约的计算逻辑）
+    const calculatePrizeAmount = (poolAmount: bigint, multiplier: number) => {
+      if (poolAmount === 0n) return formatEther(ticketPrice / 4n); // 最小奖金
+      const baseAmount = (poolAmount * BigInt(multiplier)) / 10000n;
+      const minPrize = ticketPrice / 4n;
+      return formatEther(baseAmount > minPrize ? baseAmount : minPrize);
+    };
+
+    return [
       {
         level: t("home.superGrand"),
-        probability: "0.1%",
-        reward: "40%",
+        probability: `${(Number(probabilityStats[0]) / 100).toFixed(2)}%`,
+        reward: `~${calculatePrizeAmount(poolStats[0], 1750)} ETH`,
+        rewardAmount: calculatePrizeAmount(poolStats[0], 1750),
         color: "bg-gradient-to-r from-blue-500 to-blue-700",
       },
       {
         level: t("home.grand"),
-        probability: "2.5%",
-        reward: "30%",
+        probability: `${(Number(probabilityStats[1]) / 100).toFixed(2)}%`,
+        reward: `~${calculatePrizeAmount(poolStats[1], 1250)} ETH`,
+        rewardAmount: calculatePrizeAmount(poolStats[1], 1250),
         color: "bg-gradient-to-r from-orange-400 to-red-500",
       },
       {
         level: t("home.medium"),
-        probability: "7.5%",
-        reward: "20%",
+        probability: `${(Number(probabilityStats[2]) / 100).toFixed(2)}%`,
+        reward: `~${calculatePrizeAmount(poolStats[2], 400)} ETH`,
+        rewardAmount: calculatePrizeAmount(poolStats[2], 400),
         color: "bg-gradient-to-r from-blue-400 to-purple-500",
       },
       {
         level: t("home.small"),
-        probability: "15%",
-        reward: "10%",
+        probability: `${(Number(probabilityStats[3]) / 100).toFixed(2)}%`,
+        reward: `~${calculatePrizeAmount(poolStats[3], 150)} ETH`,
+        rewardAmount: calculatePrizeAmount(poolStats[3], 150),
         color: "bg-gradient-to-r from-green-400 to-teal-500",
       },
-    ],
-    [t],
-  );
+    ];
+  }, [probabilityStats, poolStats, ticketPrice, t]);
 
   // 通用错误处理函数
   const handleError = (error: any, message: string) => {
@@ -144,7 +210,9 @@ const Home: NextPage = () => {
               </div>
               <div className="text-center">
                 <div className="text-base font-semibold mb-1 opacity-90">{t("home.prizePool")}</div>
-                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">{"--"}</div>
+                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">
+                  {poolStats ? `${parseFloat(formatEther(poolStats[4])).toFixed(2)}` : "--"}
+                </div>
                 <div className="text-lg font-semibold opacity-90">{t("common.eth")}</div>
               </div>
               <div className="mt-3 text-center">
@@ -164,7 +232,9 @@ const Home: NextPage = () => {
               </div>
               <div className="text-center">
                 <div className="text-base font-semibold mb-1 opacity-90">{t("home.ticketsSold")}</div>
-                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">{"--"}</div>
+                <div className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">
+                  {systemStats ? systemStats.totalTickets.toString() : "--"}
+                </div>
                 <div className="text-lg font-semibold opacity-90">{t("common.tickets")}</div>
               </div>
               <div className="mt-3 text-center">
@@ -277,16 +347,29 @@ const Home: NextPage = () => {
               {prizeStructure.map((prize, index) => (
                 <div key={index} className={`${prize.color} text-white p-6 rounded-xl text-center`}>
                   <h3 className="text-lg font-bold mb-2">{prize.level}</h3>
-                  <div className="text-3xl font-bold mb-2">{prize.reward}</div>
-                  <div className="text-sm opacity-90">
+                  <div className="text-2xl font-bold mb-2">{prize.reward}</div>
+                  <div className="text-sm opacity-90 mb-1">
                     {t("home.probability")}: {prize.probability}
                   </div>
+                  <div className="text-xs opacity-75">≈{parseFloat(prize.rewardAmount).toFixed(4)} ETH</div>
                 </div>
               ))}
             </div>
 
             <div className="text-center mt-6 p-4 bg-base-200 rounded-lg">
-              <p className="text-sm text-stronger">{t("home.rewardInfo")}</p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-stronger">
+                    {t("home.totalWinRate")}:{" "}
+                    {probabilityStats ? `${(Number(probabilityStats[4]) / 100).toFixed(1)}%` : "--"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-stronger">
+                    {t("home.ticketPrice")}: {ticketPrice ? formatEther(ticketPrice) : "--"} ETH
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
