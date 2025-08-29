@@ -20,11 +20,11 @@ const ABI = parseAbi([
 
 const fetchSonicPriceFromCoinGecko = async (): Promise<number> => {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=sonic-3&vs_currencies=usd');
+    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=sonic-3&vs_currencies=usd");
     const data = await response.json();
-    return data['sonic-3']?.usd || 0;
+    return data["sonic-3"]?.usd || 0;
   } catch (error) {
-    console.error('Error fetching Sonic price from CoinGecko:', error);
+    console.error("Error fetching Sonic price from CoinGecko:", error);
     return 0;
   }
 };
@@ -32,9 +32,9 @@ const fetchSonicPriceFromCoinGecko = async (): Promise<number> => {
 export const fetchPriceFromUniswap = async (targetNetwork: ChainWithAttributes): Promise<number> => {
   // Handle Sonic networks specifically
   // if (targetNetwork.id === sonicMainnet.id || targetNetwork.id === sonicTestnet.id) {
-    return await fetchSonicPriceFromCoinGecko();
+  return await fetchSonicPriceFromCoinGecko();
   // }
-  
+
   // if (
   //   targetNetwork.nativeCurrency.symbol !== "ETH" &&
   //   targetNetwork.nativeCurrency.symbol !== "SEP" &&

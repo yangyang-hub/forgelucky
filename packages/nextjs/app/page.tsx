@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
@@ -10,17 +10,23 @@ import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useLanguage } from "~~/hooks/useLanguage";
 import { notification } from "~~/utils/scaffold-eth";
+import { formatTimeRemainingCompact } from "~~/utils/timeUtils";
 
 /**
  * 首页 - 彩票购买主界面
  * 功能：展示当前周期信息、购买彩票、查看奖励体系
  */
+
+// 常量定义
+const DEPOSIT_AMOUNT_MULTIPLIER = 10;
+const BATCH_COUNT_LIMITS = { min: 1, max: 100 };
+
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [batchCount, setBatchCount] = useState<number>(5);
 
-  // 读取合约数据
+  // 读取合约数据 - 优化了默认参数
   const { data: currentCycle } = useScaffoldReadContract({
     contractName: "ForgeLucky",
     functionName: "getCurrentCycle",
@@ -38,108 +44,111 @@ const Home: NextPage = () => {
     watch: true,
   });
 
-  // 写入合约函数
-  const { writeContractAsync: buyTicketWithETH } = useScaffoldWriteContract("ForgeLucky");
-  const { writeContractAsync: buyTicketsWithETH } = useScaffoldWriteContract("ForgeLucky");
-  const { writeContractAsync: buyTicketWithBalance } = useScaffoldWriteContract("ForgeLucky");
-  const { writeContractAsync: deposit } = useScaffoldWriteContract("ForgeLucky");
+  // 合约写入函数 - 合并为一个 hook
+  const { writeContractAsync: writeContract } = useScaffoldWriteContract("ForgeLucky");
 
-  const prizeStructure = [
-    {
-      level: t("home.superGrand"),
-      probability: "1/" + t("cycles.cycle").toLowerCase(),
-      reward: "40%",
-      color: "bg-gradient-to-r from-blue-500 to-blue-700",
-    },
-    {
-      level: t("home.grand"),
-      probability: "2.5%",
-      reward: "30%",
-      color: "bg-gradient-to-r from-orange-400 to-red-500",
-    },
-    {
-      level: t("home.medium"),
-      probability: "7.5%",
-      reward: "20%",
-      color: "bg-gradient-to-r from-blue-400 to-purple-500",
-    },
-    { level: t("home.small"), probability: "15%", reward: "10%", color: "bg-gradient-to-r from-green-400 to-teal-500" },
-  ];
+  // 缓存奖励结构数据
+  const prizeStructure = useMemo(
+    () => [
+      {
+        level: t("home.superGrand"),
+        probability: "1/" + t("cycles.cycle").toLowerCase(),
+        reward: "40%",
+        color: "bg-gradient-to-r from-blue-500 to-blue-700",
+      },
+      {
+        level: t("home.grand"),
+        probability: "2.5%",
+        reward: "30%",
+        color: "bg-gradient-to-r from-orange-400 to-red-500",
+      },
+      {
+        level: t("home.medium"),
+        probability: "7.5%",
+        reward: "20%",
+        color: "bg-gradient-to-r from-blue-400 to-purple-500",
+      },
+      {
+        level: t("home.small"),
+        probability: "15%",
+        reward: "10%",
+        color: "bg-gradient-to-r from-green-400 to-teal-500",
+      },
+    ],
+    [t],
+  );
 
-  const formatTimeRemaining = (endTime: bigint) => {
-    const now = Math.floor(Date.now() / 1000);
-    const diff = Number(endTime) - now;
+  // 优化的时间格式化函数
+  const formattedTimeRemaining = useMemo(() => {
+    if (!currentCycle) return "...";
+    return formatTimeRemainingCompact(currentCycle.endTime, language, t("home.cycleEnded"));
+  }, [currentCycle, language, t]);
 
-    if (diff <= 0) return t("home.cycleEnded");
-
-    const days = Math.floor(diff / (24 * 60 * 60));
-    const hours = Math.floor((diff % (24 * 60 * 60)) / (60 * 60));
-    const minutes = Math.floor((diff % (60 * 60)) / 60);
-
-    return `${days}${t("cycles.days")} ${hours}${t("common.loading").includes("时") ? "小时" : "h"} ${minutes}${t("common.loading").includes("分") ? "分钟" : "m"}`;
+  // 通用错误处理函数
+  const handleError = (error: any, message: string) => {
+    console.error(error);
+    notification.error(message);
   };
 
-  // 购买彩票函数
+  // 购买单张彩票
   const handleBuyTicket = async () => {
+    if (!ticketPrice) return;
     try {
-      if (!ticketPrice) return;
-
-      await buyTicketWithETH({
+      await writeContract({
         functionName: "buyTicketWithETH",
         value: ticketPrice,
       });
-
       notification.success(t("common.purchaseSuccess"));
     } catch (error) {
-      console.error(error);
-      notification.error(t("common.purchaseFailed"));
+      handleError(error, t("common.purchaseFailed"));
     }
   };
 
+  // 批量购买彩票
   const handleBuyTicketsBatch = async () => {
+    if (!ticketPrice) return;
     try {
-      if (!ticketPrice) return;
-
-      await buyTicketsWithETH({
+      await writeContract({
         functionName: "buyTicketsWithETH",
         args: [BigInt(batchCount)],
         value: ticketPrice * BigInt(batchCount),
       });
-
       notification.success(t("common.batchPurchaseSuccess").replace("{count}", batchCount.toString()));
     } catch (error) {
-      console.error(error);
-      notification.error(t("common.batchPurchaseFailed"));
+      handleError(error, t("common.batchPurchaseFailed"));
     }
   };
 
+  // 使用余额购买
   const handleBuyWithBalance = async () => {
     try {
-      await buyTicketWithBalance({
+      await writeContract({
         functionName: "buyTicketWithBalance",
       });
-
       notification.success(t("common.balancePurchaseSuccess"));
     } catch (error) {
-      console.error(error);
-      notification.error(t("common.balancePurchaseFailed"));
+      handleError(error, t("common.balancePurchaseFailed"));
     }
   };
 
+  // 充值到平台
   const handleDeposit = async () => {
+    if (!ticketPrice) return;
     try {
-      if (!ticketPrice) return;
-
-      await deposit({
+      await writeContract({
         functionName: "deposit",
-        value: ticketPrice * BigInt(10), // 充值10张彩票的金额
+        value: ticketPrice * BigInt(DEPOSIT_AMOUNT_MULTIPLIER),
       });
-
       notification.success(t("common.depositSuccess"));
     } catch (error) {
-      console.error(error);
-      notification.error(t("common.depositFailed"));
+      handleError(error, t("common.depositFailed"));
     }
+  };
+
+  // 验证批量购买数量
+  const handleBatchCountChange = (value: number) => {
+    const clampedValue = Math.max(BATCH_COUNT_LIMITS.min, Math.min(BATCH_COUNT_LIMITS.max, value));
+    setBatchCount(clampedValue);
   };
 
   return (
@@ -172,9 +181,7 @@ const Home: NextPage = () => {
               <ClockIcon className="h-6 w-6" />
               <span className="text-lg font-semibold">{t("home.cycleEndsIn")}</span>
             </div>
-            <div className="text-3xl font-bold countdown-timer">
-              {currentCycle ? formatTimeRemaining(currentCycle.endTime) : "..."}
-            </div>
+            <div className="text-3xl font-bold countdown-timer">{formattedTimeRemaining}</div>
           </div>
         </div>
       </div>
@@ -213,10 +220,10 @@ const Home: NextPage = () => {
                   <input
                     type="number"
                     className="input input-bordered flex-1"
-                    min={1}
-                    max={100}
+                    min={BATCH_COUNT_LIMITS.min}
+                    max={BATCH_COUNT_LIMITS.max}
                     value={batchCount}
-                    onChange={e => setBatchCount(Number(e.target.value))}
+                    onChange={e => handleBatchCountChange(Number(e.target.value))}
                   />
                   <button
                     className="btn btn-secondary flex-1"

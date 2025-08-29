@@ -1,7 +1,5 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
-import { ThemeProvider } from "~~/components/ThemeProvider";
-import { LanguageProvider } from "~~/hooks/useLanguage";
+import ClientLayout from "~~/components/ClientLayout";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
@@ -14,11 +12,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <html suppressHydrationWarning className={``}>
       <body>
-        <ThemeProvider enableSystem defaultTheme="dark">
-          <LanguageProvider>
-            <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
-          </LanguageProvider>
-        </ThemeProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

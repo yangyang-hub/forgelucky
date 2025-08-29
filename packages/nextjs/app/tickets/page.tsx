@@ -58,65 +58,58 @@ const TicketsPage: NextPage = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
 
   // 读取合约数据
-  const { data: userTicketsDetails, refetch: refetchUserTickets } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
-    functionName: "getUserTicketsDetails",
+  const { data: userTickets, refetch: refetchUserTickets } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getUserTickets",
     args: [connectedAddress || "0x0000000000000000000000000000000000000000"],
     watch: true,
   });
 
   const { data: userInfo } = useScaffoldReadContract({
-    contractName: "ForgeLucky",
+    contractName: "ForgeLuckyInstant",
     functionName: "getUserInfo",
     args: [connectedAddress || "0x0000000000000000000000000000000000000000"],
     watch: true,
   });
 
+  const { data: probabilityStats } = useScaffoldReadContract({
+    contractName: "ForgeLuckyInstant",
+    functionName: "getProbabilityStats",
+    watch: true,
+  });
+
   // 写入合约函数
-  const { writeContractAsync: drawTicket } = useScaffoldWriteContract("ForgeLucky");
-  const { writeContractAsync: claimPrize } = useScaffoldWriteContract("ForgeLucky");
-  const { writeContractAsync: deposit } = useScaffoldWriteContract("ForgeLucky");
-  const { writeContractAsync: withdrawBalance } = useScaffoldWriteContract("ForgeLucky");
+  const { writeContractAsync: drawTicket } = useScaffoldWriteContract("ForgeLuckyInstant");
+  const { writeContractAsync: claimPrize } = useScaffoldWriteContract("ForgeLuckyInstant");
+  const { writeContractAsync: deposit } = useScaffoldWriteContract("ForgeLuckyInstant");
+  const { writeContractAsync: withdrawBalance } = useScaffoldWriteContract("ForgeLuckyInstant");
+  const { writeContractAsync: buyTicket } = useScaffoldWriteContract("ForgeLuckyInstant");
+  const { writeContractAsync: batchDrawUserTickets } = useScaffoldWriteContract("ForgeLuckyInstant");
+  const { writeContractAsync: batchBuyTickets } = useScaffoldWriteContract("ForgeLuckyInstant");
 
   // 处理合约数据并转换为前端格式
   useEffect(() => {
-    if (userTicketsDetails && connectedAddress) {
-      const [tokenIds, cycleIds, purchaseTimes, isDrawnArray, prizeLevels, prizeAmounts, isClaimedArray, canDrawArray] =
-        userTicketsDetails;
-
-      const processedTickets: Ticket[] = tokenIds.map((tokenId, index) => {
-        const isDrawn = isDrawnArray[index];
-        const isClaimed = isClaimedArray[index];
-        const canDraw = canDrawArray[index];
-        const prizeLevel = prizeLevels[index];
-        const prizeAmount = prizeAmounts[index];
-
-        let status: TicketStatus;
-        if (isClaimed) {
-          status = TicketStatus.CLAIMED;
-        } else if (isDrawn) {
-          status = TicketStatus.DRAWN;
-        } else if (canDraw) {
-          status = TicketStatus.DRAWABLE;
-        } else {
-          status = TicketStatus.ACTIVE;
-        }
-
+    if (userTickets && connectedAddress && userTickets.length > 0) {
+      const processedTickets: Ticket[] = userTickets.map((tokenId: bigint) => {
+        // 由于新合约需要单独获取每个票的详细信息，这里先返回基本信息
+        // TODO: 后续需要优化为使用单独的hooks来获取每个票的详细信息
         return {
           id: Number(tokenId),
-          cycleId: Number(cycleIds[index]),
-          purchaseTime: new Date(Number(purchaseTimes[index]) * 1000),
-          status,
-          prizeLevel: prizeLevel as PrizeLevel,
-          prizeAmount: prizeAmount > 0 ? `${formatEther(prizeAmount)} S` : undefined,
-          canDraw,
-          canClaim: isDrawn && prizeLevel > 0 && !isClaimed,
+          cycleId: 0, // 新合约没有cycle概念
+          purchaseTime: new Date(), // 默认值，需要从合约获取
+          status: TicketStatus.DRAWABLE, // 默认状态
+          prizeLevel: PrizeLevel.NO_PRIZE, // 默认未中奖
+          prizeAmount: undefined,
+          canDraw: true, // 默认可以开奖
+          canClaim: false,
         };
       });
 
       setTickets(processedTickets);
+    } else {
+      setTickets([]);
     }
-  }, [userTicketsDetails, connectedAddress]);
+  }, [userTickets, connectedAddress]);
 
   // 获取奖项等级显示信息
   const getPrizeLevelInfo = (level: PrizeLevel) => {
@@ -172,6 +165,57 @@ const TicketsPage: NextPage = () => {
     } catch (error) {
       console.error(error);
       notification.error(t("common.drawFailed"));
+    }
+  };
+
+  // 处理购买彩票
+  const handleBuyTicket = async () => {
+    try {
+      await buyTicket({
+        functionName: "buyTicket",
+        value: parseEther("0.01"), // 票价
+      });
+
+      notification.success(t("common.buySuccess"));
+      // 重新获取数据
+      await refetchUserTickets();
+    } catch (error) {
+      console.error(error);
+      notification.error(t("common.buyFailed"));
+    }
+  };
+
+  // 处理批量购买彩票
+  const handleBatchBuyTickets = async (count: number) => {
+    try {
+      await batchBuyTickets({
+        functionName: "batchBuyTickets",
+        args: [BigInt(count)],
+        value: parseEther((0.01 * count).toString()), // 总票价
+      });
+
+      notification.success(`${t("common.buySuccess")} ${count} 张彩票`);
+      // 重新获取数据
+      await refetchUserTickets();
+    } catch (error) {
+      console.error(error);
+      notification.error(t("common.buyFailed"));
+    }
+  };
+
+  // 处理批量开奖
+  const handleBatchDraw = async () => {
+    try {
+      await batchDrawUserTickets({
+        functionName: "batchDrawUserTickets",
+      });
+
+      notification.success(t("common.batchDrawSuccess"));
+      // 重新获取数据
+      await refetchUserTickets();
+    } catch (error) {
+      console.error(error);
+      notification.error(t("common.batchDrawFailed"));
     }
   };
 
@@ -253,7 +297,7 @@ const TicketsPage: NextPage = () => {
 
         {/* 用户信息卡片 */}
         <div className="lottery-card p-6 rounded-2xl mb-8">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             {/* 账户信息 */}
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -299,6 +343,42 @@ const TicketsPage: NextPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* 中奖概率统计 */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <SparklesIcon className="h-6 w-6 text-accent" />
+                中奖概率统计
+              </h3>
+              {probabilityStats ? (
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-blue-600">超大奖:</span>
+                    <span className="font-semibold">{(Number(probabilityStats[0]) / 100).toFixed(2)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-orange-600">大奖:</span>
+                    <span className="font-semibold">{(Number(probabilityStats[1]) / 100).toFixed(2)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-600">中奖:</span>
+                    <span className="font-semibold">{(Number(probabilityStats[2]) / 100).toFixed(2)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-green-600">小奖:</span>
+                    <span className="font-semibold">{(Number(probabilityStats[3]) / 100).toFixed(2)}%</span>
+                  </div>
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between font-bold">
+                      <span className="text-success">总中奖率:</span>
+                      <span className="text-success">{(Number(probabilityStats[4]) / 100).toFixed(2)}%</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-gray-500">加载中...</div>
+              )}
+            </div>
           </div>
 
           {/* 操作按钮 */}
@@ -311,10 +391,42 @@ const TicketsPage: NextPage = () => {
               <CurrencyDollarIcon className="h-5 w-5" />
               {t("tickets.withdrawBalance")}
             </button>
-            <button className="btn btn-accent flex-1 min-w-[120px]">
+
+            {/* 单票购买 */}
+            <button className="btn btn-accent flex-1 min-w-[120px]" onClick={handleBuyTicket}>
               <GiftIcon className="h-5 w-5" />
               {t("tickets.buyTickets")}
             </button>
+
+            {/* 批量购买 */}
+            <div className="dropdown dropdown-top flex-1 min-w-[120px]">
+              <label tabIndex={0} className="btn btn-info w-full">
+                <GiftIcon className="h-5 w-5" />
+                {t("tickets.batchBuy")}
+              </label>
+              <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li>
+                  <button onClick={() => handleBatchBuyTickets(5)}>5 张彩票</button>
+                </li>
+                <li>
+                  <button onClick={() => handleBatchBuyTickets(10)}>10 张彩票</button>
+                </li>
+                <li>
+                  <button onClick={() => handleBatchBuyTickets(20)}>20 张彩票</button>
+                </li>
+                <li>
+                  <button onClick={() => handleBatchBuyTickets(50)}>50 张彩票</button>
+                </li>
+              </ul>
+            </div>
+
+            {/* 批量开奖 */}
+            {stats.drawable > 0 && (
+              <button className="btn btn-warning flex-1 min-w-[120px]" onClick={handleBatchDraw}>
+                <SparklesIcon className="h-5 w-5" />
+                {t("tickets.batchDraw")}
+              </button>
+            )}
           </div>
         </div>
 
@@ -352,10 +464,6 @@ const TicketsPage: NextPage = () => {
                       {t("tickets.ticketId")}
                       {ticket.id}
                     </h3>
-                    <p className="text-sm text-gray-600">
-                      {t("tickets.cycleId")}
-                      {ticket.cycleId}
-                    </p>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bg} ${statusInfo.color}`}>
                     {statusInfo.name}
@@ -435,7 +543,7 @@ const TicketsPage: NextPage = () => {
               {selectedTab === "drawable" && t("tickets.waitForDraw")}
               {selectedTab === "claimed" && t("tickets.tryLuck")}
             </p>
-            <button className="btn btn-primary">
+            <button className="btn btn-primary" onClick={handleBuyTicket}>
               <GiftIcon className="h-5 w-5" />
               {t("tickets.buyTicketNow")}
             </button>

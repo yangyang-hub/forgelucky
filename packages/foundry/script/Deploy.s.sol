@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "./DeployHelpers.s.sol";
-import { DeployForgeLucky } from "./DeployForgeLucky.s.sol";
+import { DeployForgeLuckyInstant } from "./DeployForgeLuckyInstant.s.sol";
 
 /**
  * @notice 所有合约的主要部署脚本
@@ -15,8 +15,8 @@ contract DeployScript is ScaffoldETHDeploy {
         // 按顺序部署所有合约
         // 需要时在这里添加新的部署
 
-        // 部署ForgeLucky彩票合约
-        DeployForgeLucky deployForgeLucky = new DeployForgeLucky();
+        // 部署ForgeLuckyInstant彩票合约
+        DeployForgeLuckyInstant deployForgeLucky = new DeployForgeLuckyInstant();
         deployForgeLucky.run();
 
         // 部署其他合约（如需要）

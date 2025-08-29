@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 /**
  * 语言类型定义
@@ -14,12 +14,20 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  isLoading: boolean;
 }
 
 /**
  * 语言上下文
  */
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+/**
+ * 常量定义
+ */
+const STORAGE_KEY = "forgelucky_language";
+const SUPPORTED_LANGUAGES: Language[] = ["zh", "en"];
+const DEFAULT_LANGUAGE: Language = "en";
 
 /**
  * 中文翻译
@@ -91,6 +99,9 @@ const translations_zh = {
     depositBalance: "充值余额",
     withdrawBalance: "提取余额",
     buyTickets: "购买彩票",
+    batchBuy: "批量购买",
+    batchDraw: "批量开奖",
+    connectWalletInfo: "请先连接钱包",
 
     allTickets: "全部彩票",
     drawableTickets: "可开奖",
@@ -248,6 +259,16 @@ const translations_zh = {
     balancePurchaseFailed: "余额购买失败",
     depositSuccess: "充值成功！",
     depositFailed: "充值失败",
+    drawSuccess: "开奖成功！",
+    drawFailed: "开奖失败",
+    claimSuccess: "领取奖金成功！",
+    claimFailed: "领取奖金失败",
+    withdrawSuccess: "提现成功！",
+    withdrawFailed: "提现失败",
+    buySuccess: "购买成功！",
+    buyFailed: "购买失败",
+    batchDrawSuccess: "批量开奖成功！",
+    batchDrawFailed: "批量开奖失败",
   },
 
   // 404页面
@@ -256,7 +277,7 @@ const translations_zh = {
     message: "您访问的页面不存在。",
     goHome: "返回首页",
   },
-};
+} as const;
 
 /**
  * 英文翻译
@@ -328,6 +349,9 @@ const translations_en = {
     depositBalance: "Deposit Balance",
     withdrawBalance: "Withdraw Balance",
     buyTickets: "Buy Tickets",
+    batchBuy: "Batch Buy",
+    batchDraw: "Batch Draw",
+    connectWalletInfo: "Please connect wallet first",
 
     allTickets: "All Tickets",
     drawableTickets: "Drawable",
@@ -485,6 +509,16 @@ const translations_en = {
     balancePurchaseFailed: "Balance purchase failed",
     depositSuccess: "Deposit successful!",
     depositFailed: "Deposit failed",
+    drawSuccess: "Draw successful!",
+    drawFailed: "Draw failed",
+    claimSuccess: "Claim successful!",
+    claimFailed: "Claim failed",
+    withdrawSuccess: "Withdraw successful!",
+    withdrawFailed: "Withdraw failed",
+    buySuccess: "Purchase successful!",
+    buyFailed: "Purchase failed",
+    batchDrawSuccess: "Batch draw successful!",
+    batchDrawFailed: "Batch draw failed",
   },
 
   // 404 page
@@ -493,7 +527,7 @@ const translations_en = {
     message: "The page you're looking for doesn't exist.",
     goHome: "Go Home",
   },
-};
+} as const;
 
 /**
  * 翻译字典
@@ -501,7 +535,7 @@ const translations_en = {
 const translations = {
   zh: translations_zh,
   en: translations_en,
-};
+} as const;
 
 /**
  * 语言提供者属性
@@ -511,49 +545,83 @@ interface LanguageProviderProps {
 }
 
 /**
+ * 安全地获取localStorage
+ */
+const getStoredLanguage = (): Language => {
+  if (typeof window === "undefined") return DEFAULT_LANGUAGE;
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY) as Language;
+    return SUPPORTED_LANGUAGES.includes(stored) ? stored : DEFAULT_LANGUAGE;
+  } catch {
+    return DEFAULT_LANGUAGE;
+  }
+};
+
+/**
+ * 安全地设置localStorage
+ */
+const setStoredLanguage = (language: Language): void => {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.setItem(STORAGE_KEY, language);
+  } catch {
+    // 忽略存储错误
+  }
+};
+
+/**
  * 语言提供者组件
  */
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 从本地存储读取语言设置
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("language") as Language;
-    if (savedLanguage && (savedLanguage === "zh" || savedLanguage === "en")) {
-      setLanguage(savedLanguage);
+    const stored = getStoredLanguage();
+    setLanguageState(stored);
+    setIsLoading(false);
+  }, []);
+
+  // 设置语言并保存到本地存储
+  const setLanguage = useCallback((lang: Language) => {
+    if (SUPPORTED_LANGUAGES.includes(lang)) {
+      setLanguageState(lang);
+      setStoredLanguage(lang);
     }
   }, []);
 
-  // 保存语言设置到本地存储
-  useEffect(() => {
-    localStorage.setItem("language", language);
+  /**
+   * 翻译函数 - 使用useMemo优化性能
+   */
+  const t = useMemo(() => {
+    return (key: string): string => {
+      const keys = key.split(".");
+      let result: any = translations[language];
+
+      for (const k of keys) {
+        if (result && typeof result === "object" && k in result) {
+          result = result[k];
+        } else {
+          return key; // 如果找不到翻译，返回原键值
+        }
+      }
+
+      return typeof result === "string" ? result : key;
+    };
   }, [language]);
 
-  /**
-   * 翻译函数
-   * @param key 翻译键值，支持点分割的嵌套键
-   * @returns 翻译结果
-   */
-  const t = (key: string): string => {
-    const keys = key.split(".");
-    let result: any = translations[language];
-
-    for (const k of keys) {
-      if (result && typeof result === "object" && k in result) {
-        result = result[k];
-      } else {
-        return key; // 如果找不到翻译，返回原键值
-      }
-    }
-
-    return typeof result === "string" ? result : key;
-  };
-
-  const value: LanguageContextType = {
-    language,
-    setLanguage,
-    t,
-  };
+  const value: LanguageContextType = useMemo(
+    () => ({
+      language,
+      setLanguage,
+      t,
+      isLoading,
+    }),
+    [language, setLanguage, t, isLoading],
+  );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
